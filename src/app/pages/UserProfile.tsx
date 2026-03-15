@@ -1,12 +1,11 @@
-import { useParams, Link } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { StartupCard } from '../components/StartupCard';
 import { mockStartups } from '../data/mockData';
 import { MapPin, Calendar, Briefcase } from 'lucide-react';
+import { Link } from 'react-router';
 
 export function UserProfile() {
-  const { id } = useParams();
-  
+
   // In a real app, we'd fetch user data based on id
   const userStartups = mockStartups.slice(0, 3); // Mock: show first 3 startups
   const userName = userStartups[0]?.founder || 'User';
@@ -20,7 +19,7 @@ export function UserProfile() {
         <div className="bg-white rounded-2xl shadow-md p-8 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             {/* Profile Picture */}
-            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex-shrink-0 flex items-center justify-center shadow-lg">
+            <div className="w-32 h-32 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 shrink-0 flex items-center justify-center shadow-lg">
               <span className="text-5xl font-bold text-white">{userName[0]}</span>
             </div>
 
@@ -49,7 +48,7 @@ export function UserProfile() {
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-2">
-              <button className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg">
+              <button className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg">
                 Follow
               </button>
               <button className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors font-medium">
