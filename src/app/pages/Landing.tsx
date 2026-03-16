@@ -2,8 +2,28 @@ import { Link } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { Rocket, Users, TrendingUp } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import supabase from '../supabaseClient';
 
 export function Landing() {
+  const [webName, setWebName] = useState<string>('');
+
+  const fetchWebName = async () => {
+    const { data, error } = await supabase
+      .from('changes')
+      .select('web_name')
+      .single();
+
+    if (error) {
+      console.error('Error fetching web name:', error);
+    } else {
+      setWebName(data.web_name);
+    }
+  }
+
+  useEffect(() => {
+    fetchWebName();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -41,7 +61,7 @@ export function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why GradLaunch?
+              Why {webName}?
             </h2>
             <p className="text-lg text-gray-600">
               The perfect platform to showcase and discover youth startups

@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { Upload, X } from 'lucide-react';
+import { useWebData } from '../contexts/webData';
 
 export function CreateStartup() {
   const navigate = useNavigate();
+  const { webName } = useWebData();
   const [formData, setFormData] = useState({
     name: '',
     founder: '',
@@ -43,7 +45,7 @@ export function CreateStartup() {
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         <div className="bg-white rounded-2xl shadow-md p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Your Startup</h1>
-          <p className="text-gray-600 mb-8">Share your business with the GradLaunch community</p>
+          <p className="text-gray-600 mb-8">Share your business with the {webName} community</p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Startup Name */}
@@ -144,6 +146,7 @@ export function CreateStartup() {
                     <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100">
                       <img src={img} alt={`Upload ${index + 1}`} className="w-full h-full object-cover" />
                       <button
+                        title='button'
                         type="button"
                         onClick={() => removeImage(index)}
                         className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
@@ -159,7 +162,7 @@ export function CreateStartup() {
             {/* Contact Information */}
             <div className="border-t border-gray-200 pt-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
-              
+
               <div className="space-y-4">
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
@@ -218,7 +221,7 @@ export function CreateStartup() {
               </button>
               <button
                 type="submit"
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg"
+                className="px-6 py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg"
               >
                 Publish Startup
               </button>

@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { useWebData } from '../../contexts/webData';
 
 export function Login() {
   const navigate = useNavigate();
+  const { webName } = useWebData();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -22,16 +24,16 @@ export function Login() {
         {/* Logo */}
         <Link to="/" className="flex items-center justify-center space-x-2 mb-8">
           <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold text-2xl">G</span>
+            <span className="text-white font-bold text-2xl">{webName.charAt(0).toLocaleUpperCase()}</span>
           </div>
-          <span className="text-2xl font-bold text-gray-900">GradLaunch</span>
+          <span className="text-2xl font-bold text-gray-900">{webName}</span>
         </Link>
 
         {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-gray-600">Sign in to continue to GradLaunch</p>
+            <p className="text-gray-600">Sign in to continue to {webName}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">

@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { Search, User } from 'lucide-react';
 import { useState } from 'react';
+import { useWebData } from '../contexts/webData';
 
 interface NavbarProps {
   showSearch?: boolean;
@@ -9,6 +10,7 @@ interface NavbarProps {
 }
 
 export function Navbar({ showSearch = false, showAuth = true, onSearch }: NavbarProps) {
+  const { webName } = useWebData();
   const [searchValue, setSearchValue] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -27,9 +29,9 @@ export function Navbar({ showSearch = false, showAuth = true, onSearch }: Navbar
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm">
-              <span className="text-white font-bold text-lg">G</span>
+              <span className="text-white font-bold text-lg">{webName.charAt(0).toLocaleUpperCase()}</span>
             </div>
-            <span className="text-xl font-semibold text-gray-900">GradLaunch</span>
+            <span className="text-xl font-semibold text-gray-900">{webName}</span>
           </Link>
 
           {/* Search Bar - shown on feed page */}

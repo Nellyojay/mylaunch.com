@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Eye, EyeOff, Mail, Lock, User, GraduationCap } from 'lucide-react';
+import { useWebData } from '../../contexts/webData';
 
 export function Signup() {
   const navigate = useNavigate();
+  const { webName } = useWebData();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -35,16 +37,16 @@ export function Signup() {
         {/* Logo */}
         <Link to="/" className="flex items-center justify-center space-x-2 mb-8">
           <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold text-2xl">G</span>
+            <span className="text-white font-bold text-2xl">{webName.charAt(0).toLocaleUpperCase()}</span>
           </div>
-          <span className="text-2xl font-bold text-gray-900">GradLaunch</span>
+          <span className="text-2xl font-bold text-gray-900">{webName}</span>
         </Link>
 
         {/* Signup Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-            <p className="text-gray-600">Join GradLaunch and showcase your startup</p>
+            <p className="text-gray-600">Join {webName} and showcase your startup</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">

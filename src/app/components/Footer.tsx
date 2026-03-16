@@ -1,7 +1,9 @@
 import { Link } from 'react-router';
 import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { useWebData } from '../contexts/webData';
 
 export function Footer() {
+  const { webName } = useWebData();
   return (
     <footer className="bg-gray-50 border-t border-gray-200 mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -10,9 +12,9 @@ export function Footer() {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm">
-                <span className="text-white font-bold text-lg">G</span>
+                <span className="text-white font-bold text-lg">{webName.charAt(0).toLocaleUpperCase()}</span>
               </div>
-              <span className="text-xl font-semibold text-gray-900">GradLaunch</span>
+              <span className="text-xl font-semibold text-gray-900">{webName}</span>
             </div>
             <p className="text-gray-600 max-w-md">
               Empowering young entrepreneurs to showcase their startups and connect with supporters worldwide.
@@ -67,7 +69,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-200 text-center text-gray-600">
-          <p>&copy; 2026 GradLaunch. All rights reserved.</p>
+          <p>&copy; 2026 {webName}. All rights reserved.</p>
         </div>
       </div>
     </footer>
