@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { Search, User } from 'lucide-react';
 import { useState } from 'react';
 import { useWebData } from '../contexts/webData';
+import { useAuth } from '../contexts/authContext';
 
 interface NavbarProps {
   showSearch?: boolean;
@@ -9,8 +10,9 @@ interface NavbarProps {
   onSearch?: (query: string) => void;
 }
 
-export function Navbar({ showSearch = false, showAuth = true, onSearch }: NavbarProps) {
+export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   const { webName } = useWebData();
+  const { session } = useAuth();
   const [searchValue, setSearchValue] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -52,7 +54,7 @@ export function Navbar({ showSearch = false, showAuth = true, onSearch }: Navbar
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-6">
-            {showAuth ? (
+            {!session ? (
               <>
                 <Link to="/feed" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Explore
@@ -99,7 +101,7 @@ export function Navbar({ showSearch = false, showAuth = true, onSearch }: Navbar
         {/* Mobile Menu - shown when mobile menu button is clicked */}
         {isMobileMenuOpen && (
           <div className="md:hidden mt-2 space-y-2">
-            {showAuth ? (
+            {!session ? (
               <div className="md:hidden py-2 border-t border-gray-200">
                 <Link to="/feed" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                   Explore

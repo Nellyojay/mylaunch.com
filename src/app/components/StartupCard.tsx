@@ -1,7 +1,6 @@
 import { Link } from 'react-router';
 import { LikeButton } from './LikeButton';
 import { CommentButton } from './CommentButton';
-import { GraduationCap } from 'lucide-react';
 
 export interface Startup {
   id: number;
@@ -45,12 +44,6 @@ export function StartupCard({ startup }: StartupCardProps) {
             </Link>
             <div className="flex items-center space-x-2 mt-1">
               <p className="text-sm text-gray-600">by {startup.founder}</p>
-              {startup.verified && (
-                <span className="flex items-center space-x-1 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                  <GraduationCap className="w-3 h-3" />
-                  <span>Verified</span>
-                </span>
-              )}
             </div>
           </div>
         </div>
