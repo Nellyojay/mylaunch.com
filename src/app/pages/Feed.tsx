@@ -65,6 +65,7 @@ export function Feed() {
           <div className="flex items-center space-x-2">
             <ArrowUpDown className="w-4 h-4 text-gray-500" />
             <select
+              title='sortBy'
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'newest' | 'likes' | 'trending')}
               className="px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-700"

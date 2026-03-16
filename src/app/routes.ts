@@ -5,6 +5,8 @@ import { StartupProfile } from "./pages/StartupProfile";
 import { CreateStartup } from "./pages/CreateStartup";
 import { UserProfile } from "./pages/UserProfile";
 import { NotFound } from "./pages/NotFound";
+import { Login } from "./pages/auth/login";
+import { Signup } from "./pages/auth/signup";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +24,14 @@ export const router = createBrowserRouter([
   {
     path: "/create",
     Component: CreateStartup,
+  },
+  {
+    path: "/login",
+    Component: Login,
+  },
+  {
+    path: "/signup",
+    Component: Signup,
   },
   {
     path: "/profile/:id",

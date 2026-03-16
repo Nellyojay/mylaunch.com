@@ -10,6 +10,7 @@ interface NavbarProps {
 
 export function Navbar({ showSearch = false, showAuth = true, onSearch }: NavbarProps) {
   const [searchValue, setSearchValue] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -48,7 +49,7 @@ export function Navbar({ showSearch = false, showAuth = true, onSearch }: Navbar
           )}
 
           {/* Navigation Links */}
-          <div className="flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-6">
             {showAuth ? (
               <>
                 <Link to="/feed" className="text-gray-700 hover:text-gray-900 transition-colors">
@@ -57,11 +58,11 @@ export function Navbar({ showSearch = false, showAuth = true, onSearch }: Navbar
                 <Link to="/#about" className="text-gray-700 hover:text-gray-900 transition-colors hidden sm:block">
                   About
                 </Link>
-                <Link to="/feed" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link to="/login" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Sign In
                 </Link>
                 <Link
-                  to="/create"
+                  to="/signup"
                   className="bg-linear-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
                 >
                   Create Account
@@ -78,7 +79,54 @@ export function Navbar({ showSearch = false, showAuth = true, onSearch }: Navbar
               </>
             )}
           </div>
+
+          <div>
+            {/* Mobile Menu Button */}
+            <button
+              title='Toggle menu'
+              className="md:hidden text-gray-700 hover:text-gray-900 focus:outline-none"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Menu - shown when mobile menu button is clicked */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden mt-2 space-y-2">
+            {showAuth ? (
+              <div className="md:hidden py-2 border-t border-gray-200">
+                <Link to="/feed" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                  Explore
+                </Link>
+                <Link to="/#about" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                  About
+                </Link>
+                <Link to="/login" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="bg-linear-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
+                >
+                  Create Account
+                </Link>
+              </div>
+            ) : (
+              <div className="md:hidden py-2 border-t border-gray-200">
+                <Link to="/create" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                  Create Startup
+                </Link>
+                <Link to="/profile/1" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                  <User className="w-5 h-5 inline" /> Profile
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </nav>
   );
