@@ -13,7 +13,7 @@ export function Landing() {
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
             Discover Startups by
-            <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mt-2">Young Graduates</span>
+            <span className="block bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mt-2 pb-2">Young Graduates</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10">
             Support and discover businesses created by young entrepreneurs. Connect with the next generation of innovators.
@@ -21,7 +21,7 @@ export function Landing() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/create"
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl text-lg font-medium"
+              className="bg-linear-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl text-lg font-medium"
             >
               Create Account
             </Link>
@@ -49,7 +49,7 @@ export function Landing() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white rounded-2xl p-8 shadow-md text-center hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Rocket className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Launch Your Startup</h3>
@@ -59,7 +59,7 @@ export function Landing() {
             </div>
 
             <div className="bg-white rounded-2xl p-8 shadow-md text-center hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-linear-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Connect & Engage</h3>
@@ -69,7 +69,7 @@ export function Landing() {
             </div>
 
             <div className="bg-white rounded-2xl p-8 shadow-md text-center hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-linear-to-br from-green-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Grow Your Business</h3>
@@ -95,7 +95,7 @@ export function Landing() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
+              <div className="w-16 h-16 bg-linear-to-br from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
                 1
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Create an Account</h3>
@@ -105,7 +105,7 @@ export function Landing() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
+              <div className="w-16 h-16 bg-linear-to-br from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
                 2
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Post Your Startup</h3>
@@ -115,7 +115,7 @@ export function Landing() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
+              <div className="w-16 h-16 bg-linear-to-br from-green-600 to-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
                 3
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Get Discovered</h3>
@@ -128,7 +128,7 @@ export function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600">
+      <section className="py-20 bg-linear-to-br from-blue-600 via-indigo-600 to-purple-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Launch Your Startup?
