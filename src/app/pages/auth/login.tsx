@@ -2,20 +2,39 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { useWebData } from '../../contexts/webData';
+import supabase from '../../supabaseClient';
 
 export function Login() {
   const navigate = useNavigate();
   const { webName } = useWebData();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     // In a real app, this would authenticate with backend
-    navigate('/feed');
+    const { error } = await supabase
+      .auth
+      .signInWithPassword({
+        email: formData.email,
+        password: formData.password
+      });
+
+    if (error) {
+      console.error('Login error:', error);
+      setErrorMessage('Invalid email or password. Please try again.');
+    } else {
+      setErrorMessage('');
+      navigate('/feed');
+      setFormData({ email: '', password: '' });
+    }
+    setLoading(false);
   };
 
   return (
@@ -32,9 +51,15 @@ export function Login() {
         {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-gray-600">Sign in to continue to {webName}</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome To {webName}</h1>
+            <p className="text-gray-600">Sign in to continue to {webName} account</p>
           </div>
+
+          {errorMessage && (
+            <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-6">
+              {errorMessage}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
@@ -99,7 +124,9 @@ export function Login() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
+              disabled={loading}
+              className={`w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg ${loading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
             >
               Sign In
             </button>
