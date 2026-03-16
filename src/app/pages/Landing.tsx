@@ -4,6 +4,7 @@ import { Footer } from '../components/Footer';
 import { Rocket, Users, TrendingUp } from 'lucide-react';
 
 export function Landing() {
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar showAuth={true} />
