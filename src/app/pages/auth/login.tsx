@@ -39,7 +39,10 @@ export function Login() {
 
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google'
+      provider: 'google',
+      options: {
+        redirectTo: 'https://nellyojay.github.io/mylaunch.com/profile'
+      }
     });
 
     if (error) {
