@@ -41,7 +41,7 @@ export function Feed() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar showSearch={true} showAuth={false} onSearch={setSearchQuery} />
+      <Navbar showSearch={true} onSearch={setSearchQuery} />
 
       {/* Category Filter */}
       <CategoryFilter
@@ -50,13 +50,13 @@ export function Feed() {
       />
 
       {/* Feed Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-18">
         {/* Search and Sort Controls */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+        <div className="flex items-center mb-2 gap-4">
           <div className="text-gray-700">
             {searchQuery && (
               <p className="text-sm">
-                Showing results for <span className="font-semibold">"{searchQuery}"</span>
+                Results <span className="font-semibold">"{searchQuery}"</span>
               </p>
             )}
           </div>

@@ -4,8 +4,10 @@ import { Footer } from '../components/Footer';
 import { Rocket, Users, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import supabase from '../supabaseClient';
+import { useAuth } from '../contexts/authContext';
 
 export function Landing() {
+  const { session } = useAuth();
   const [webName, setWebName] = useState<string>('');
 
   const fetchWebName = async () => {
@@ -41,7 +43,7 @@ export function Landing() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/create"
+              to="/signup"
               className="bg-linear-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl text-lg font-medium"
             >
               Create Account
@@ -158,7 +160,7 @@ export function Landing() {
             Join hundreds of young entrepreneurs already showcasing their businesses
           </p>
           <Link
-            to="/create"
+            to={session ? "/create" : "/signup"}
             className="bg-white text-blue-600 px-8 py-4 rounded-full hover:bg-gray-100 transition-colors text-lg font-medium inline-block shadow-xl hover:shadow-2xl"
           >
             Get Started Now
