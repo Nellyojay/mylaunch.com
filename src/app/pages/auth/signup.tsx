@@ -66,7 +66,7 @@ export function Signup() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://nellyojay.github.io/mylaunch.com/profile'
+        redirectTo: 'https://nellyojay.github.io/mylaunch.com/'
       }
     })
 
