@@ -32,60 +32,45 @@ export function Signup() {
       setLoading(false);
       return;
     }
-    // Create profile using the name
-    const { data: profileData, error: profileError } = await supabase
-      .from('users')
-      .insert({
-        full_name: formData.fullName,
-      })
-      .select()
-      .single();
 
-    if (profileError) {
-      console.error('Error creating user profile:', profileError);
+    const { error: signupError } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.confirmPassword,
+      options: {
+        data: {
+          full_name: formData.fullName
+        }
+      }
+    });
+
+    if (signupError) {
       alert('Failed to create account. Please try again.');
       setLoading(false);
       return;
-    } else if (profileError === null) {
-      const { data: signupData, error: signupError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.confirmPassword,
-      });
-
-      if (signupError) {
-        console.error('Error signing up:', signupError);
-        alert('Failed to create account. Please try again.');
-        setLoading(false);
-        return;
-      } else {
-        const { error: updateError } = await supabase
-          .from('users')
-          .update({
-            auth_id: signupData.user?.id,
-            TC_agreed: formData.agreeToTerms,
-          })
-          .eq('user_id', profileData?.user_id);
-
-        if (updateError) {
-          console.error('Error updating user profile:', updateError);
-          alert('Account created but failed to update profile. Please contact support.');
-          setLoading(false);
-          return;
-        }
-      }
-
-      setConfirmEmail(true);
-      setFormData({
-        fullName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        agreeToTerms: false
-      });
     }
+
+    setConfirmEmail(true);
+    setFormData({
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      agreeToTerms: false
+    });
 
     setLoading(false);
   };
+
+  const signInWithGoogle = async () => {
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google'
+    })
+
+    if (error) {
+      alert('Failed to sign in with Google. Please try again.');
+    }
+  }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-12">
@@ -258,7 +243,10 @@ export function Signup() {
 
             {/* Social Signup */}
             <div className="grid grid-cols-2 gap-3">
-              <button className="flex items-center justify-center space-x-2 px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+              <button
+                onClick={signInWithGoogle}
+                className="flex items-center justify-center space-x-2 px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+              >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
