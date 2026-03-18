@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createHashRouter } from "react-router";
 import { Landing } from "./pages/Landing";
 import { Feed } from "./pages/Feed";
 import { StartupProfile } from "./pages/StartupProfile";
@@ -8,7 +8,7 @@ import { NotFound } from "./pages/NotFound";
 import { Login } from "./pages/auth/login";
 import { Signup } from "./pages/auth/signup";
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     path: "/",
     Component: Landing,
