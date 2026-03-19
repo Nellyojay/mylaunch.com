@@ -17,7 +17,7 @@ import {
   Globe,
   Calendar
 } from 'lucide-react';
-import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
+import { FaEdit, FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { BsTwitterX } from 'react-icons/bs';
 import { useAuth } from '../contexts/authContext';
 
@@ -68,7 +68,16 @@ export function StartupProfile() {
             </div>
 
             <div className="flex-1 text-center md:text-left mt-2">
-              {/* Startup Name and Verified Badge */}
+              {true && (
+                <Link
+                  to={`/startup/${startup.id}/edit`}
+                  className="absolute flex gap-2 top-4 right-4 bg-gray-100 text-gray-600 rounded-full p-2 hover:bg-gray-200 transition-colors"
+                >
+                  Edit
+                  <FaEdit className="w-5 h-5" />
+                </Link>
+              )}
+              {/* Startup Name */}
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
                 {startup.name}
               </h1>
