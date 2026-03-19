@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { PostCard } from '../components/PostCard';
-import { mockStartups, startupExtendedData } from '../data/mockData';
+import { mockComments, mockStartups, startupExtendedData } from '../data/mockData';
 import {
   GraduationCap,
   Mail,
@@ -18,9 +18,10 @@ import {
   Calendar
 } from 'lucide-react';
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
-import { BsTwitterX } from 'react-icons/bs';
+import { BsChevronDown, BsTwitterX } from 'react-icons/bs';
 import { useAuth } from '../contexts/authContext';
 import { BiEdit } from 'react-icons/bi';
+import { CommentBox } from '../components/CommentBox';
 
 export function StartupProfile() {
   const { session } = useAuth();
@@ -31,6 +32,7 @@ export function StartupProfile() {
   const [following, setFollowing] = useState(false);
   const [liked, setLiked] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
   if (!startup || !extendedData) {
     return (
@@ -71,7 +73,7 @@ export function StartupProfile() {
             <div className="flex-1 text-center md:text-left mt-2">
               {true && (
                 <Link
-                  to={`/startup/${startup.id}/edit`}
+                  to={`/startup/${startup?.id}/edit`}
                   className="absolute flex gap-2 top-4 right-4 bg-gray-100 text-gray-600 rounded-full p-2 hover:bg-gray-200 transition-colors"
                 >
                   Edit
@@ -80,18 +82,18 @@ export function StartupProfile() {
               )}
               {/* Startup Name */}
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
-                {startup.name}
+                {startup?.name}
               </h1>
 
               {/* Founder Name */}
               <p className="text-lg text-gray-600 mb-2">
-                Founded by {startup.founder}
+                Founded by {startup?.founder}
               </p>
 
               {/* Category and Location */}
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-3">
                 <span className="text-sm text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
-                  {startup.category}
+                  {startup?.category}
                 </span>
                 <span className="flex items-center space-x-1 text-sm text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
                   <MapPin className="w-3 h-3" />
@@ -115,13 +117,20 @@ export function StartupProfile() {
 
               {/* Short Description */}
               <p className="text-gray-700 leading-relaxed mb-4">
-                {startup.description}
+                {startup?.description}
               </p>
 
               <div className='flex gap-6'>
-                <p className='text-gray-600'>Startups <strong>3</strong></p>
                 <p className='text-gray-600'>Followers <strong>12</strong></p>
                 <p className='text-gray-600'>Likes <strong>45</strong></p>
+                <button
+                  onClick={() => setShowComments(!showComments)}
+                  className='text-gray-600 hover:text-blue-600 transition-colors flex items-center gap-1'
+                >
+                  Opinions
+                  <span><strong>45</strong></span>
+                  <BsChevronDown className='w-3 h-3' />
+                </button>
               </div>
             </div>
           </div>
@@ -167,91 +176,98 @@ export function StartupProfile() {
             </button>
           </div>
 
-          {/* View More Button */}
-          <button
-            onClick={() => setShowMore(!showMore)}
-            className="w-full mt-4 flex items-center justify-center space-x-2 py-3 text-blue-600 hover:bg-blue-50 rounded-xl transition-all font-medium"
-          >
-            <span>{showMore ? 'View Less' : 'View More About Startup'}</span>
-            {showMore ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-          </button>
+          {showComments ? (
+            <CommentBox comments={mockComments} showComments={showComments} setShowComments={setShowComments} />
+          ) : (
+            <>
+              {/* View More Button */}
+              <button
+                onClick={() => setShowMore(!showMore)}
+                className="w-full mt-4 flex items-center justify-center space-x-2 py-3 text-blue-600 hover:bg-blue-50 rounded-xl transition-all font-medium"
+              >
+                <span>{showMore ? 'View Less' : 'View More About Startup'}</span>
+                {showMore ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+              </button>
 
-          {/* Expandable Details Section */}
-          {showMore && (
-            <div className="mt-6 pt-6 border-t border-gray-200 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Full Description</h3>
-                <p className="text-gray-700 leading-relaxed">{extendedData.fullDescription}</p>
-              </div>
+              {/* Expandable Details Section */}
+              {showMore && (
+                <div className="mt-6 pt-6 border-t border-gray-200 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Full Description</h3>
+                    <p className="text-gray-700 leading-relaxed">{extendedData.fullDescription}</p>
+                  </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Contact Information</h3>
-                  <div className="space-y-2 text-sm text-gray-700">
-                    <div className="flex items-center space-x-2">
-                      <Mail className="w-4 h-4 text-blue-600" />
-                      <span>{extendedData.email}</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-900 mb-2">Contact Information</h3>
+                      <div className="space-y-2 text-sm text-gray-700">
+                        <div className="flex items-center space-x-2">
+                          <Mail className="w-4 h-4 text-blue-600" />
+                          <span>{extendedData.email}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Phone className="w-4 h-4 text-blue-600" />
+                          <span>{extendedData.phone}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Globe className="w-4 h-4 text-blue-600" />
+                          <a href={`https://${extendedData.website}`} className="text-blue-600 hover:underline">
+                            {extendedData.website}
+                          </a>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Phone className="w-4 h-4 text-blue-600" />
-                      <span>{extendedData.phone}</span>
+
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-900 mb-2">Business Details</h3>
+                      <div className="space-y-2 text-sm text-gray-700">
+                        <div className="flex items-center space-x-2">
+                          <MapPin className="w-4 h-4 text-blue-600" />
+                          <span>{extendedData.address}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="w-4 h-4 text-blue-600" />
+                          <span>Founded in {extendedData.year}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <GraduationCap className="w-4 h-4 text-blue-600" />
+                          <span>Founder: {startup.founder}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Globe className="w-4 h-4 text-blue-600" />
-                      <a href={`https://${extendedData.website}`} className="text-blue-600 hover:underline">
-                        {extendedData.website}
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-2">Social Media</h3>
+                    <div className="flex space-x-3">
+                      <a
+                        title='X'
+                        href="#"
+                        className="w-10 h-10 bg-gray-100 text-black rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors"
+                      >
+                        <BsTwitterX className="w-5 h-5" />
+                      </a>
+                      <a
+                        title='Facebook'
+                        href="#"
+                        className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors"
+                      >
+                        <FaFacebook className="w-6 h-6" />
+                      </a>
+                      <a
+                        title='WhatsApp'
+                        href="#"
+                        className="w-10 h-10 bg-green-100 text-green-500 rounded-full flex items-center justify-center hover:bg-green-200 transition-colors"
+                      >
+                        <FaWhatsapp className="w-6 h-6" />
                       </a>
                     </div>
                   </div>
                 </div>
-
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Business Details</h3>
-                  <div className="space-y-2 text-sm text-gray-700">
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="w-4 h-4 text-blue-600" />
-                      <span>{extendedData.address}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="w-4 h-4 text-blue-600" />
-                      <span>Founded in {extendedData.year}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <GraduationCap className="w-4 h-4 text-blue-600" />
-                      <span>Founder: {startup.founder}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Social Media</h3>
-                <div className="flex space-x-3">
-                  <a
-                    title='X'
-                    href="#"
-                    className="w-10 h-10 bg-gray-100 text-black rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors"
-                  >
-                    <BsTwitterX className="w-5 h-5" />
-                  </a>
-                  <a
-                    title='Facebook'
-                    href="#"
-                    className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors"
-                  >
-                    <FaFacebook className="w-6 h-6" />
-                  </a>
-                  <a
-                    title='WhatsApp'
-                    href="#"
-                    className="w-10 h-10 bg-green-100 text-green-500 rounded-full flex items-center justify-center hover:bg-green-200 transition-colors"
-                  >
-                    <FaWhatsapp className="w-6 h-6" />
-                  </a>
-                </div>
-              </div>
-            </div>
+              )}
+            </>
           )}
+
         </div>
 
         {/* Posts Feed Section */}
