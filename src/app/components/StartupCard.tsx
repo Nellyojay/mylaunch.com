@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { LikeButton } from './LikeButton';
 import type { StartupData } from '../contexts/StartupProfileContext';
+import { useUserData } from '../contexts/userDataContext';
 
 export interface Startup {
   id: number;
@@ -20,10 +21,14 @@ interface StartupCardProps {
 }
 
 export function StartupCard({ startup, userId }: StartupCardProps) {
+  const { setSelectedProfile } = useUserData();
   return (
     <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 duration-300">
       {/* Startup Image */}
-      <Link to={`/startup/${startup.id}`}>
+      <Link
+        to={`/startup/${startup.id}`}
+        onClick={() => setSelectedProfile(userId)}
+      >
         <div className="aspect-square overflow-hidden bg-gray-100">
           <img
             src={startup.display_image}

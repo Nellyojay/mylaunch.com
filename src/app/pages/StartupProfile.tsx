@@ -13,18 +13,21 @@ import {
   ChevronDown,
   ChevronUp,
   Globe,
-  Calendar
+  Calendar,
+  Edit,
+  Plus
 } from 'lucide-react';
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { BsChevronDown, BsTwitterX } from 'react-icons/bs';
 import { useAuth } from '../contexts/authContext';
-import { BiEdit } from 'react-icons/bi';
 import { CommentBox } from '../components/CommentBox';
 import { useStartup } from '../contexts/StartupProfileContext';
 import { formatDate } from '../constants/dateFormat';
+import { useUserData } from '../contexts/userDataContext';
 
 export function StartupProfile() {
-  const { session } = useAuth();
+  const { session, user } = useAuth();
+  const { userData } = useUserData();
   const { id } = useParams();
   const { startupData } = useStartup();
   const startup = startupData?.find(s => s.id === id);
@@ -33,7 +36,6 @@ export function StartupProfile() {
   const [liked, setLiked] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  console.log('My startups:', startupData);
 
   if (!startupData) {
     return (
@@ -72,15 +74,7 @@ export function StartupProfile() {
             </div>
 
             <div className="flex-1 text-center md:text-left mt-2">
-              {true && (
-                <Link
-                  to={`/startup/${startup?.id}`}
-                  className="absolute flex gap-2 top-4 right-4 bg-gray-100 text-gray-600 rounded-full p-2 hover:bg-gray-200 transition-colors"
-                >
-                  Edit
-                  <BiEdit className="w-5 h-5" />
-                </Link>
-              )}
+
               {/* Startup Name */}
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
                 {startup?.name}
@@ -134,17 +128,28 @@ export function StartupProfile() {
 
           {/* Action Buttons */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-            <button
-              onClick={() => setFollowing(!following)}
-              disabled={!session}
-              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium transition-all ${following
-                ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                : 'bg-linear-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg'
-                }`}
-            >
-              <UserPlus className="w-5 h-5" />
-              <span>{following ? 'Following' : 'Follow'}</span>
-            </button>
+            {userData?.auth_id === user.id ? (
+              <button
+                onClick={() => setFollowing(!following)}
+                disabled={!session}
+                className='flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium transition-all bg-linear-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg'
+              >
+                <Edit className="w-5 h-5" />
+                <span>Edit startup</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => setFollowing(!following)}
+                disabled={!session}
+                className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium transition-all ${following
+                  ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  : 'bg-linear-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg'
+                  }`}
+              >
+                <UserPlus className="w-5 h-5" />
+                <span>{following ? 'Following' : 'Follow'}</span>
+              </button>
+            )}
 
             <a
               href={`tel:${startup?.phone}`}
@@ -268,7 +273,14 @@ export function StartupProfile() {
         {/* Posts Feed Section */}
         <div className="mt-8 px-4">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Posts</h2>
+            <div className='flex justify-between mb-2 pb-2 border-b border-gray-400'>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Posts</h2>
+              <Link to={`/`} className='flex items-center px-2 gap-2 text-blue-600 md:text-gray-500 md:hover:text-blue-600 border-2 border-blue-600 md:border-gray-400 rounded-lg md:hover:border-blue-600 md:hover:shadow-'>
+                Add Post
+                <Plus />
+              </Link>
+            </div>
+
             <p className="text-gray-600">Latest updates from {startup?.name}</p>
           </div>
 

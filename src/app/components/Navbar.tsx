@@ -25,21 +25,14 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hideLogoName, setHideLogoName] = useState(false);
 
-  console.log('My user id', myUserId)
-
   const getMyUserId = async () => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('users')
       .select('user_id')
       .eq('auth_id', user.id)
       .single();
 
-    if (error) {
-      console.log(error.message)
-    } else {
-      console.log(data)
-      setMyUserId(data)
-    }
+    setMyUserId(data)
   }
 
   useEffect(() => {

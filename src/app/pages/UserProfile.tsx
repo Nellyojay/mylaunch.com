@@ -11,10 +11,9 @@ import { Link, useNavigate, useParams } from 'react-router';
 export function UserProfile() {
   const navigate = useNavigate();
   const { startupData } = useStartup();
-  const { userData, setSelectedProfile, selectedProfile } = useUserData();
-  const { logout } = useAuth()
+  const { userData, setSelectedProfile } = useUserData();
+  const { logout, user } = useAuth()
   const { id } = useParams();
-  console.log(selectedProfile);
 
   useEffect(() => {
     setSelectedProfile(id)
@@ -55,21 +54,23 @@ export function UserProfile() {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col gap-2">
-              <button className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg">
-                Edit profile
-              </button>
-              <button
-                className="px-6 py-2 border border-red-700 text-red-700 rounded-full hover:bg-red-100 transition-colors font-medium"
-                onClick={() => {
-                  logout();
-                  navigate('/login');
-                }}
-              >
-                Log out
-              </button>
-            </div>
+            {userData?.auth_id === user.id ? (
+              <div className="flex flex-col gap-2">
+                <button className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg">
+                  Edit profile
+                </button>
+                <button
+                  className="px-6 py-2 border border-red-700 text-red-700 rounded-full hover:bg-red-100 transition-colors font-medium"
+                  onClick={() => {
+                    logout();
+                    navigate('/login');
+                  }}
+                >
+                  Log out
+                </button>
+              </div>
+            ) : null}
+
           </div>
         </div>
 
@@ -77,12 +78,14 @@ export function UserProfile() {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">My Startups</h2>
-            <Link
-              to="/create"
-              className="text-blue-600 hover:text-blue-700 font-medium"
-            >
-              + Create New
-            </Link>
+            {userData?.auth_id === user.id && (
+              <Link
+                to="/create"
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
+                + Create New
+              </Link>
+            )}
           </div>
 
           {(userStartups ?? []).length > 0 ? (

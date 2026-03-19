@@ -33,24 +33,20 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
   const fetchUserData = async () => {
     setLoadingUserData(true);
 
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('users')
       .select('*')
       .eq('user_id', selectedProfile)
       .single();
 
     if (data) {
-      console.log(data)
       setUserData(data);
-    }
-    if (error) {
-      console.error('Error fetching user data:', error);
     }
     setLoadingUserData(false);
   }
 
   useEffect(() => {
-    if (session) {
+    if (session && selectedProfile) {
       fetchUserData();
     } else {
       setUserData(null);
