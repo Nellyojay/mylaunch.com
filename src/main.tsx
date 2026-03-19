@@ -5,13 +5,16 @@ import App from './app/App'
 import { WebDataProvider } from './app/contexts/webData'
 import { AuthProvider } from './app/contexts/authContext'
 import { UserDataProvider } from './app/contexts/userDataContext'
+import { StartupProvider } from './app/contexts/StartupProfileContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <WebDataProvider>
       <AuthProvider>
         <UserDataProvider>
-          <App />
+          <StartupProvider>
+            <App />
+          </StartupProvider>
         </UserDataProvider>
       </AuthProvider>
     </WebDataProvider>

@@ -1,8 +1,14 @@
 import { Link } from 'react-router';
 import { Search, User } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useWebData } from '../contexts/webData';
 import { useAuth } from '../contexts/authContext';
+import { useUserData } from '../contexts/userDataContext';
+import supabase from '../supabaseClient';
+
+type MyUserId = {
+  user_id: string
+}
 
 interface NavbarProps {
   showSearch?: boolean;
@@ -12,10 +18,33 @@ interface NavbarProps {
 
 export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   const { webName } = useWebData();
-  const { session } = useAuth();
+  const { session, user } = useAuth();
+  const { userData, setSelectedProfile } = useUserData();
+  const [myUserId, setMyUserId] = useState<MyUserId | null>(null)
   const [searchValue, setSearchValue] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hideLogoName, setHideLogoName] = useState(false);
+
+  console.log('My user id', myUserId)
+
+  const getMyUserId = async () => {
+    const { data, error } = await supabase
+      .from('users')
+      .select('user_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (error) {
+      console.log(error.message)
+    } else {
+      console.log(data)
+      setMyUserId(data)
+    }
+  }
+
+  useEffect(() => {
+    getMyUserId();
+  }, [user]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -80,10 +109,13 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
               </>
             ) : (
               <>
+                <Link to="/feed" className="text-gray-700 hover:text-gray-900 transition-colors">
+                  Explore
+                </Link>
                 <Link to="/create" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Create Startup
                 </Link>
-                <Link to="/profile/1" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link to={`/profile/${myUserId?.user_id}`} className="text-gray-700 hover:text-gray-900 transition-colors">
                   <User className="w-6 h-6" />
                 </Link>
               </>
@@ -124,10 +156,13 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
               </div>
             ) : (
               <div className="md:hidden py-4 border-t border-gray-200">
+                <Link to="/feed" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                  Explore
+                </Link>
                 <Link to="/create" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                   Create Startup
                 </Link>
-                <Link to="/profile/1" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                <Link to={`/profile/${myUserId?.user_id}`} onClick={() => { setSelectedProfile(userData) }} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                   <User className="w-5 h-5 inline" /> Profile
                 </Link>
               </div>

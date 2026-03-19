@@ -4,6 +4,7 @@ import { useAuth } from "./authContext";
 
 type userData = {
   user_id: string;
+  auth_id: string;
   full_name: string;
   created_at: string;
   user_name: string;
@@ -16,38 +17,48 @@ type userData = {
 
 type UserDataContextType = {
   userData: userData | null;
+  selectedProfile: string | null;
+  setSelectedProfile: any;
+  loadingUserData: boolean;
 };
 
 const UserDataContext = createContext<UserDataContextType | null>(null);
 
 export const UserDataProvider = ({ children }: { children: React.ReactNode }) => {
   const [userData, setUserData] = useState<userData | null>(null);
-  const { user } = useAuth();
+  const [selectedProfile, setSelectedProfile] = useState<string | null>(null)
+  const [loadingUserData, setLoadingUserData] = useState(false);
+  const { session } = useAuth();
 
   const fetchUserData = async () => {
+    setLoadingUserData(true);
+
     const { data, error } = await supabase
       .from('users')
       .select('*')
-      .eq('auth_id', user?.id);
+      .eq('user_id', selectedProfile)
+      .single();
 
     if (data) {
-      setUserData(data[0]);
+      console.log(data)
+      setUserData(data);
     }
     if (error) {
       console.error('Error fetching user data:', error);
     }
+    setLoadingUserData(false);
   }
 
   useEffect(() => {
-    if (user) {
+    if (session) {
       fetchUserData();
     } else {
       setUserData(null);
     }
-  }, [user]);
+  }, [session, selectedProfile]);
 
   return (
-    <UserDataContext.Provider value={{ userData }}>
+    <UserDataContext.Provider value={{ userData, loadingUserData, selectedProfile, setSelectedProfile }}>
       {children}
     </UserDataContext.Provider>
   );

@@ -1,19 +1,27 @@
+import { useEffect } from 'react';
 import { Navbar } from '../components/Navbar';
 import { StartupCard } from '../components/StartupCard';
 import { formatDate } from '../constants/dateFormat';
 import { useAuth } from '../contexts/authContext';
+import { useStartup } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
-import { mockStartups } from '../data/mockData';
 import { Calendar, Briefcase } from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 
 export function UserProfile() {
   const navigate = useNavigate();
-  const { userData } = useUserData();
+  const { startupData } = useStartup();
+  const { userData, setSelectedProfile, selectedProfile } = useUserData();
   const { logout } = useAuth()
+  const { id } = useParams();
+  console.log(selectedProfile);
+
+  useEffect(() => {
+    setSelectedProfile(id)
+  }, [id])
 
   // In a real app, we'd fetch user data based on id
-  const userStartups = mockStartups.slice(0, 3); // Mock: show first 3 startups
+  const userStartups = startupData?.filter(s => s.user_id === userData?.user_id)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -38,11 +46,11 @@ export function UserProfile() {
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-gray-600">
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-4 h-4" />
-                  <span>{formatDate(userData?.created_at)}</span>
+                  <span>Joined MyLaunch {formatDate(userData?.created_at, false)}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Briefcase className="w-4 h-4" />
-                  <span>{userData?.start_ups} Startups</span>
+                  <span>{userStartups?.length} Startup{userStartups?.length === 1 ? '' : 's'}</span>
                 </div>
               </div>
             </div>
@@ -50,10 +58,7 @@ export function UserProfile() {
             {/* Action Buttons */}
             <div className="flex flex-col gap-2">
               <button className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg">
-                Follow
-              </button>
-              <button className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors font-medium">
-                Message
+                Edit profile
               </button>
               <button
                 className="px-6 py-2 border border-red-700 text-red-700 rounded-full hover:bg-red-100 transition-colors font-medium"
@@ -65,24 +70,6 @@ export function UserProfile() {
                 Log out
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-white rounded-xl shadow-md p-6 text-center">
-            <div className="md:text-3xl font-bold text-blue-600 mb-1">{userData?.start_ups}</div>
-            <div className="text-gray-600 text-xs md:text-sm">Startups</div>
-          </div>
-          <div className="bg-white rounded-xl shadow-md p-6 text-center">
-            <div className="md:text-3xl font-bold text-blue-600 mb-1">{userData?.followers}</div>
-            <div className="text-gray-600 text-xs md:text-sm">Followers</div>
-          </div>
-          <div className="bg-white rounded-xl shadow-md p-6 text-center">
-            <div className="md:text-3xl font-bold text-blue-600 mb-1">
-              {userData?.likes || 0}
-            </div>
-            <div className="text-gray-600 text-xs md:text-sm">Total Likes</div>
           </div>
         </div>
 
@@ -98,10 +85,10 @@ export function UserProfile() {
             </Link>
           </div>
 
-          {userStartups.length > 0 ? (
+          {(userStartups ?? []).length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {userStartups.map((startup) => (
-                <StartupCard key={startup.id} startup={startup} />
+              {userStartups?.map((startup) => (
+                <StartupCard key={startup.id} startup={startup} userId={startup.user_id} />
               ))}
             </div>
           ) : (

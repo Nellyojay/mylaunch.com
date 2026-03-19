@@ -2,42 +2,43 @@ import { useState } from 'react';
 import { Navbar } from '../components/Navbar';
 import { CategoryFilter } from '../components/CategoryFilter';
 import { StartupCard } from '../components/StartupCard';
-import { mockStartups } from '../data/mockData';
 import { ArrowUpDown } from 'lucide-react';
+import { useStartup } from '../contexts/StartupProfileContext';
 
 export function Feed() {
+  const { startupData } = useStartup();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'newest' | 'likes' | 'trending'>('newest');
 
   // Filter by category
   let filteredStartups = selectedCategory === 'All'
-    ? mockStartups
-    : mockStartups.filter(startup => startup.category === selectedCategory);
+    ? startupData
+    : startupData?.filter(startup => startup.cartegory === selectedCategory);
 
   // Filter by search query
   if (searchQuery.trim()) {
     const query = searchQuery.toLowerCase();
-    filteredStartups = filteredStartups.filter(
+    filteredStartups = filteredStartups?.filter(
       startup =>
         startup.name.toLowerCase().includes(query) ||
-        startup.founder.toLowerCase().includes(query) ||
+        startup.founder_name.toLowerCase().includes(query) ||
         startup.description.toLowerCase().includes(query)
     );
   }
 
   // Sort startups
-  const sortedStartups = [...filteredStartups].sort((a, b) => {
-    switch (sortBy) {
-      case 'likes':
-        return b.likes - a.likes;
-      case 'trending':
-        return b.comments - a.comments;
-      case 'newest':
-      default:
-        return b.id - a.id;
-    }
-  });
+  // const sortedStartups = filteredStartups?.sort((a, b) => {
+  //   switch (sortBy) {
+  //     case 'likes':
+  //       return a.likes;
+  //     case 'trending':
+  //       return a.likes;
+  //     case 'newest':
+  //     default:
+  //       return a.id;
+  //   }
+  // });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -77,10 +78,10 @@ export function Feed() {
           </div>
         </div>
 
-        {sortedStartups.length > 0 ? (
+        {(filteredStartups ?? []).length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {sortedStartups.map((startup) => (
-              <StartupCard key={startup.id} startup={startup} />
+            {filteredStartups?.map((startup) => (
+              <StartupCard key={startup.id} startup={startup} userId={startup.user_id} />
             ))}
           </div>
         ) : (

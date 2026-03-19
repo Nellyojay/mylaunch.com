@@ -3,26 +3,52 @@ import { useNavigate } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { Upload, X } from 'lucide-react';
 import { useWebData } from '../contexts/webData';
+import supabase from '../supabaseClient';
+import { useUserData } from '../contexts/userDataContext';
 
 export function CreateStartup() {
   const navigate = useNavigate();
+  const { userData } = useUserData();
   const { webName } = useWebData();
   const [formData, setFormData] = useState({
     name: '',
-    founder: '',
+    founder: userData?.full_name,
+    introDescription: '',
     description: '',
     phone: '',
     email: '',
     address: '',
-    category: 'Fashion'
+    category: 'Fashion',
+    productOrSevices: ''
   });
   const [images, setImages] = useState<string[]>([]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // In a real app, this would submit to a backend
-    alert('Startup published successfully!');
-    navigate('/feed');
+
+    const { error } = await supabase
+      .from('startups')
+      .insert({
+        user_id: userData?.user_id,
+        name: formData.name,
+        founder_name: formData.founder,
+        cartegory: formData.category,
+        intro_description: formData.introDescription ?? "Introduction",
+        description: formData.description ?? "The full description of the startup",
+        phone: formData.phone ?? "",
+        email: formData.email ?? "",
+        address: formData.address ?? "",
+        products_and_services: [formData.productOrSevices ?? ""]
+      })
+      .select();
+
+    if (error) {
+      return;
+    } else {
+      alert('Startup published successfully!');
+      navigate('/feed');
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,16 +131,31 @@ export function CreateStartup() {
             {/* Description */}
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                Startup Description *
+                Startup intro description *
               </label>
               <textarea
                 id="description"
                 required
                 rows={4}
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                value={formData.introDescription}
+                onChange={(e) => setFormData({ ...formData, introDescription: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 placeholder="Tell us about your startup..."
+              />
+            </div>
+
+            <div>
+              <label htmlFor="founder" className="block text-sm font-medium text-gray-700 mb-2">
+                Products or Services *
+              </label>
+              <input
+                type="text"
+                id="founder"
+                required
+                value={formData.productOrSevices}
+                onChange={(e) => setFormData({ ...formData, productOrSevices: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Your name"
               />
             </div>
 
@@ -166,7 +207,7 @@ export function CreateStartup() {
               <div className="space-y-4">
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number *
+                    Startup business Phone Number *
                   </label>
                   <input
                     type="tel"
@@ -175,22 +216,21 @@ export function CreateStartup() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="+1 (555) 123-4567"
+                    placeholder="0712345678"
                   />
                 </div>
 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
+                    Startup business email
                   </label>
                   <input
                     type="email"
                     id="email"
-                    required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="your@email.com"
+                    placeholder="yourstartup@email.com"
                   />
                 </div>
 
@@ -204,7 +244,7 @@ export function CreateStartup() {
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="City, State"
+                    placeholder="City or State"
                   />
                 </div>
               </div>

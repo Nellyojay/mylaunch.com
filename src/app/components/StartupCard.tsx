@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { LikeButton } from './LikeButton';
-import { CommentButton } from './CommentButton';
+import type { StartupData } from '../contexts/StartupProfileContext';
 
 export interface Startup {
   id: number;
@@ -15,17 +15,18 @@ export interface Startup {
 }
 
 interface StartupCardProps {
-  startup: Startup;
+  startup: StartupData;
+  userId: string;
 }
 
-export function StartupCard({ startup }: StartupCardProps) {
+export function StartupCard({ startup, userId }: StartupCardProps) {
   return (
     <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 duration-300">
       {/* Startup Image */}
       <Link to={`/startup/${startup.id}`}>
         <div className="aspect-square overflow-hidden bg-gray-100">
           <img
-            src={startup.image}
+            src={startup.display_image}
             alt={startup.name}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
           />
@@ -43,21 +44,25 @@ export function StartupCard({ startup }: StartupCardProps) {
               </h3>
             </Link>
             <div className="flex items-center space-x-2 mt-1">
-              <p className="text-sm text-gray-600">by {startup.founder}</p>
+              <Link
+                to={`/profile/${userId}`}
+                className="text-sm text-gray-600 md:hover:text-blue-600"
+              >
+                by {startup.founder_name}
+              </Link>
             </div>
           </div>
         </div>
 
         {/* Description */}
         <p className="text-sm text-gray-700 line-clamp-2">
-          {startup.description}
+          {startup.intro_description}
         </p>
 
         {/* Interaction Buttons */}
         <div className="flex items-center justify-between pt-2 border-t border-gray-100">
           <div className="flex items-center space-x-4">
             <LikeButton initialLikes={startup.likes} />
-            <CommentButton count={startup.comments} />
           </div>
           <Link
             to={`/startup/${startup.id}`}

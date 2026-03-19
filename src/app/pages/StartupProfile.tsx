@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { Navbar } from '../components/Navbar';
-import { PostCard } from '../components/PostCard';
-import { mockComments, mockStartups, startupExtendedData } from '../data/mockData';
+import { mockComments } from '../data/mockData';
 import {
   GraduationCap,
   Mail,
@@ -10,7 +9,6 @@ import {
   MapPin,
   Heart,
   UserPlus,
-  MessageCircle,
   Share2,
   ChevronDown,
   ChevronUp,
@@ -22,19 +20,22 @@ import { BsChevronDown, BsTwitterX } from 'react-icons/bs';
 import { useAuth } from '../contexts/authContext';
 import { BiEdit } from 'react-icons/bi';
 import { CommentBox } from '../components/CommentBox';
+import { useStartup } from '../contexts/StartupProfileContext';
+import { formatDate } from '../constants/dateFormat';
 
 export function StartupProfile() {
   const { session } = useAuth();
   const { id } = useParams();
-  const startup = mockStartups.find(s => s.id === Number(id));
-  const extendedData = startupExtendedData[Number(id)];
+  const { startupData } = useStartup();
+  const startup = startupData?.find(s => s.id === id);
 
   const [following, setFollowing] = useState(false);
   const [liked, setLiked] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  console.log('My startups:', startupData);
 
-  if (!startup || !extendedData) {
+  if (!startupData) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar showAuth={false} />
@@ -56,8 +57,8 @@ export function StartupProfile() {
         {/* Banner Image */}
         <div className="relative w-full h-48 md:h-64 bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600">
           <img
-            src={extendedData.banner}
-            alt={`${startup.name} banner`}
+            src={startup?.cover_image}
+            alt={`${startup?.name} banner`}
             className="w-full h-full object-cover"
           />
         </div>
@@ -67,13 +68,13 @@ export function StartupProfile() {
           {/* Logo overlapping banner */}
           <div className="flex flex-col items-center md:flex-row md:items-start gap-4">
             <div className="w-28 h-28 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 shrink-0 flex items-center justify-center shadow-xl -mt-14 border-4 border-white">
-              <span className="text-4xl font-bold text-white">{startup.name[0]}</span>
+              <span className="text-4xl font-bold text-white">{startup?.name[0]}</span>
             </div>
 
             <div className="flex-1 text-center md:text-left mt-2">
               {true && (
                 <Link
-                  to={`/startup/${startup?.id}/edit`}
+                  to={`/startup/${startup?.id}`}
                   className="absolute flex gap-2 top-4 right-4 bg-gray-100 text-gray-600 rounded-full p-2 hover:bg-gray-200 transition-colors"
                 >
                   Edit
@@ -86,18 +87,14 @@ export function StartupProfile() {
               </h1>
 
               {/* Founder Name */}
-              <p className="text-lg text-gray-600 mb-2">
-                Founded by {startup?.founder}
-              </p>
+              <Link to={`/profile/${startup?.user_id}`} className="text-lg text-gray-600 mb-2 md:hover:text-blue-600">
+                Founded by {startup?.founder_name}
+              </Link>
 
               {/* Category and Location */}
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-3">
                 <span className="text-sm text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
-                  {startup?.category}
-                </span>
-                <span className="flex items-center space-x-1 text-sm text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
-                  <MapPin className="w-3 h-3" />
-                  <span>{extendedData.location}</span>
+                  {startup?.cartegory}
                 </span>
               </div>
 
@@ -105,27 +102,27 @@ export function StartupProfile() {
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-sm text-gray-600 mb-3">
                 <div className="flex items-center space-x-1">
                   <Phone className="w-4 h-4" />
-                  <span>{extendedData.phone}</span>
+                  <a href={`tel:${startup?.phone}`}>{startup?.phone}</a>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Globe className="w-4 h-4" />
-                  <a href={`https://${extendedData.website}`} className="text-blue-600 hover:underline">
-                    {extendedData.website}
+                  <a className="text-blue-600 hover:underline">
+                    {startup?.website ? startup.website : 'www.startup.com'}
                   </a>
                 </div>
               </div>
 
               {/* Short Description */}
               <p className="text-gray-700 leading-relaxed mb-4">
-                {startup?.description}
+                {startup?.intro_description}
               </p>
 
               <div className='flex gap-6'>
-                <p className='text-gray-600'>Followers <strong>12</strong></p>
-                <p className='text-gray-600'>Likes <strong>45</strong></p>
+                <p className='text-gray-600'>Followers <strong>{startup?.followers}</strong></p>
+                <p className='text-gray-600'>Likes <strong>{startup?.likes}</strong></p>
                 <button
                   onClick={() => setShowComments(!showComments)}
-                  className='text-gray-600 hover:text-blue-600 transition-colors flex items-center gap-1'
+                  className='text-gray-600 md:hover:text-blue-600 transition-colors flex items-center gap-1'
                 >
                   Opinions
                   <span><strong>45</strong></span>
@@ -149,12 +146,13 @@ export function StartupProfile() {
               <span>{following ? 'Following' : 'Follow'}</span>
             </button>
 
-            <button
+            <a
+              href={`tel:${startup?.phone}`}
               className="flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all"
             >
-              <MessageCircle className="w-5 h-5" />
+              <Phone className="w-5 h-5" />
               <span>Contact</span>
-            </button>
+            </a>
 
             <button
               onClick={() => setLiked(!liked)}
@@ -194,7 +192,7 @@ export function StartupProfile() {
                 <div className="mt-6 pt-6 border-t border-gray-200 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Full Description</h3>
-                    <p className="text-gray-700 leading-relaxed">{extendedData.fullDescription}</p>
+                    <p className="text-gray-700 leading-relaxed">{startup?.description}</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -203,16 +201,16 @@ export function StartupProfile() {
                       <div className="space-y-2 text-sm text-gray-700">
                         <div className="flex items-center space-x-2">
                           <Mail className="w-4 h-4 text-blue-600" />
-                          <span>{extendedData.email}</span>
+                          <span>{startup?.email}</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Phone className="w-4 h-4 text-blue-600" />
-                          <span>{extendedData.phone}</span>
+                          <a href={`tel:${startup?.phone}`}>{startup?.phone}</a>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Globe className="w-4 h-4 text-blue-600" />
-                          <a href={`https://${extendedData.website}`} className="text-blue-600 hover:underline">
-                            {extendedData.website}
+                          <a className="text-blue-600 hover:underline">
+                            {startup?.website ? startup.website : 'www.startup.com'}
                           </a>
                         </div>
                       </div>
@@ -223,15 +221,15 @@ export function StartupProfile() {
                       <div className="space-y-2 text-sm text-gray-700">
                         <div className="flex items-center space-x-2">
                           <MapPin className="w-4 h-4 text-blue-600" />
-                          <span>{extendedData.address}</span>
+                          <span>{startup?.address}</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Calendar className="w-4 h-4 text-blue-600" />
-                          <span>Founded in {extendedData.year}</span>
+                          <span>Founded in {formatDate(startup?.created_at, true)}</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <GraduationCap className="w-4 h-4 text-blue-600" />
-                          <span>Founder: {startup.founder}</span>
+                          <span>Founder: {startup?.founder_name}</span>
                         </div>
                       </div>
                     </div>
@@ -241,22 +239,19 @@ export function StartupProfile() {
                     <h3 className="text-sm font-semibold text-gray-900 mb-2">Social Media</h3>
                     <div className="flex space-x-3">
                       <a
-                        title='X'
-                        href="#"
+                        title='twitter'
                         className="w-10 h-10 bg-gray-100 text-black rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors"
                       >
                         <BsTwitterX className="w-5 h-5" />
                       </a>
                       <a
-                        title='Facebook'
-                        href="#"
+                        title='facebook'
                         className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors"
                       >
                         <FaFacebook className="w-6 h-6" />
                       </a>
                       <a
-                        title='WhatsApp'
-                        href="#"
+                        title='whatsApp'
                         className="w-10 h-10 bg-green-100 text-green-500 rounded-full flex items-center justify-center hover:bg-green-200 transition-colors"
                       >
                         <FaWhatsapp className="w-6 h-6" />
@@ -274,22 +269,22 @@ export function StartupProfile() {
         <div className="mt-8 px-4">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Posts</h2>
-            <p className="text-gray-600">Latest updates from {startup.name}</p>
+            <p className="text-gray-600">Latest updates from {startup?.name}</p>
           </div>
 
           {/* Posts Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {extendedData.posts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
-          </div>
+          </div> */}
 
           {/* Empty State */}
-          {extendedData.posts.length === 0 && (
+          {/* {extendedData.posts.length === 0 && (
             <div className="text-center py-12 bg-white rounded-2xl shadow-md">
               <p className="text-gray-500">No posts yet. Check back later!</p>
             </div>
-          )}
+          )} */}
         </div>
       </main>
     </div>

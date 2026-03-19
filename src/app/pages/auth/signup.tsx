@@ -38,7 +38,8 @@ export function Signup() {
       password: formData.confirmPassword,
       options: {
         data: {
-          full_name: formData.fullName
+          full_name: formData.fullName,
+          is_agreed: formData.agreeToTerms
         }
       }
     });
@@ -62,6 +63,11 @@ export function Signup() {
   };
 
   const signInWithGoogle = async () => {
+    if (formData.agreeToTerms === false) {
+      alert('Please agree to the terms and conditions');
+      setLoading(false);
+      return;
+    }
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
