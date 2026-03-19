@@ -17,9 +17,10 @@ import {
   Globe,
   Calendar
 } from 'lucide-react';
-import { FaEdit, FaFacebook, FaWhatsapp } from 'react-icons/fa';
+import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { BsTwitterX } from 'react-icons/bs';
 import { useAuth } from '../contexts/authContext';
+import { BiEdit } from 'react-icons/bi';
 
 export function StartupProfile() {
   const { session } = useAuth();
@@ -74,7 +75,7 @@ export function StartupProfile() {
                   className="absolute flex gap-2 top-4 right-4 bg-gray-100 text-gray-600 rounded-full p-2 hover:bg-gray-200 transition-colors"
                 >
                   Edit
-                  <FaEdit className="w-5 h-5" />
+                  <BiEdit className="w-5 h-5" />
                 </Link>
               )}
               {/* Startup Name */}
