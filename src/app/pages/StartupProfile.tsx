@@ -3,7 +3,8 @@ import { Navbar } from '../components/Navbar';
 import { LikeButton } from '../components/LikeButton';
 import { CommentBox } from '../components/CommentBox';
 import { mockStartups, mockComments } from '../data/mockData';
-import { GraduationCap, Mail, Phone, MapPin, Heart, ExternalLink } from 'lucide-react';
+import { Mail, Phone, MapPin, Heart, ExternalLink } from 'lucide-react';
+import { BsFacebook, BsLinkedin, BsTwitterX } from 'react-icons/bs';
 
 export function StartupProfile() {
   const { id } = useParams();
@@ -31,10 +32,12 @@ export function StartupProfile() {
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         {/* Header Section */}
-        <div className="bg-white rounded-2xl shadow-md p-8 mb-6">
+        <div
+          className="bg-white rounded-2xl shadow-md p-8 mb-6 imgBackground"
+        >
           <div className="flex flex-col md:flex-row items-start gap-6">
             {/* Logo */}
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex-shrink-0 flex items-center justify-center shadow-lg">
+            <div className="w-24 h-24 rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 shrink-0 flex items-center justify-center shadow-lg">
               <span className="text-4xl font-bold text-white">{startup.name[0]}</span>
             </div>
 
@@ -45,10 +48,6 @@ export function StartupProfile() {
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">{startup.name}</h1>
                   <p className="text-lg text-gray-600 mb-3">Founded by {startup.founder}</p>
                   <div className="flex items-center space-x-2">
-                    <span className="flex items-center space-x-1 text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-                      <GraduationCap className="w-4 h-4" />
-                      <span>Graduate Verified</span>
-                    </span>
                     <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                       {startup.category}
                     </span>
@@ -66,10 +65,10 @@ export function StartupProfile() {
             <div className="bg-white rounded-2xl shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">About</h2>
               <p className="text-gray-700 leading-relaxed">
-                {startup.description} Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad 
-                minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea 
-                commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit 
+                {startup.description} Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+                minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
                 esse cillum dolore eu fugiat nulla pariatur.
               </p>
             </div>
@@ -126,7 +125,7 @@ export function StartupProfile() {
             </div>
 
             {/* Support Section */}
-            <div className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl shadow-md p-6 text-white">
+            <div className="bg-linear-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl shadow-md p-6 text-white">
               <h2 className="text-xl font-semibold mb-4">Support This Startup</h2>
               <p className="text-blue-100 mb-6">
                 Help {startup.founder} grow their business
@@ -147,14 +146,14 @@ export function StartupProfile() {
             <div className="bg-white rounded-2xl shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Follow Us</h2>
               <div className="flex space-x-3">
-                <a href="#" className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors">
-                  <ExternalLink className="w-5 h-5" />
+                <a title='Twitter' href="#" className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors">
+                  <BsTwitterX className="w-5 h-5" />
                 </a>
-                <a href="#" className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors">
-                  <ExternalLink className="w-5 h-5" />
+                <a title='LinkedIn' href="#" className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors">
+                  <BsLinkedin className="w-6 h-6" />
                 </a>
-                <a href="#" className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors">
-                  <ExternalLink className="w-5 h-5" />
+                <a title='Facebook' href="#" className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors">
+                  <BsFacebook className="w-6 h-6" />
                 </a>
               </div>
             </div>

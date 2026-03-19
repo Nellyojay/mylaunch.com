@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Send } from 'lucide-react';
+import { useAuth } from '../contexts/authContext';
 
 interface Comment {
   id: number;
@@ -13,6 +14,7 @@ interface CommentBoxProps {
 }
 
 export function CommentBox({ comments: initialComments }: CommentBoxProps) {
+  const { session } = useAuth();
   const [comments, setComments] = useState(initialComments);
   const [newComment, setNewComment] = useState('');
 
@@ -58,14 +60,15 @@ export function CommentBox({ comments: initialComments }: CommentBoxProps) {
           type="text"
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
+          disabled={!session}
+          placeholder={session ? "Add a comment..." : "Log in to comment"}
           className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
         <button
           title='Submit'
           type="submit"
           className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={!newComment.trim()}
+          disabled={!newComment.trim() && !session}
         >
           <Send className="w-5 h-5" />
         </button>

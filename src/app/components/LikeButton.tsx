@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Heart } from 'lucide-react';
+import { useAuth } from '../contexts/authContext';
 
 interface LikeButtonProps {
   initialLikes: number;
@@ -7,6 +8,7 @@ interface LikeButtonProps {
 }
 
 export function LikeButton({ initialLikes, initialLiked = false }: LikeButtonProps) {
+  const { session } = useAuth();
   const [liked, setLiked] = useState(initialLiked);
   const [likes, setLikes] = useState(initialLikes);
 
@@ -23,7 +25,8 @@ export function LikeButton({ initialLikes, initialLiked = false }: LikeButtonPro
   return (
     <button
       onClick={handleLike}
-      className="flex items-center space-x-2 text-gray-700 hover:text-red-500 transition-colors"
+      disabled={!session}
+      className="flex items-center space-x-2 text-gray-700 md:hover:text-red-500 transition-colors"
     >
       <Heart
         className={`w-5 h-5 ${liked ? 'fill-red-500 text-red-500' : ''}`}

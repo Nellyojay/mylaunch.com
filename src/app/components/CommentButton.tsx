@@ -1,4 +1,5 @@
 import { MessageCircle } from 'lucide-react';
+import { useAuth } from '../contexts/authContext';
 
 interface CommentButtonProps {
   count: number;
@@ -6,10 +7,12 @@ interface CommentButtonProps {
 }
 
 export function CommentButton({ count, onClick }: CommentButtonProps) {
+  const { session } = useAuth();
   return (
     <button
       onClick={onClick}
-      className="flex items-center space-x-2 text-gray-700 hover:text-blue-500 transition-colors"
+      disabled={!session}
+      className="flex items-center space-x-2 text-gray-700 md:hover:text-blue-500 transition-colors"
     >
       <MessageCircle className="w-5 h-5" />
       <span>{count}</span>
