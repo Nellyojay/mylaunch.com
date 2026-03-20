@@ -6,21 +6,28 @@ import { useAuth } from '../contexts/authContext';
 import { useStartup } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
 import { Calendar, Briefcase } from 'lucide-react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 export function UserProfile() {
   const navigate = useNavigate();
   const { startupData } = useStartup();
-  const { userData, setSelectedProfile } = useUserData();
-  const { logout, user } = useAuth()
-  const { id } = useParams();
+  const { userData, setSelectedProfile, selectedProfile } = useUserData();
+  const { logout, user } = useAuth();
+
+  const profileId = selectedProfile || userData?.user_id || user?.id || null;
+  const isOwner = Boolean(
+    profileId &&
+    userData?.user_id === profileId &&
+    userData?.auth_id === user?.id
+  );
 
   useEffect(() => {
-    setSelectedProfile(id)
-  }, [id])
+    if (profileId) {
+      setSelectedProfile(profileId);
+    }
+  }, [profileId, setSelectedProfile]);
 
-  // In a real app, we'd fetch user data based on id
-  const userStartups = startupData?.filter(s => s.user_id === userData?.user_id)
+  const userStartups = startupData?.filter(s => s.user_id === profileId) || [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -54,7 +61,7 @@ export function UserProfile() {
               </div>
             </div>
 
-            {userData?.auth_id === user.id ? (
+            {isOwner ? (
               <div className="flex flex-col gap-2">
                 <button className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg">
                   Edit profile
@@ -78,7 +85,7 @@ export function UserProfile() {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">My Startups</h2>
-            {userData?.auth_id === user.id && (
+            {isOwner && (
               <Link
                 to="/create"
                 className="text-blue-600 hover:text-blue-700 font-medium"

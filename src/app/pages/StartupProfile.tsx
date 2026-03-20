@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router';
+import { Link } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { mockComments } from '../data/mockData';
 import {
@@ -28,10 +28,13 @@ import { formatPhoneEA } from '../constants/phoneNumberormater';
 
 export function StartupProfile() {
   const { session, user } = useAuth();
-  const { userData } = useUserData();
-  const { id } = useParams();
+  const { userData, selectedProfile } = useUserData();
   const { startupData } = useStartup();
-  const startup = startupData?.find(s => s.id === id);
+
+  const profileId = selectedProfile || userData?.user_id || user?.id;
+  const startup = startupData?.find(s => s.user_id === profileId) || null;
+  const isOwner = Boolean(startup && userData && user && startup.user_id === userData.user_id && userData.auth_id === user.id);
+  console.log(isOwner, startup?.user_id, userData?.user_id);
 
   const [following, setFollowing] = useState(false);
   const [liked, setLiked] = useState(false);
@@ -95,7 +98,7 @@ export function StartupProfile() {
               </h1>
 
               {/* Founder Name */}
-              <Link to={`/profile/${startup?.user_id}`} className="text-lg text-gray-600 mb-2 md:hover:text-blue-600">
+              <Link to="/profile" className="text-lg text-gray-600 mb-2 md:hover:text-blue-600">
                 Founded by {startup?.founder_name}
               </Link>
 
@@ -142,7 +145,7 @@ export function StartupProfile() {
 
           {/* Action Buttons */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-            {userData?.auth_id === user.id ? (
+            {isOwner ? (
               <button
                 onClick={() => setFollowing(!following)}
                 disabled={!session}
@@ -298,7 +301,7 @@ export function StartupProfile() {
           <div className="mb-6">
             <div className='flex justify-between mb-2 pb-2 border-b border-gray-400'>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Posts</h2>
-              {userData?.auth_id === user.id && (
+              {isOwner && (
                 <Link to={`/`} className='flex items-center px-2 gap-2 text-blue-600 md:text-gray-500 md:hover:text-blue-600 border-2 border-blue-600 md:border-gray-400 rounded-lg md:hover:border-blue-600 md:hover:shadow-'>
                   Add Post
                   <Plus />

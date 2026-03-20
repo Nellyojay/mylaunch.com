@@ -18,7 +18,7 @@ export const router = createHashRouter([
     Component: Feed,
   },
   {
-    path: "/startup/:id",
+    path: "/startup",
     Component: StartupProfile,
   },
   {
@@ -34,7 +34,7 @@ export const router = createHashRouter([
     Component: Signup,
   },
   {
-    path: "/profile/:id",
+    path: "/profile",
     Component: UserProfile,
   },
   {

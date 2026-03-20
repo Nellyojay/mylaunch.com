@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import supabase from "../supabaseClient";
-import { useAuth } from "./authContext";
 
 type userData = {
   user_id: string;
@@ -28,7 +27,6 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
   const [userData, setUserData] = useState<userData | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<string | null>(null)
   const [loadingUserData, setLoadingUserData] = useState(false);
-  const { session } = useAuth();
 
   const fetchUserData = async () => {
     setLoadingUserData(true);
@@ -46,12 +44,12 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
   }
 
   useEffect(() => {
-    if (session && selectedProfile) {
+    if (selectedProfile) {
       fetchUserData();
     } else {
       setUserData(null);
     }
-  }, [session, selectedProfile]);
+  }, [selectedProfile]);
 
   return (
     <UserDataContext.Provider value={{ userData, loadingUserData, selectedProfile, setSelectedProfile }}>

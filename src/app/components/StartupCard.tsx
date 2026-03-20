@@ -26,7 +26,7 @@ export function StartupCard({ startup, userId }: StartupCardProps) {
     <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 duration-300">
       {/* Startup Image */}
       <Link
-        to={`/startup/${startup.id}`}
+        to="/startup"
         onClick={() => setSelectedProfile(userId)}
       >
         <div className="aspect-square overflow-hidden bg-gray-100">
@@ -50,8 +50,9 @@ export function StartupCard({ startup, userId }: StartupCardProps) {
             </Link>
             <div className="flex items-center space-x-2 mt-1">
               <Link
-                to={`/profile/${userId}`}
+                to="/profile"
                 className="text-sm text-gray-600 md:hover:text-blue-600"
+                onClick={() => setSelectedProfile(userId)}
               >
                 by {startup.founder_name}
               </Link>
@@ -70,8 +71,9 @@ export function StartupCard({ startup, userId }: StartupCardProps) {
             <LikeButton initialLikes={startup.likes} />
           </div>
           <Link
-            to={`/startup/${startup.id}`}
+            to="/startup"
             className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            onClick={() => setSelectedProfile(userId)}
           >
             View Startup
           </Link>

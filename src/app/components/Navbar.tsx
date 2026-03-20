@@ -19,13 +19,15 @@ interface NavbarProps {
 export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   const { webName } = useWebData();
   const { session, user } = useAuth();
-  const { userData, setSelectedProfile } = useUserData();
+  const { setSelectedProfile } = useUserData();
   const [myUserId, setMyUserId] = useState<MyUserId | null>(null)
   const [searchValue, setSearchValue] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hideLogoName, setHideLogoName] = useState(false);
 
   const getMyUserId = async () => {
+    if (!user) return;
+
     const { data } = await supabase
       .from('users')
       .select('user_id')
@@ -108,7 +110,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
                 <Link to="/create" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Create Startup
                 </Link>
-                <Link to={`/profile/${myUserId?.user_id}`} className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link to="/profile" className="text-gray-700 hover:text-gray-900 transition-colors" onClick={() => setSelectedProfile(myUserId?.user_id)}>
                   <User className="w-6 h-6" />
                 </Link>
               </>
@@ -155,7 +157,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
                 <Link to="/create" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                   Create Startup
                 </Link>
-                <Link to={`/profile/${myUserId?.user_id}`} onClick={() => { setSelectedProfile(userData) }} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                <Link to="/profile" onClick={() => setSelectedProfile(myUserId?.user_id)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                   <User className="w-5 h-5 inline" /> Profile
                 </Link>
               </div>
