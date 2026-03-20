@@ -53,7 +53,40 @@ export const StartupProvider = ({ children }: { children: React.ReactNode }) => 
 
   useEffect(() => {
     getStartupData();
-  }, [getStartupData])
+
+    const channel = supabase
+      .channel('realtime-startups')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'startups' },
+        (payload) => {
+          setStartupData((prevState) => {
+            if (!prevState) return prevState;
+
+            const record = payload.new || payload.old;
+            if (!record) return prevState;
+
+            switch (payload.eventType) {
+              case 'INSERT':
+                return [...prevState, record as StartupData];
+              case 'UPDATE':
+                return prevState.map((item) =>
+                  item.id === (record as StartupData).id ? (record as StartupData) : item
+                );
+              case 'DELETE':
+                return prevState.filter((item) => item.id !== (record as StartupData).id);
+              default:
+                return prevState;
+            }
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [getStartupData]);
 
   return (
     <StartupContext.Provider value={{ startupData, startupLoading }}>

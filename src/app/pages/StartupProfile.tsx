@@ -32,9 +32,11 @@ export function StartupProfile() {
   const { startupData } = useStartup();
 
   const profileId = selectedProfile || userData?.user_id || user?.id;
-  const startup = startupData?.find(s => s.user_id === profileId) || null;
-  const isOwner = Boolean(startup && userData && user && startup.user_id === userData.user_id && userData.auth_id === user.id);
-  console.log(isOwner, startup?.user_id, userData?.user_id);
+  const rawStartup = startupData?.find(s => s.user_id === profileId) || null;
+  const isOwner = Boolean(rawStartup && userData && user && rawStartup.user_id === userData.user_id && userData.auth_id === user.id);
+
+  const activeStartup = rawStartup;
+  const startup = activeStartup;
 
   const [following, setFollowing] = useState(false);
   const [liked, setLiked] = useState(false);
@@ -54,7 +56,10 @@ export function StartupProfile() {
     }
   };
 
-  if (!startupData) {
+  console.log("Startup data:", startup);
+  console.log("Active Startup:", activeStartup);
+
+  if (!startupData || !activeStartup) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar showAuth={false} />
@@ -105,7 +110,7 @@ export function StartupProfile() {
               {/* Category and Location */}
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-3">
                 <span className="text-sm text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
-                  {startup?.cartegory}
+                  {startup?.products_and_services ? startup.products_and_services.join(', ') : 'General'}
                 </span>
               </div>
 
@@ -146,14 +151,13 @@ export function StartupProfile() {
           {/* Action Buttons */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
             {isOwner ? (
-              <button
-                onClick={() => setFollowing(!following)}
-                disabled={!session}
+              <Link
+                to="/startup/edit"
                 className='flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium transition-all bg-linear-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg'
               >
                 <Edit className="w-5 h-5" />
                 <span>Edit startup</span>
-              </button>
+              </Link>
             ) : (
               <button
                 onClick={() => setFollowing(!following)}

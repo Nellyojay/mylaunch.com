@@ -7,6 +7,7 @@ import { UserProfile } from "./pages/UserProfile";
 import { NotFound } from "./pages/NotFound";
 import { Login } from "./pages/auth/login";
 import { Signup } from "./pages/auth/signup";
+import { EditStartup } from "./pages/EditStartup";
 
 export const router = createHashRouter([
   {
@@ -20,6 +21,10 @@ export const router = createHashRouter([
   {
     path: "/startup",
     Component: StartupProfile,
+  },
+  {
+    path: "/startup/edit",
+    Component: EditStartup,
   },
   {
     path: "/create",
