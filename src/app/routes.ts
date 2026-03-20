@@ -9,6 +9,7 @@ import { NotFound } from "./pages/NotFound";
 import { Login } from "./pages/auth/login";
 import { Signup } from "./pages/auth/signup";
 import { EditStartup } from "./pages/EditStartup";
+import { EditProfile } from "./pages/EditProfile";
 
 export const router = createHashRouter([
   {
@@ -46,6 +47,10 @@ export const router = createHashRouter([
   {
     path: "/profile",
     Component: UserProfile,
+  },
+  {
+    path: "/profile/edit",
+    Component: EditProfile,
   },
   {
     path: "*",

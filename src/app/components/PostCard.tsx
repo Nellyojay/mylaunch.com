@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react';
-import { Bookmark, Heart } from 'lucide-react';
+import { Bookmark, Heart, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/authContext';
 import type { Post } from '../pages/StartupProfile';
 import { formatDate } from '../constants/dateFormat';
 import supabase from '../supabaseClient';
 import { useUserData } from '../contexts/userDataContext';
+import { Modal } from './Modal';
 
 interface PostCardProps {
   post: Post;
+  deletePost: () => void;
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, deletePost }: PostCardProps) {
   const { session } = useAuth();
   const { userData } = useUserData();
   const [liked, setLiked] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [likes, setLikes] = useState(post.likes);
   const [savingLike, setSavingLike] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -128,9 +131,9 @@ export function PostCard({ post }: PostCardProps) {
               className={`flex items-center space-x-1 transition-colors ${liked ? 'text-red-500' : 'text-gray-700 hover:text-red-500'}`}
             >
               <Heart
-                className={`w-6 h-6 ${liked ? 'fill-red-500 text-red-500' : ''}`}
+                className={`w-6 h-6 text-gray-500 ${liked ? 'fill-red-500 text-red-500' : ''}`}
               />
-              <p className="font-semibold text-gray-900">{likes.toLocaleString()}</p>
+              <p className="font-semibold text-gray-500">{likes.toLocaleString()}</p>
             </button>
             <button
               title='Save'
@@ -138,11 +141,32 @@ export function PostCard({ post }: PostCardProps) {
               disabled={!session || savingSave}
               className={`flex items-center space-x-1 transition-colors ${saved ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'}`}
             >
-              <Bookmark className={`w-6 h-6 ${saved ? 'text-blue-500' : ''}`} />
-              <p className="font-semibold text-gray-900">{saves.toLocaleString()}</p>
+              <Bookmark className={`w-6 h-6 ${saved ? 'fill-blue-500 text-blue-500' : 'text-gray-500'}`} />
+              <p className="font-semibold text-gray-500">{saves.toLocaleString()}</p>
             </button>
           </div>
+
+          <button
+            title='Delete Post'
+            onClick={() => setIsConfirmOpen(true)}
+          >
+            <Trash2 className="w-5 h-5 text-red-400" />
+          </button>
         </div>
+
+        <Modal
+          isOpen={isConfirmOpen}
+          title="Confirm Delete"
+          message="Are you sure you want to delete this post? This action cannot be undone."
+          confirmText="Delete"
+          cancelText="Cancel"
+          onConfirm={() => {
+            setIsConfirmOpen(false);
+            deletePost();
+          }}
+          onCancel={() => setIsConfirmOpen(false)}
+          confirmClassName='bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg'
+        />
 
         {/* Caption */}
         <div className="mb-2">

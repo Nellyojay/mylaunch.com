@@ -45,8 +45,9 @@ export function UserProfile() {
             {/* Profile Info */}
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{userData?.full_name}</h1>
+              <p className="text-sm text-gray-500 mb-4">@{userData?.user_name}</p>
               <p className="text-lg text-gray-600 mb-4">
-                Young entrepreneur passionate about innovation and building great products
+                {userData?.bio || 'This user has not added a bio yet.'}
               </p>
 
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-gray-600">
@@ -63,9 +64,11 @@ export function UserProfile() {
 
             {isOwner ? (
               <div className="flex flex-col gap-2">
-                <button className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg">
+                <Link
+                  to="/profile/edit"
+                  className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg">
                   Edit profile
-                </button>
+                </Link>
                 <button
                   className="px-6 py-2 border border-red-700 text-red-700 rounded-full hover:bg-red-100 transition-colors font-medium"
                   onClick={() => {
