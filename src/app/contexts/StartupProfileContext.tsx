@@ -21,6 +21,7 @@ export type StartupData = {
   products_and_services: [string];
   user_id: string;
   website: string;
+  x_username: string;
 }
 
 type StartupContextType = {

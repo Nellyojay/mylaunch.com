@@ -24,6 +24,7 @@ import { CommentBox } from '../components/CommentBox';
 import { useStartup } from '../contexts/StartupProfileContext';
 import { formatDate } from '../constants/dateFormat';
 import { useUserData } from '../contexts/userDataContext';
+import { formatPhoneEA } from '../constants/phoneNumberormater';
 
 export function StartupProfile() {
   const { session, user } = useAuth();
@@ -96,7 +97,7 @@ export function StartupProfile() {
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-sm text-gray-600 mb-3">
                 <div className="flex items-center space-x-1">
                   <Phone className="w-4 h-4" />
-                  <a href={`tel:${startup?.phone}`}>{startup?.phone}</a>
+                  <a href={`tel:${startup?.phone}`}>+{formatPhoneEA(startup?.phone)}</a>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Globe className="w-4 h-4" />
@@ -210,7 +211,7 @@ export function StartupProfile() {
                         </div>
                         <div className="flex items-center space-x-2">
                           <Phone className="w-4 h-4 text-blue-600" />
-                          <a href={`tel:${startup?.phone}`}>{startup?.phone}</a>
+                          <a href={`tel:${startup?.phone}`}>+{formatPhoneEA(startup?.phone)}</a>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Globe className="w-4 h-4 text-blue-600" />
@@ -245,18 +246,26 @@ export function StartupProfile() {
                     <div className="flex space-x-3">
                       <a
                         title='twitter'
+                        href={`https://x.com/${startup?.x_username}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
                         className="w-10 h-10 bg-gray-100 text-black rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors"
                       >
                         <BsTwitterX className="w-5 h-5" />
                       </a>
                       <a
                         title='facebook'
+                        target='_blank'
+                        rel='noopener noreferrer'
                         className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors"
                       >
                         <FaFacebook className="w-6 h-6" />
                       </a>
                       <a
                         title='whatsApp'
+                        href={`https://wa.me/${formatPhoneEA(startup?.phone)}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
                         className="w-10 h-10 bg-green-100 text-green-500 rounded-full flex items-center justify-center hover:bg-green-200 transition-colors"
                       >
                         <FaWhatsapp className="w-6 h-6" />
@@ -275,10 +284,12 @@ export function StartupProfile() {
           <div className="mb-6">
             <div className='flex justify-between mb-2 pb-2 border-b border-gray-400'>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Posts</h2>
-              <Link to={`/`} className='flex items-center px-2 gap-2 text-blue-600 md:text-gray-500 md:hover:text-blue-600 border-2 border-blue-600 md:border-gray-400 rounded-lg md:hover:border-blue-600 md:hover:shadow-'>
-                Add Post
-                <Plus />
-              </Link>
+              {userData?.auth_id === user.id && (
+                <Link to={`/`} className='flex items-center px-2 gap-2 text-blue-600 md:text-gray-500 md:hover:text-blue-600 border-2 border-blue-600 md:border-gray-400 rounded-lg md:hover:border-blue-600 md:hover:shadow-'>
+                  Add Post
+                  <Plus />
+                </Link>
+              )}
             </div>
 
             <p className="text-gray-600">Latest updates from {startup?.name}</p>
