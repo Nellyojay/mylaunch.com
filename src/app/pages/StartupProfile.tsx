@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { Navbar } from '../components/Navbar';
+import { PostCard } from '../components/PostCard';
 import { mockComments } from '../data/mockData';
+import supabase from '../supabaseClient';
 import {
   GraduationCap,
   Mail,
@@ -26,6 +28,15 @@ import { formatDate } from '../constants/dateFormat';
 import { useUserData } from '../contexts/userDataContext';
 import { formatPhoneEA } from '../constants/phoneNumberormater';
 
+export type Post = {
+  id: number;
+  image_url: string;
+  content: string;
+  created_at: string;
+  likes: number;
+  saves: number;
+}
+
 export function StartupProfile() {
   const { session, user } = useAuth();
   const { userData, selectedProfile } = useUserData();
@@ -43,6 +54,69 @@ export function StartupProfile() {
   const [showMore, setShowMore] = useState(false);
   const [showComments, setShowComments] = useState(false);
 
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(false);
+  console.log(posts)
+
+  useEffect(() => {
+    if (!activeStartup?.id) {
+      setPosts([]);
+      setLoadingPosts(false);
+      return;
+    }
+
+    setLoadingPosts(true);
+
+    let isMounted = true;
+
+    const fetchStartupPosts = async () => {
+      const { data, error } = await supabase
+        .from('startup_posts')
+        .select('id, content, image_url, created_at, likes, saves')
+        .eq('startup_id', activeStartup.id)
+        .order('created_at', { ascending: false });
+
+      if (isMounted) {
+        setLoadingPosts(false);
+        if (!error && data) {
+          setPosts(data as any[]);
+        }
+      }
+    };
+
+    fetchStartupPosts();
+
+    const postsChannel = supabase
+      .channel(`realtime-posts-${activeStartup.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'posts', filter: `startup_id=eq.${activeStartup.id}` },
+        (payload: any) => {
+          setPosts((prevPosts) => {
+            const record = payload.new || payload.old;
+            if (!record) return prevPosts;
+
+            switch (payload.eventType) {
+              case 'INSERT':
+                return [record, ...prevPosts];
+              case 'UPDATE':
+                return prevPosts.map((p) => (p.id === record.id ? record : p));
+              case 'DELETE':
+                return prevPosts.filter((p) => p.id !== record.id);
+              default:
+                return prevPosts;
+            }
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      isMounted = false;
+      supabase.removeChannel(postsChannel);
+    };
+  }, [activeStartup?.id]);
+
   const handleShare = async () => {
     if (navigator.share) {
       await navigator.share({
@@ -55,9 +129,6 @@ export function StartupProfile() {
       alert("Link copied to clipboard");
     }
   };
-
-  console.log("Startup data:", startup);
-  console.log("Active Startup:", activeStartup);
 
   if (!startupData || !activeStartup) {
     return (
@@ -306,29 +377,35 @@ export function StartupProfile() {
             <div className='flex justify-between mb-2 pb-2 border-b border-gray-400'>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Posts</h2>
               {isOwner && (
-                <Link to={`/`} className='flex items-center px-2 gap-2 text-blue-600 md:text-gray-500 md:hover:text-blue-600 border-2 border-blue-600 md:border-gray-400 rounded-lg md:hover:border-blue-600 md:hover:shadow-'>
+                <Link to="/startup/add-post" className='flex items-center px-2 gap-2 text-blue-600 md:text-gray-500 md:hover:text-blue-600 border-2 border-blue-600 md:border-gray-400 rounded-lg md:hover:border-blue-600 md:hover:shadow-' >
                   Add Post
                   <Plus />
                 </Link>
               )}
             </div>
-
             <p className="text-gray-600">Latest updates from {startup?.name}</p>
           </div>
 
-          {/* Posts Grid */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {extendedData.posts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div> */}
+          {loadingPosts && (
+            <div className="text-center py-8">Loading posts...</div>
+          )}
 
-          {/* Empty State */}
-          {/* {extendedData.posts.length === 0 && (
+          {!loadingPosts && posts.length === 0 && (
             <div className="text-center py-12 bg-white rounded-2xl shadow-md">
-              <p className="text-gray-500">No posts yet. Check back later!</p>
+              <p className="text-gray-500">No posts yet. Add the first update!</p>
             </div>
-          )} */}
+          )}
+
+          {!loadingPosts && posts.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>

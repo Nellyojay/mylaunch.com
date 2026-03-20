@@ -4,6 +4,7 @@ import { Feed } from "./pages/Feed";
 import { StartupProfile } from "./pages/StartupProfile";
 import { CreateStartup } from "./pages/CreateStartup";
 import { UserProfile } from "./pages/UserProfile";
+import { AddPost } from "./pages/AddPost";
 import { NotFound } from "./pages/NotFound";
 import { Login } from "./pages/auth/login";
 import { Signup } from "./pages/auth/signup";
@@ -25,6 +26,10 @@ export const router = createHashRouter([
   {
     path: "/startup/edit",
     Component: EditStartup,
+  },
+  {
+    path: "/startup/add-post",
+    Component: AddPost,
   },
   {
     path: "/create",

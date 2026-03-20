@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Bookmark, Heart } from 'lucide-react';
-import type { Post } from '../data/mockData';
 import { useAuth } from '../contexts/authContext';
+import type { Post } from '../pages/StartupProfile';
+import { formatDate } from '../constants/dateFormat';
 
 interface PostCardProps {
   post: Post;
@@ -27,9 +28,9 @@ export function PostCard({ post }: PostCardProps) {
       {/* Post Image */}
       <div className="w-full aspect-square bg-gray-100">
         <img
-          src={post.image}
+          src={post.image_url}
           alt="Post"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
         />
       </div>
 
@@ -47,6 +48,7 @@ export function PostCard({ post }: PostCardProps) {
               <Heart
                 className={`w-6 h-6 ${liked ? 'fill-red-500 text-red-500' : ''}`}
               />
+              <p className="font-semibold text-gray-900">{likes.toLocaleString()}</p>
             </button>
             <button
               title='Save'
@@ -54,24 +56,20 @@ export function PostCard({ post }: PostCardProps) {
               disabled={!session}
             >
               <Bookmark className="w-6 h-6" />
+              <p className="font-semibold text-gray-900">{post.saves.toLocaleString()}</p>
             </button>
           </div>
-        </div>
-
-        {/* Likes Count */}
-        <div className="mb-2">
-          <p className="font-semibold text-gray-900">{likes.toLocaleString()} likes</p>
         </div>
 
         {/* Caption */}
         <div className="mb-2">
           <p className="text-gray-700 text-sm leading-relaxed">
-            {post.caption}
+            {post.content}
           </p>
         </div>
 
         {/* Timestamp */}
-        <p className="text-xs text-gray-400 uppercase">{post.timestamp}</p>
+        <p className="text-xs text-gray-400 uppercase">{formatDate(post.created_at, false)}</p>
       </div>
     </div>
   );
