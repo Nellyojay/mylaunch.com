@@ -38,6 +38,19 @@ export function StartupProfile() {
   const [showMore, setShowMore] = useState(false);
   const [showComments, setShowComments] = useState(false);
 
+  const handleShare = async () => {
+    if (navigator.share) {
+      await navigator.share({
+        title: startup?.name,
+        text: `Check out ${startup?.name}`,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert("Link copied to clipboard");
+    }
+  };
+
   if (!startupData) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -173,6 +186,7 @@ export function StartupProfile() {
             </button>
 
             <button
+              onClick={handleShare}
               className="flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all"
             >
               <Share2 className="w-5 h-5" />
