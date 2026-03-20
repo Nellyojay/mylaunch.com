@@ -107,6 +107,9 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
                 <Link to="/feed" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Explore
                 </Link>
+                <Link to="/feedback" className="text-gray-700 hover:text-gray-900 transition-colors hidden sm:block">
+                  Feedback
+                </Link>
                 <Link to="/create" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Create Startup
                 </Link>
@@ -153,6 +156,9 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
               <div className="md:hidden py-4 border-t border-gray-200">
                 <Link to="/feed" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                   Explore
+                </Link>
+                <Link to="/feedback" className="text-gray-700 hover:text-gray-900 transition-colors hidden sm:block">
+                  Feedback
                 </Link>
                 <Link to="/create" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                   Create Startup

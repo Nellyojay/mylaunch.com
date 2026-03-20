@@ -10,6 +10,7 @@ import { Login } from "./pages/auth/login";
 import { Signup } from "./pages/auth/signup";
 import { EditStartup } from "./pages/EditStartup";
 import { EditProfile } from "./pages/EditProfile";
+import { Feedback } from "./pages/Feedback";
 
 export const router = createHashRouter([
   {
@@ -19,6 +20,10 @@ export const router = createHashRouter([
   {
     path: "/feed",
     Component: Feed,
+  },
+  {
+    path: "/feedback",
+    Component: Feedback,
   },
   {
     path: "/startup",

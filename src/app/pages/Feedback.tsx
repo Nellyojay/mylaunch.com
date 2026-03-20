@@ -1,0 +1,353 @@
+import { useState } from 'react';
+import { Navbar } from '../components/Navbar';
+import { Send, MessageSquare, Star, CheckCircle } from 'lucide-react';
+import { useWebData } from '../contexts/webData';
+
+interface FeedbackMessage {
+  id: number;
+  author: string;
+  email: string;
+  rating: number;
+  category: string;
+  message: string;
+  timestamp: string;
+}
+
+const mockFeedback: FeedbackMessage[] = [
+  {
+    id: 1,
+    author: 'Alex Rivera',
+    email: 'alex@example.com',
+    rating: 5,
+    category: 'Feature Request',
+    message: 'Love the platform! Would be great to have a messaging feature to connect directly with startup founders.',
+    timestamp: '2 hours ago'
+  },
+  {
+    id: 2,
+    author: 'Maya Patel',
+    email: 'maya@example.com',
+    rating: 4,
+    category: 'Bug Report',
+    message: 'The search function is sometimes slow on mobile. Otherwise, amazing platform for discovering new startups!',
+    timestamp: '1 day ago'
+  },
+  {
+    id: 3,
+    author: 'Jordan Kim',
+    email: 'jordan@example.com',
+    rating: 5,
+    category: 'General Feedback',
+    message: 'This platform has helped me discover so many amazing graduate-led businesses. Keep up the great work!',
+    timestamp: '2 days ago'
+  },
+  {
+    id: 4,
+    author: 'Sarah Johnson',
+    email: 'sarah@example.com',
+    rating: 5,
+    category: 'Feature Request',
+    message: 'Would love to see analytics for startup owners to track their profile views and engagement.',
+    timestamp: '3 days ago'
+  }
+];
+
+export function Feedback() {
+  const { webName } = useWebData();
+  const [feedbackList, setFeedbackList] = useState<FeedbackMessage[]>(mockFeedback);
+  const [formData, setFormData] = useState({
+    author: '',
+    email: '',
+    rating: 5,
+    category: 'General Feedback',
+    message: ''
+  });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const newFeedback: FeedbackMessage = {
+      id: Date.now(),
+      author: formData.author,
+      email: formData.email,
+      rating: formData.rating,
+      category: formData.category,
+      message: formData.message,
+      timestamp: 'Just now'
+    };
+
+    setFeedbackList([newFeedback, ...feedbackList]);
+    setFormData({
+      author: '',
+      email: '',
+      rating: 5,
+      category: 'General Feedback',
+      message: ''
+    });
+    setSubmitted(true);
+
+    // Reset success message after 5 seconds
+    setTimeout(() => setSubmitted(false), 5000);
+  };
+
+  const renderStars = (rating: number) => {
+    return (
+      <div className="flex space-x-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={`w-5 h-5 ${star <= rating
+              ? 'fill-yellow-400 text-yellow-400'
+              : 'text-gray-300'
+              }`}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar showAuth={false} />
+
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 bg-linear-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <MessageSquare className="w-8 h-8 text-white" />
+            </div>
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+            Share Your Feedback
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Help us improve {webName}! Your feedback is valuable and helps us create a better platform for young entrepreneurs.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Feedback Form */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl shadow-md p-6 md:p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Submit Feedback</h2>
+
+              {/* Success Message */}
+              {submitted && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <CheckCircle className="w-6 h-6 text-green-600 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-green-900">Thank you for your feedback!</p>
+                    <p className="text-sm text-green-700">Your message has been submitted successfully.</p>
+                  </div>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Name and Email */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                      Your Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      required
+                      value={formData.author}
+                      onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                      placeholder="John Doe"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="john@example.com"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Category */}
+                <div>
+                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                    Feedback Category *
+                  </label>
+                  <select
+                    id="category"
+                    required
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="General Feedback">General Feedback</option>
+                    <option value="Feature Request">Feature Request</option>
+                    <option value="Bug Report">Bug Report</option>
+                    <option value="User Experience">User Experience</option>
+                    <option value="Content Suggestion">Content Suggestion</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                {/* Rating */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Rate Your Experience *
+                  </label>
+                  <div className="flex space-x-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        title={`Rate ${star} stars`}
+                        key={star}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, rating: star })}
+                        className="transition-transform hover:scale-110"
+                      >
+                        <Star
+                          className={`w-8 h-8 ${star <= formData.rating
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'text-gray-300 hover:text-yellow-300'
+                            }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-sm text-gray-500 mt-2">
+                    {formData.rating === 5 && 'Excellent!'}
+                    {formData.rating === 4 && 'Very Good'}
+                    {formData.rating === 3 && 'Good'}
+                    {formData.rating === 2 && 'Fair'}
+                    {formData.rating === 1 && 'Needs Improvement'}
+                  </p>
+                </div>
+
+                {/* Message */}
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                    Your Message *
+                  </label>
+                  <textarea
+                    id="message"
+                    required
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    rows={6}
+                    placeholder={`Tell us what you think about ${webName}...`}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  />
+                  <p className="text-sm text-gray-500 mt-2">
+                    Minimum 10 characters ({formData.message.length}/10)
+                  </p>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={formData.message.length < 10}
+                  className="w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                >
+                  <Send className="w-5 h-5" />
+                  <span>Submit Feedback</span>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          {/* Feedback Stats & Info */}
+          <div className="space-y-6">
+            {/* Stats Card */}
+            <div className="bg-linear-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl shadow-md p-6 text-white">
+              <h3 className="text-xl font-bold mb-4">Community Feedback</h3>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-blue-100 text-sm mb-1">Total Feedback</p>
+                  <p className="text-3xl font-bold">{feedbackList.length}</p>
+                </div>
+                <div>
+                  <p className="text-blue-100 text-sm mb-1">Average Rating</p>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-3xl font-bold">
+                      {(feedbackList.reduce((acc, f) => acc + f.rating, 0) / feedbackList.length).toFixed(1)}
+                    </p>
+                    <Star className="w-6 h-6 fill-yellow-400 text-yellow-400" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Info Card */}
+            <div className="bg-white rounded-2xl shadow-md p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Why Your Feedback Matters</h3>
+              <ul className="space-y-3 text-sm text-gray-700">
+                <li className="flex items-start space-x-2">
+                  <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                  <span>Helps us improve the platform for everyone</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                  <span>Guides our development priorities</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                  <span>Shapes the future of {webName}</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                  <span>Ensures we meet your needs</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Feedback Section */}
+        <div className="mt-12">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Recent Feedback</h2>
+            <p className="text-gray-600">See what others are saying about {webName}</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {feedbackList.map((feedback) => (
+              <div
+                key={feedback.id}
+                className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow"
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                      {feedback.author[0]}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">{feedback.author}</p>
+                      <p className="text-xs text-gray-500">{feedback.timestamp}</p>
+                    </div>
+                  </div>
+                  {renderStars(feedback.rating)}
+                </div>
+
+                {/* Category Badge */}
+                <span className="inline-block text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full mb-3">
+                  {feedback.category}
+                </span>
+
+                {/* Message */}
+                <p className="text-gray-700 leading-relaxed">{feedback.message}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
