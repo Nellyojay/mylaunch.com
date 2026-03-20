@@ -1,39 +1,293 @@
-import { useState } from 'react';
-import { Send } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Send, Trash2, Edit2 } from 'lucide-react';
 import { useAuth } from '../contexts/authContext';
+import { useUserData } from '../contexts/userDataContext';
 import { BsX } from 'react-icons/bs';
+import supabase from '../supabaseClient';
 
-interface Comment {
+export interface Comment {
   id: number;
-  author: string;
-  text: string;
-  timestamp: string;
+  content: string;
+  created_at: string;
+  user_id: string;
+  startup_id: string;
+  parent_id?: number | null;
+  user_name?: string;
+}
+
+interface CommentNode extends Comment {
+  children: CommentNode[];
 }
 
 interface CommentBoxProps {
+  startupId: string;
   comments: Comment[];
+  setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
   showComments: boolean;
   setShowComments: (show: boolean) => void;
 }
 
-export function CommentBox({ comments: initialComments, showComments, setShowComments }: CommentBoxProps) {
+export function CommentBox({ startupId, comments, setComments, showComments, setShowComments }: CommentBoxProps) {
   const { session } = useAuth();
-  const [comments, setComments] = useState(initialComments);
+  const { userData } = useUserData();
   const [newComment, setNewComment] = useState('');
+  const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!startupId) return;
+
+    setLoading(true);
+    const fetchComments = async () => {
+      const { data, error } = await supabase
+        .from('opinions')
+        .select('id, content, created_at, user_id, startup_id, parent_id, user_name')
+        .eq('startup_id', startupId)
+        .order('created_at', { ascending: false });
+
+      setLoading(false);
+      if (error) {
+        console.error('Failed to load comments', error);
+        return;
+      }
+
+      setComments((data || []) as Comment[]);
+    };
+
+    fetchComments();
+
+    const commentsChannel = supabase
+      .channel(`realtime-comments-${startupId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'opinions', filter: `startup_id=eq.${startupId}` },
+        (payload: any) => {
+          setComments((prev) => {
+            const record = payload.new || payload.old;
+            if (!record) return prev;
+
+            switch (payload.eventType) {
+              case 'INSERT':
+                if (prev.some((c) => c.id === record.id)) return prev;
+                return [record, ...prev];
+              case 'UPDATE':
+                return prev.map((c) => (c.id === record.id ? record : c));
+              case 'DELETE':
+                return prev.filter((c) => c.id !== record.id);
+              default:
+                return prev;
+            }
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(commentsChannel);
+    };
+  }, [startupId, setComments]);
+
+  const isAuthenticated = Boolean(session?.user);
+
+  const buildCommentTree = (): CommentNode[] => {
+    const nodes = comments.map((comment) => ({ ...comment, children: [] }));
+    const map = new Map<number, CommentNode>(nodes.map((node) => [node.id, node]));
+    const roots: CommentNode[] = [];
+
+    nodes.forEach((node) => {
+      if (node.parent_id && map.has(node.parent_id)) {
+        map.get(node.parent_id)!.children.push(node);
+      } else {
+        roots.push(node);
+      }
+    });
+
+    const traverse = (items: CommentNode[]) => {
+      items.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      items.forEach((item) => traverse(item.children));
+    };
+
+    traverse(roots);
+    return roots;
+  };
+
+  const renderComments = (nodes: CommentNode[], level = 0): React.ReactNode[] =>
+    nodes.map((node) => (
+      <div
+        key={node.id}
+        className={`bg-white p-3 rounded-xl border border-gray-200 ${level > 0 ? 'pl-4 border-l-2 border-gray-200' : ''}`}
+      >
+        <div className="flex space-x-3">
+          <div className="w-8 h-8 rounded-full bg-blue-100 shrink-0 flex items-center justify-center">
+            <span className="text-sm font-medium text-blue-600">
+              {(node.user_name || 'U')[0].toUpperCase()}
+            </span>
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <span className="font-medium text-gray-900">{node.user_name || 'Unknown'}</span>
+                <span className="text-xs text-gray-500 ml-2">{new Date(node.created_at).toLocaleDateString()}</span>
+              </div>
+              <div className="flex gap-1">
+                {level < 2 && (
+                  <button
+                    type="button"
+                    title="Reply to this comment"
+                    onClick={() => setReplyToCommentId(node.id)}
+                    className="text-xs text-blue-500 hover:underline"
+                  >
+                    Reply
+                  </button>
+                )}
+                {isAuthenticated && (userData?.user_id || session.user.id) === node.user_id && (
+                  <>
+                    <button
+                      type="button"
+                      title="Edit this comment"
+                      onClick={() => beginEdit(node)}
+                      className="p-1 text-gray-500 hover:text-blue-600"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      title="Delete this comment"
+                      onClick={() => handleDeleteComment(node.id, node.user_id)}
+                      className="p-1 text-gray-500 hover:text-red-600"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {editingCommentId === node.id ? (
+              <>
+                <textarea
+                  className="w-full mt-2 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={2}
+                  placeholder="Edit your comment"
+                  value={editingText}
+                  onChange={(e) => setEditingText(e.target.value)}
+                />
+                <div className="flex gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={saveEdit}
+                    className="px-3 py-1 text-xs font-semibold text-white bg-green-600 rounded hover:bg-green-700"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingCommentId(null);
+                      setEditingText('');
+                    }}
+                    className="px-3 py-1 text-xs font-semibold text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p className="text-gray-700 mt-1">{node.content}</p>
+            )}
+          </div>
+        </div>
+
+        {node.children.length > 0 && (
+          <div className="mt-3 space-y-3">
+            {renderComments(node.children, level + 1)}
+          </div>
+        )}
+      </div>
+    ));
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newComment.trim()) {
-      const comment: Comment = {
-        id: Date.now(),
-        author: 'You',
-        text: newComment,
-        timestamp: 'Just now'
-      };
-      setComments([...comments, comment]);
-      setNewComment('');
+    if (!isAuthenticated || !newComment.trim()) return;
+
+    const content = newComment.trim();
+    const { data, error } = await supabase
+      .from('opinions')
+      .insert([
+        {
+          content,
+          user_id: userData?.user_id || session.user.id,
+          startup_id: startupId,
+          parent_id: replyToCommentId,
+          user_name: userData?.user_name || `User${(userData?.user_id || session.user.id).slice(0, 5)}`,
+        }
+      ])
+      .select('*')
+      .single();
+
+    if (error) {
+      alert('Failed to post comment. Please try again.');
+      return;
+    }
+
+    setNewComment('');
+    setReplyToCommentId(null);
+    if (data) {
+      setComments((prev) => [data as Comment, ...prev]);
     }
   };
+
+  const handleDeleteComment = async (commentId: number, commentUserId: string) => {
+    if (!isAuthenticated || (userData?.user_id || session.user.id) !== commentUserId) {
+      alert('You can only delete your own comments.');
+      return;
+    }
+
+    const confirmed = confirm('Delete this comment?');
+    if (!confirmed) return;
+
+    const { error } = await supabase
+      .from('opinions')
+      .delete()
+      .eq('id', commentId);
+
+    if (error) {
+      alert('Failed to delete comment.');
+    }
+
+    setComments((prev) => prev.filter((c) => c.id !== commentId));
+  };
+
+  const beginEdit = (comment: Comment) => {
+    if (!isAuthenticated || (userData?.user_id || session.user.id) !== comment.user_id) {
+      alert('You can only edit your own comments.');
+      return;
+    }
+    setEditingCommentId(comment.id);
+    setEditingText(comment.content);
+  };
+
+  const saveEdit = async () => {
+    if (!editingCommentId || !editingText.trim()) return;
+
+    const { data, error } = await supabase
+      .from('opinions')
+      .update({ content: editingText.trim() })
+      .eq('id', editingCommentId)
+      .select('*')
+      .single();
+
+    if (error) {
+      alert('Failed to update comment.');
+      return;
+    }
+
+    setComments((prev) => prev.map((c) => (c.id === editingCommentId ? (data as Comment) : c)));
+    setEditingCommentId(null);
+    setEditingText('');
+  };
+
 
   return (
     <div className="space-y-4 mt-4">
@@ -46,45 +300,45 @@ export function CommentBox({ comments: initialComments, showComments, setShowCom
           <BsX className="w-6 h-6 text-gray-500 hover:text-gray-700 transition-colors" />
         </button>
       </div>
-      {/* Comments List */}
-      <div className="space-y-3">
-        {comments.map((comment) => (
-          <div key={comment.id} className="flex space-x-3">
-            <div className="w-8 h-8 rounded-full bg-blue-100 shrink-0 flex items-center justify-center">
-              <span className="text-sm font-medium text-blue-600">
-                {comment.author[0]}
-              </span>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center space-x-2">
-                <span className="font-medium text-gray-900">{comment.author}</span>
-                <span className="text-sm text-gray-500">{comment.timestamp}</span>
-              </div>
-              <p className="text-gray-700 mt-1">{comment.text}</p>
-            </div>
-          </div>
-        ))}
+
+      {loading && <div className="text-sm text-gray-500">Loading comments...</div>}
+
+      <div className="space-y-3 max-h-72 overflow-y-auto pr-1 scrollbar-hide">
+        {renderComments(buildCommentTree())}
       </div>
 
-      {/* Comment Input */}
-      <form onSubmit={handleSubmit} className="flex space-x-2">
+      {replyToCommentId && (
+        <div className="flex items-center justify-between bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 text-sm text-blue-800">
+          <span>Replying to comment #{replyToCommentId}</span>
+          <button
+            type="button"
+            onClick={() => setReplyToCommentId(null)}
+            className="text-blue-600 hover:underline"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="flex items-center space-x-2">
         <input
           type="text"
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           disabled={!session}
-          placeholder={session ? "Add a comment..." : "Log in to comment"}
+          placeholder={session ? 'Add a comment...' : 'Log in to comment'}
           className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
         <button
           title='Submit'
-          type="submit"
-          className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={!newComment.trim() && !session}
+          type='submit'
+          className='bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+          disabled={!session || !newComment.trim()}
         >
-          <Send className="w-5 h-5" />
+          <Send className='w-5 h-5' />
         </button>
       </form>
     </div>
   );
 }
+

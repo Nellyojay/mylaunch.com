@@ -3,7 +3,8 @@ import { Link } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { PostCard } from '../components/PostCard';
 import { Modal } from '../components/Modal';
-import { mockComments } from '../data/mockData';
+import { CommentBox } from '../components/CommentBox';
+import type { Comment as StartupComment } from '../components/CommentBox';
 import supabase from '../supabaseClient';
 import {
   GraduationCap,
@@ -26,7 +27,6 @@ import {
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { BsChevronDown, BsTwitterX } from 'react-icons/bs';
 import { useAuth } from '../contexts/authContext';
-import { CommentBox } from '../components/CommentBox';
 import { useStartup } from '../contexts/StartupProfileContext';
 import { formatDate } from '../constants/dateFormat';
 import { useUserData } from '../contexts/userDataContext';
@@ -58,6 +58,7 @@ export function StartupProfile() {
   const [showMore, setShowMore] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [comments, setComments] = useState<StartupComment[]>([]);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [loadingPosts, setLoadingPosts] = useState(false);
 
@@ -257,7 +258,7 @@ export function StartupProfile() {
                   className='text-gray-600 md:hover:text-blue-600 transition-colors flex items-center gap-1'
                 >
                   Opinions
-                  <span><strong>45</strong></span>
+                  <span><strong>{comments.length}</strong></span>
                   <BsChevronDown className='w-3 h-3' />
                 </button>
               </div>
@@ -328,7 +329,13 @@ export function StartupProfile() {
           </div>
 
           {showComments ? (
-            <CommentBox comments={mockComments} showComments={showComments} setShowComments={setShowComments} />
+            <CommentBox
+              startupId={startup?.id ?? ''}
+              comments={comments}
+              setComments={setComments}
+              showComments={showComments}
+              setShowComments={setShowComments}
+            />
           ) : (
             <>
               {/* View More Button */}
