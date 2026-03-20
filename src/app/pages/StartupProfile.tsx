@@ -56,7 +56,6 @@ export function StartupProfile() {
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
-  console.log(posts)
 
   useEffect(() => {
     if (!activeStartup?.id) {
@@ -206,7 +205,6 @@ export function StartupProfile() {
 
               <div className='flex gap-6'>
                 <p className='text-gray-600'>Followers <strong>{startup?.followers}</strong></p>
-                <p className='text-gray-600'>Likes <strong>{startup?.likes}</strong></p>
                 <button
                   onClick={() => setShowComments(!showComments)}
                   className='text-gray-600 md:hover:text-blue-600 transition-colors flex items-center gap-1'
@@ -392,7 +390,7 @@ export function StartupProfile() {
 
           {!loadingPosts && posts.length === 0 && (
             <div className="text-center py-12 bg-white rounded-2xl shadow-md">
-              <p className="text-gray-500">No posts yet. Add the first update!</p>
+              <p className="text-gray-500">No posts yet.</p>
             </div>
           )}
 

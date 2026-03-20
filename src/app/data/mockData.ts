@@ -5,6 +5,7 @@ export interface Post {
   image: string;
   caption: string;
   likes: number;
+  saves?: number;
   comments: number;
   timestamp: string;
 }
