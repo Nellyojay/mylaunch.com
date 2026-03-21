@@ -21,6 +21,7 @@ export type StartupData = {
   products_and_services: [string];
   user_id: string;
   website: string;
+  founded_in: string;
   x_username: string;
 }
 

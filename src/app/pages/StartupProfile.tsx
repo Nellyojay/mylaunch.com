@@ -409,7 +409,7 @@ export function StartupProfile() {
                         </div>
                         <div className="flex items-center space-x-2">
                           <Calendar className="w-4 h-4 text-blue-600" />
-                          <span>Founded in {formatDate(startup?.created_at, true)}</span>
+                          <span>Founded in {formatDate(startup?.founded_in, true)}</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <GraduationCap className="w-4 h-4 text-blue-600" />

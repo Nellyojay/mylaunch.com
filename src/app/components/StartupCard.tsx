@@ -42,7 +42,10 @@ export function StartupCard({ startup, userId }: StartupCardProps) {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <Link to={`/startup/${startup.id}`}>
+            <Link
+              to='/startup'
+              onClick={() => setSelectedProfile(userId)}
+            >
               <h3 className="font-semibold text-gray-900 hover:text-blue-600 transition-colors">
                 {startup.name}
               </h3>

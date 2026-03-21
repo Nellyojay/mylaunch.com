@@ -24,6 +24,7 @@ export function EditStartup() {
     phone: '',
     email: '',
     address: '',
+    founded_in: '',
     website: '',
     x_username: '',
     products_and_services: '' // comma-separated input for UI
@@ -40,6 +41,7 @@ export function EditStartup() {
         phone: startup.phone || '',
         email: startup.email || '',
         address: startup.address || '',
+        founded_in: startup.founded_in || '',
         website: startup.website || '',
         x_username: startup.x_username || '',
         products_and_services: Array.isArray(startup.products_and_services)
@@ -73,6 +75,7 @@ export function EditStartup() {
         phone: formData.phone,
         email: formData.email,
         address: formData.address,
+        founded_in: formData.founded_in,
         website: formData.website,
         x_username: formData.x_username,
         products_and_services: productsAndServices
@@ -162,6 +165,7 @@ export function EditStartup() {
               <textarea
                 value={formData.products_and_services}
                 onChange={(e) => setFormData({ ...formData, products_and_services: e.target.value })}
+                placeholder="e.g. Product 1, Product 2, Service 1"
                 className="mt-1 w-full p-2 border border-gray-300 rounded-lg"
                 rows={2}
               />
@@ -187,10 +191,21 @@ export function EditStartup() {
             </div>
 
             <label className="block">
+              <span className="text-sm font-medium text-gray-700">Founded In</span>
+              <input
+                value={formData.founded_in}
+                onChange={(e) => setFormData({ ...formData, founded_in: e.target.value })}
+                placeholder='e.g. 2020'
+                className="mt-1 w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </label>
+
+            <label className="block">
               <span className="text-sm font-medium text-gray-700">Address</span>
               <input
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                placeholder='e.g. 123 Main St, City, State'
                 className="mt-1 w-full p-2 border border-gray-300 rounded-lg"
               />
             </label>
@@ -201,6 +216,7 @@ export function EditStartup() {
                 <input
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  placeholder='e.g. www.example.com'
                   className="mt-1 w-full p-2 border border-gray-300 rounded-lg"
                 />
               </label>
@@ -210,6 +226,7 @@ export function EditStartup() {
                 <input
                   value={formData.x_username}
                   onChange={(e) => setFormData({ ...formData, x_username: e.target.value })}
+                  placeholder='e.g. x_example'
                   className="mt-1 w-full p-2 border border-gray-300 rounded-lg"
                 />
               </label>
