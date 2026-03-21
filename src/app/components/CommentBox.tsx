@@ -22,41 +22,22 @@ interface CommentNode extends Comment {
 interface CommentBoxProps {
   startupId: string;
   comments: Comment[];
+  loading: boolean;
   setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
   showComments: boolean;
   setShowComments: (show: boolean) => void;
 }
 
-export function CommentBox({ startupId, comments, setComments, showComments, setShowComments }: CommentBoxProps) {
+export function CommentBox({ startupId, comments, loading, setComments, showComments, setShowComments }: CommentBoxProps) {
   const { session } = useAuth();
   const { userData } = useUserData();
   const [newComment, setNewComment] = useState('');
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState('');
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!startupId) return;
-
-    setLoading(true);
-    const fetchComments = async () => {
-      const { data, error } = await supabase
-        .from('opinions')
-        .select('id, content, created_at, user_id, startup_id, parent_id, user_name')
-        .eq('startup_id', startupId)
-        .order('created_at', { ascending: false });
-
-      setLoading(false);
-      if (error) {
-        console.error('Failed to load comments', error);
-        return;
-      }
-
-      setComments((data || []) as Comment[]);
-    };
-
-    fetchComments();
 
     const commentsChannel = supabase
       .channel(`realtime-comments-${startupId}`)
@@ -117,7 +98,7 @@ export function CommentBox({ startupId, comments, setComments, showComments, set
     nodes.map((node) => (
       <div
         key={node.id}
-        className={`bg-white p-3 rounded-xl border border-gray-200 ${level > 0 ? 'pl-4 border-l-2 border-gray-200' : ''}`}
+        className={`bg-white p-1 rounded-xl border border-gray-200 ${level > 0 ? ' border-l-4 border-l-blue-100' : ''}`}
       >
         <div className="flex space-x-3">
           <div className="w-8 h-8 rounded-full bg-blue-100 shrink-0 flex items-center justify-center">
@@ -128,8 +109,11 @@ export function CommentBox({ startupId, comments, setComments, showComments, set
           <div className="flex-1">
             <div className="flex items-center justify-between gap-2">
               <div>
-                <span className="font-medium text-gray-900">{node.user_name || 'Unknown'}</span>
+                <span className="text-sm font-medium text-gray-500">{node.user_name || 'Unknown'}</span>
                 <span className="text-xs text-gray-500 ml-2">{new Date(node.created_at).toLocaleDateString()}</span>
+                {node.user_id === userData?.user_id && (
+                  <span className="text-xs bg-blue-100 text-blue-800 px-1 rounded-full ml-2">owner</span>
+                )}
               </div>
               <div className="flex gap-1">
                 {level < 2 && (
@@ -195,13 +179,13 @@ export function CommentBox({ startupId, comments, setComments, showComments, set
                 </div>
               </>
             ) : (
-              <p className="text-gray-700 mt-1">{node.content}</p>
+              <p className="text-gray-700">{node.content}</p>
             )}
           </div>
         </div>
 
         {node.children.length > 0 && (
-          <div className="mt-3 space-y-3">
+          <div className="mt-1 space-y-3">
             {renderComments(node.children, level + 1)}
           </div>
         )}

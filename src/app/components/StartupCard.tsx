@@ -1,5 +1,4 @@
 import { Link } from 'react-router';
-import { LikeButton } from './LikeButton';
 import type { StartupData } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
 
@@ -66,10 +65,7 @@ export function StartupCard({ startup, userId }: StartupCardProps) {
         </p>
 
         {/* Interaction Buttons */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-          <div className="flex items-center space-x-4">
-            <LikeButton initialLikes={startup.likes} />
-          </div>
+        <div className="pt-2 border-t border-gray-100">
           <Link
             to="/startup"
             className="text-sm text-blue-600 hover:text-blue-700 font-medium"

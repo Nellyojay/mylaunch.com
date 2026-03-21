@@ -4,7 +4,7 @@ import { Navbar } from '../components/Navbar';
 import { PostCard } from '../components/PostCard';
 import { Modal } from '../components/Modal';
 import { CommentBox } from '../components/CommentBox';
-import type { Comment as StartupComment } from '../components/CommentBox';
+import type { Comment, Comment as StartupComment } from '../components/CommentBox';
 import supabase from '../supabaseClient';
 import {
   GraduationCap,
@@ -39,6 +39,7 @@ export type Post = {
   created_at: string;
   likes: number;
   saves: number;
+  user_id: string;
 }
 
 export function StartupProfile() {
@@ -61,6 +62,7 @@ export function StartupProfile() {
   const [comments, setComments] = useState<StartupComment[]>([]);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [loadingPosts, setLoadingPosts] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!activeStartup?.id) {
@@ -76,7 +78,7 @@ export function StartupProfile() {
     const fetchStartupPosts = async () => {
       const { data, error } = await supabase
         .from('startup_posts')
-        .select('id, content, image_url, created_at, likes, saves')
+        .select('id, content, image_url, created_at, likes, saves, user_id')
         .eq('startup_id', activeStartup.id)
         .order('created_at', { ascending: false });
 
@@ -120,6 +122,27 @@ export function StartupProfile() {
       supabase.removeChannel(postsChannel);
     };
   }, [activeStartup?.id]);
+
+  useEffect(() => {
+    setLoading(true);
+    const fetchComments = async () => {
+      const { data, error } = await supabase
+        .from('opinions')
+        .select('id, content, created_at, user_id, startup_id, parent_id, user_name')
+        .eq('startup_id', startup?.id)
+        .order('created_at', { ascending: false });
+
+      setLoading(false);
+      if (error) {
+        console.error('Failed to load comments', error);
+        return;
+      }
+
+      setComments((data || []) as Comment[]);
+    };
+
+    fetchComments();
+  }, [startup?.id]);
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -331,6 +354,7 @@ export function StartupProfile() {
           {showComments ? (
             <CommentBox
               startupId={startup?.id ?? ''}
+              loading={loading}
               comments={comments}
               setComments={setComments}
               showComments={showComments}
@@ -465,6 +489,7 @@ export function StartupProfile() {
                   key={post.id}
                   post={post}
                   deletePost={() => handleDeletePost(post.id)}
+                  isOwner={isOwner}
                 />
               ))}
             </div>

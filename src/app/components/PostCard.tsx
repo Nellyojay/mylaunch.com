@@ -10,9 +10,11 @@ import { Modal } from './Modal';
 interface PostCardProps {
   post: Post;
   deletePost: () => void;
+  isOwner: boolean;
+
 }
 
-export function PostCard({ post, deletePost }: PostCardProps) {
+export function PostCard({ post, deletePost, isOwner }: PostCardProps) {
   const { session } = useAuth();
   const { userData } = useUserData();
   const [liked, setLiked] = useState(false);
@@ -146,12 +148,14 @@ export function PostCard({ post, deletePost }: PostCardProps) {
             </button>
           </div>
 
-          <button
-            title='Delete Post'
-            onClick={() => setIsConfirmOpen(true)}
-          >
-            <Trash2 className="w-5 h-5 text-red-400" />
-          </button>
+          {isOwner && (
+            <button
+              title='Delete Post'
+              onClick={() => setIsConfirmOpen(true)}
+            >
+              <Trash2 className="w-5 h-5 text-red-400" />
+            </button>
+          )}
         </div>
 
         <Modal
