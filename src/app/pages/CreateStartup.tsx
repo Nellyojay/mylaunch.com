@@ -30,7 +30,7 @@ export function CreateStartup() {
     const { error } = await supabase
       .from('startups')
       .insert({
-        user_id: userData?.user_id,
+        user_id: userData?.id,
         name: formData.name,
         founder_name: formData.founder,
         cartegory: formData.category,

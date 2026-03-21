@@ -71,7 +71,7 @@ export function Feedback() {
         rating: formData.rating,
         category: formData.category,
         message: formData.message,
-        user_id: userData?.user_id || null
+        user_id: userData?.id || null
       })
       .select()
       .single();

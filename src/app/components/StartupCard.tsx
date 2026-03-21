@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import type { StartupData } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
+import { getImageUrl } from '../constants/getImageUrl';
 
 export interface Startup {
   id: number;
@@ -30,7 +31,7 @@ export function StartupCard({ startup, userId }: StartupCardProps) {
       >
         <div className="aspect-square overflow-hidden bg-gray-100">
           <img
-            src={startup.display_image}
+            src={getImageUrl(startup.display_image) || '/default-startup-image.jpg'}
             alt={startup.name}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
           />

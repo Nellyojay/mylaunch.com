@@ -4,14 +4,17 @@ import { Navbar } from '../components/Navbar';
 import { useAuth } from '../contexts/authContext';
 import { useUserData } from '../contexts/userDataContext';
 import supabase from '../supabaseClient';
+import { Upload } from 'lucide-react';
+import { FOLDER, imageHandlerService } from '../constants/imageHandler';
 
 export function EditProfile() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { userData, selectedProfile, setSelectedProfile } = useUserData();
 
-  const profileId = selectedProfile || userData?.user_id || user?.id || null;
+  const profileId = selectedProfile || userData?.id || user?.id || null;
 
+  const [profileImage, setProfileImage] = useState<File | null>(null);
   const [fullName, setFullName] = useState(userData?.full_name || '');
   const [userName, setUserName] = useState(userData?.user_name || '');
   const [bio, setBio] = useState(userData?.bio || '');
@@ -26,6 +29,8 @@ export function EditProfile() {
     }
   }, [userData]);
 
+  const dismissSelectedProfileImage = () => setProfileImage(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profileId) {
@@ -39,7 +44,7 @@ export function EditProfile() {
     // Username uniqueness check
     const { data: existingUser, error: checkError } = await supabase
       .from('users')
-      .select('user_id')
+      .select('id')
       .eq('user_name', userName)
       .maybeSingle();
 
@@ -49,7 +54,7 @@ export function EditProfile() {
       return;
     }
 
-    if (existingUser && existingUser.user_id !== profileId) {
+    if (existingUser && existingUser.id !== profileId) {
       setLoading(false);
       setError('Username is already taken. Please choose another one.');
       return;
@@ -58,13 +63,26 @@ export function EditProfile() {
     const { error: updateError } = await supabase
       .from('users')
       .update({ full_name: fullName, user_name: userName, bio })
-      .eq('user_id', profileId);
-
-    setLoading(false);
+      .eq('id', profileId);
 
     if (updateError) {
       setError(updateError.message || 'Could not update profile.');
+      setLoading(false);
       return;
+    }
+
+    if (profileImage) {
+      const insertProfileImage = await imageHandlerService.uploadImage(
+        profileImage,
+        FOLDER.USER_PROFILE,
+        profileId
+      )
+
+      if (!insertProfileImage) {
+        setError('Profile updated but failed to upload image. Please try again.');
+        setLoading(false);
+        return;
+      }
     }
 
     setSelectedProfile(profileId);
@@ -79,6 +97,40 @@ export function EditProfile() {
           <h1 className="text-3xl font-bold mb-6">Edit Profile</h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {profileImage ? (
+              <div className="w-28 md:w-48 h-28 md:h-48 mx-auto">
+                <button
+                  type="button"
+                  onClick={dismissSelectedProfileImage}
+                  className="absolute left-32 right-0 md:left-48 text-red-500 font-bold text-3xl rounded-full hover:text-red-300"
+                >
+                  ×
+                </button>
+
+                <img
+                  src={URL.createObjectURL(profileImage)}
+                  alt="Profile Preview"
+                  className="w-full h-full rounded-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-500 transition-colors">
+                <input
+                  type="file"
+                  id="images"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => setProfileImage(e.target.files?.[0] as File | undefined || null)}
+                  className="hidden"
+                />
+                <label htmlFor="images" className="cursor-pointer">
+                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600 mb-2">Click to upload images</p>
+                  <p className="text-sm text-gray-500">PNG, JPG up to 10MB</p>
+                </label>
+              </div>
+            )}
+
             <div>
               <label htmlFor="full-name" className="block text-sm font-medium text-gray-700">
                 Full Name

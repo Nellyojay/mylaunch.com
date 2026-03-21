@@ -111,7 +111,7 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
               <div>
                 <span className="text-sm font-medium text-gray-500">{node.user_name || 'Unknown'}</span>
                 <span className="text-xs text-gray-500 ml-2">{new Date(node.created_at).toLocaleDateString()}</span>
-                {node.user_id === userData?.user_id && (
+                {node.user_id === userData?.id && (
                   <span className="text-xs bg-blue-100 text-blue-800 px-1 rounded-full ml-2">owner</span>
                 )}
               </div>
@@ -126,7 +126,7 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
                     Reply
                   </button>
                 )}
-                {isAuthenticated && (userData?.user_id || session.user.id) === node.user_id && (
+                {isAuthenticated && (userData?.id || session.user.id) === node.user_id && (
                   <>
                     <button
                       type="button"
@@ -201,10 +201,10 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
       .insert([
         {
           content,
-          user_id: userData?.user_id || session.user.id,
+          user_id: userData?.id || session.user.id,
           startup_id: startupId,
           parent_id: replyToCommentId,
-          user_name: userData?.user_name || `User${(userData?.user_id || session.user.id).slice(0, 5)}`,
+          user_name: userData?.user_name || `User${(userData?.id || session.user.id).slice(0, 5)}`,
         }
       ])
       .select('*')
@@ -223,7 +223,7 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
   };
 
   const handleDeleteComment = async (commentId: number, commentUserId: string) => {
-    if (!isAuthenticated || (userData?.user_id || session.user.id) !== commentUserId) {
+    if (!isAuthenticated || (userData?.id || session.user.id) !== commentUserId) {
       alert('You can only delete your own comments.');
       return;
     }
@@ -244,7 +244,7 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
   };
 
   const beginEdit = (comment: Comment) => {
-    if (!isAuthenticated || (userData?.user_id || session.user.id) !== comment.user_id) {
+    if (!isAuthenticated || (userData?.id || session.user.id) !== comment.user_id) {
       alert('You can only edit your own comments.');
       return;
     }

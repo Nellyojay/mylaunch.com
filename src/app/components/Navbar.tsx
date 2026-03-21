@@ -7,7 +7,7 @@ import { useUserData } from '../contexts/userDataContext';
 import supabase from '../supabaseClient';
 
 type MyUserId = {
-  user_id: string
+  id: string
 }
 
 interface NavbarProps {
@@ -30,7 +30,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
 
     const { data } = await supabase
       .from('users')
-      .select('user_id')
+      .select('id')
       .eq('auth_id', user.id)
       .single();
 
@@ -113,7 +113,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
                 <Link to="/create" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Create Startup
                 </Link>
-                <Link to="/profile" className="text-gray-700 hover:text-gray-900 transition-colors" onClick={() => setSelectedProfile(myUserId?.user_id)}>
+                <Link to="/profile" className="text-gray-700 hover:text-gray-900 transition-colors" onClick={() => setSelectedProfile(myUserId?.id)}>
                   <User className="w-6 h-6" />
                 </Link>
               </>
@@ -163,7 +163,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
                 <Link to="/create" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                   Create Startup
                 </Link>
-                <Link to="/profile" onClick={() => setSelectedProfile(myUserId?.user_id)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                <Link to="/profile" onClick={() => setSelectedProfile(myUserId?.id)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                   <User className="w-5 h-5 inline" /> Profile
                 </Link>
               </div>

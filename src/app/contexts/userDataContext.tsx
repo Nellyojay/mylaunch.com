@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import supabase from "../supabaseClient";
 
 type userData = {
-  user_id: string;
+  id: string;
   auth_id: string;
   full_name: string;
   created_at: string;
@@ -12,6 +12,7 @@ type userData = {
   followers: number;
   following: number;
   likes: number;
+  profile_image: string;
 }
 
 type UserDataContextType = {
@@ -55,7 +56,7 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
     const { data } = await supabase
       .from('users')
       .select('*')
-      .eq('user_id', selectedProfile)
+      .eq('id', selectedProfile)
       .single();
 
     if (data) {
@@ -71,6 +72,27 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
       setUserData(null);
     }
   }, [selectedProfile]);
+
+  useEffect(() => {
+    if (!selectedProfile) return;
+
+    const channel = supabase
+      .channel('public:users')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'users', filter: `id=eq.${selectedProfile}` },
+        (payload) => {
+          if (payload.new) {
+            setUserData(prev => prev && prev.id === payload.new.id ? payload.new as userData : prev);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    }
+  }, [selectedProfile, setSelectedProfile, fetchUserData]);
 
   return (
     <UserDataContext.Provider value={{ userData, loadingUserData, selectedProfile, setSelectedProfile }}>

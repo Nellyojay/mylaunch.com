@@ -7,6 +7,7 @@ import { useStartup } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
 import { Calendar, Briefcase } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
+import { getImageUrl } from '../constants/getImageUrl';
 
 export function UserProfile() {
   const navigate = useNavigate();
@@ -14,10 +15,10 @@ export function UserProfile() {
   const { userData, setSelectedProfile, selectedProfile } = useUserData();
   const { logout, user } = useAuth();
 
-  const profileId = selectedProfile || userData?.user_id || user?.id || null;
+  const profileId = selectedProfile || userData?.id || user?.id || null;
   const isOwner = Boolean(
     profileId &&
-    userData?.user_id === profileId &&
+    userData?.id === profileId &&
     userData?.auth_id === user?.id
   );
 
@@ -38,9 +39,17 @@ export function UserProfile() {
         <div className="bg-white rounded-2xl shadow-md p-8 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             {/* Profile Picture */}
-            <div className="w-32 h-32 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 shrink-0 flex items-center justify-center shadow-lg">
-              <span className="text-5xl font-bold text-white">{userData?.full_name.charAt(0) || 'U'}</span>
-            </div>
+            {userData?.profile_image ? (
+              <img
+                src={getImageUrl(userData.profile_image) || undefined}
+                alt="Profile Picture"
+                className="w-32 h-32 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-32 h-32 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 shrink-0 flex items-center justify-center shadow-lg">
+                <span className="text-5xl font-bold text-white">{userData?.full_name.charAt(0) || 'U'}</span>
+              </div>
+            )}
 
             {/* Profile Info */}
             <div className="flex-1 text-center md:text-left">

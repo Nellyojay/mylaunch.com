@@ -6,6 +6,7 @@ import { formatDate } from '../constants/dateFormat';
 import supabase from '../supabaseClient';
 import { useUserData } from '../contexts/userDataContext';
 import { Modal } from './Modal';
+import { getImageUrl } from '../constants/getImageUrl';
 
 interface PostCardProps {
   post: Post;
@@ -33,7 +34,7 @@ export function PostCard({ post, deletePost, isOwner }: PostCardProps) {
         .from('likes')
         .select('id')
         .eq('post_id', post.id)
-        .eq('user_id', userData.user_id)
+        .eq('user_id', userData.id)
         .maybeSingle()
 
       if (!likeErr) {
@@ -45,7 +46,7 @@ export function PostCard({ post, deletePost, isOwner }: PostCardProps) {
         .from('saves')
         .select('id')
         .eq('post_id', post.id)
-        .eq('user_id', userData.user_id)
+        .eq('user_id', userData.id)
         .maybeSingle();
 
       if (!saveErr) {
@@ -67,11 +68,11 @@ export function PostCard({ post, deletePost, isOwner }: PostCardProps) {
     setLikes(nextLikeCount);
 
     const { error: likeError } = nextLiked
-      ? await supabase.from('likes').insert([{ post_id: post.id, user_id: userData?.user_id }])
+      ? await supabase.from('likes').insert([{ post_id: post.id, user_id: userData?.id }])
       : await supabase
         .from('likes')
         .delete()
-        .match({ post_id: post.id, user_id: userData?.user_id });
+        .match({ post_id: post.id, user_id: userData?.id });
 
     if (likeError) {
       setLiked(liked);
@@ -94,11 +95,11 @@ export function PostCard({ post, deletePost, isOwner }: PostCardProps) {
     setSaves(nextSaveCount);
 
     const { error: saveError } = nextSaved
-      ? await supabase.from('saves').insert([{ post_id: post.id, user_id: userData?.user_id }])
+      ? await supabase.from('saves').insert([{ post_id: post.id, user_id: userData?.id }])
       : await supabase
         .from('saves')
         .delete()
-        .match({ post_id: post.id, user_id: userData?.user_id });
+        .match({ post_id: post.id, user_id: userData?.id });
 
     if (saveError) {
       setSaved(saved);
@@ -115,9 +116,9 @@ export function PostCard({ post, deletePost, isOwner }: PostCardProps) {
       {/* Post Image */}
       <div className="w-full aspect-square bg-gray-100">
         <img
-          src={post.image_url}
+          src={getImageUrl(post.image_url) || '/default-post-image.jpg'}
           alt="Post"
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover"
         />
       </div>
 

@@ -31,6 +31,7 @@ import { useStartup } from '../contexts/StartupProfileContext';
 import { formatDate } from '../constants/dateFormat';
 import { useUserData } from '../contexts/userDataContext';
 import { formatPhoneEA } from '../constants/phoneNumberormater';
+import { getImageUrl } from '../constants/getImageUrl';
 
 export type Post = {
   id: number;
@@ -47,9 +48,9 @@ export function StartupProfile() {
   const { userData, selectedProfile } = useUserData();
   const { startupData } = useStartup();
 
-  const profileId = selectedProfile || userData?.user_id || user?.id;
+  const profileId = selectedProfile || userData?.id || user?.id;
   const rawStartup = startupData?.find(s => s.user_id === profileId) || null;
-  const isOwner = Boolean(rawStartup && userData && user && rawStartup.user_id === userData.user_id && userData.auth_id === user.id);
+  const isOwner = Boolean(rawStartup && userData && user && rawStartup.user_id === userData.id && userData.auth_id === user.id);
 
   const activeStartup = rawStartup;
   const startup = activeStartup;
@@ -216,7 +217,7 @@ export function StartupProfile() {
         {/* Banner Image */}
         <div className="relative w-full h-48 md:h-64 bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600">
           <img
-            src={startup?.cover_image}
+            src={getImageUrl(startup?.cover_image) || '/default-startup-banner.jpg'}
             alt={`${startup?.name} banner`}
             className="w-full h-full object-cover"
           />
@@ -226,8 +227,16 @@ export function StartupProfile() {
         <div className="bg-white -mt-16 mx-4 rounded-3xl shadow-lg p-6 relative z-10">
           {/* Logo overlapping banner */}
           <div className="flex flex-col items-center md:flex-row md:items-start gap-4">
-            <div className="w-28 h-28 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 shrink-0 flex items-center justify-center shadow-xl -mt-14 border-4 border-white">
-              <span className="text-4xl font-bold text-white">{startup?.name[0]}</span>
+            <div className="w-28 h-28 rounded-full shadow-xl -mt-14 bg-gray-200 flex items-center justify-center border border-gray-300">
+              {startup?.display_image ? (
+                <img
+                  src={getImageUrl(startup.display_image) || '/default-startup-image.jpg'}
+                  alt=""
+                  className="object-cover w-28 h-28 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 shrink-0 flex items-center justify-center shadow-xl border-4 border-white"
+                />
+              ) : (
+                <span className="text-4xl font-bold text-gray-700">{startup?.name[0]}</span>
+              )}
             </div>
 
             <div className="flex-1 text-center md:text-left mt-2">

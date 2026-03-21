@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/authContext';
 import { useStartup } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
 import supabase from '../supabaseClient';
+import { FOLDER, imageHandlerService } from '../constants/imageHandler';
 
 export function AddPost() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export function AddPost() {
   const { startupData } = useStartup();
   const { userData, selectedProfile } = useUserData();
 
-  const profileId = selectedProfile || userData?.user_id || user?.id;
+  const profileId = selectedProfile || userData?.id || user?.id;
   const startup = startupData?.find((s) => s.user_id === profileId) || null;
 
   const [content, setContent] = useState('');
@@ -35,7 +36,7 @@ export function AddPost() {
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePostSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!startup) {
@@ -50,22 +51,39 @@ export function AddPost() {
     setError(null);
     setSaving(true);
 
-    const { error: insertError } = await supabase.from('startup_posts').insert([
-      {
-        startup_id: startup.id,
-        user_id: userData?.user_id || null,
-        content: content.trim(),
-        image_url: imagePreview || null,
-      },
-    ]);
-
-    setSaving(false);
+    const { data, error: insertError } = await supabase
+      .from('startup_posts')
+      .insert([
+        {
+          startup_id: startup.id,
+          user_id: userData?.id || null,
+          content: content.trim(),
+        },
+      ])
+      .select('id, image_url')
+      .single();
 
     if (insertError) {
       setError(insertError.message || 'Could not save post');
       return;
     }
+    console.log('Post created with ID:', data.id);
 
+    const insertImage = await imageHandlerService.uploadImage(
+      imagePreview as File | null,
+      FOLDER.STARTUP_POST,
+      userData?.id || '',
+      startup.id,
+      data.id
+    )
+
+    if (!insertImage) {
+      setError('Post saved but image upload failed');
+      console.log('Post created with ID:', data.id, 'but image upload failed', insertImage);
+      return;
+    }
+
+    setSaving(false);
     navigate('/startup');
   };
 
@@ -82,7 +100,7 @@ export function AddPost() {
           {!startup ? (
             <p className="text-red-600">No startup selected. Go back to the profile and choose a startup first.</p>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handlePostSubmit} className="space-y-4">
 
               <div>
                 <label htmlFor="post-content" className="block text-sm font-medium text-gray-700">Content</label>
@@ -106,7 +124,7 @@ export function AddPost() {
                 />
                 {imagePreview && (
                   <img
-                    src={imagePreview}
+                    src={imagePreview as string}
                     alt="Preview"
                     className="mt-3 w-full max-h-64 object-cover rounded-lg"
                   />
