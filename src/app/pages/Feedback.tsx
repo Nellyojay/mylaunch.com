@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navbar } from '../components/Navbar';
 import { Send, MessageSquare, Star, CheckCircle } from 'lucide-react';
 import { useWebData } from '../contexts/webData';
+import { useAuth } from '../contexts/authContext';
+import supabase from '../supabaseClient';
+import { useUserData } from '../contexts/userDataContext';
+import { formatDate } from '../constants/dateFormat';
 
 interface FeedbackMessage {
   id: number;
@@ -10,85 +14,93 @@ interface FeedbackMessage {
   rating: number;
   category: string;
   message: string;
-  timestamp: string;
+  created_at: string;
 }
-
-const mockFeedback: FeedbackMessage[] = [
-  {
-    id: 1,
-    author: 'Alex Rivera',
-    email: 'alex@example.com',
-    rating: 5,
-    category: 'Feature Request',
-    message: 'Love the platform! Would be great to have a messaging feature to connect directly with startup founders.',
-    timestamp: '2 hours ago'
-  },
-  {
-    id: 2,
-    author: 'Maya Patel',
-    email: 'maya@example.com',
-    rating: 4,
-    category: 'Bug Report',
-    message: 'The search function is sometimes slow on mobile. Otherwise, amazing platform for discovering new startups!',
-    timestamp: '1 day ago'
-  },
-  {
-    id: 3,
-    author: 'Jordan Kim',
-    email: 'jordan@example.com',
-    rating: 5,
-    category: 'General Feedback',
-    message: 'This platform has helped me discover so many amazing graduate-led businesses. Keep up the great work!',
-    timestamp: '2 days ago'
-  },
-  {
-    id: 4,
-    author: 'Sarah Johnson',
-    email: 'sarah@example.com',
-    rating: 5,
-    category: 'Feature Request',
-    message: 'Would love to see analytics for startup owners to track their profile views and engagement.',
-    timestamp: '3 days ago'
-  }
-];
 
 export function Feedback() {
   const { webName } = useWebData();
-  const [feedbackList, setFeedbackList] = useState<FeedbackMessage[]>(mockFeedback);
+  const { user } = useAuth();
+  const { userData } = useUserData();
+  const [loading, setLoading] = useState(false);
+  const [feedbackList, setFeedbackList] = useState<FeedbackMessage[]>([]);
   const [formData, setFormData] = useState({
-    author: '',
-    email: '',
+    author: userData?.full_name || '',
+    email: user?.email || '',
     rating: 5,
     category: 'General Feedback',
-    message: ''
+    message: '',
   });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      const { data, error } = await supabase
+        .from('feedback')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    const newFeedback: FeedbackMessage = {
-      id: Date.now(),
-      author: formData.author,
-      email: formData.email,
-      rating: formData.rating,
-      category: formData.category,
-      message: formData.message,
-      timestamp: 'Just now'
+      if (error) {
+        console.error('Error fetching feedback:', error);
+        return;
+      }
+      if (data) {
+        setFeedbackList(data);
+      }
     };
 
-    setFeedbackList([newFeedback, ...feedbackList]);
+    fetchFeedback();
+  }, [feedbackList.length]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (!user) return;
+
+    if (formData.message.length < 10) {
+      alert('Please enter a message with at least 10 characters.');
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('feedback')
+      .insert({
+        author: formData.author,
+        email: formData.email,
+        rating: formData.rating,
+        category: formData.category,
+        message: formData.message,
+        user_id: userData?.user_id || null
+      })
+      .select()
+      .single();
+
+    if (error) {
+      alert('There was an error submitting your feedback. Please try again later.');
+      setLoading(false);
+      return;
+    }
+
+    if (!data) {
+      alert('There was an error submitting your feedback. Please try again later.');
+      setLoading(false);
+      return;
+    }
+
+    setFeedbackList([data, ...feedbackList]);
     setFormData({
-      author: '',
-      email: '',
+      author: userData?.full_name || '',
+      email: user?.email || '',
       rating: 5,
       category: 'General Feedback',
       message: ''
     });
     setSubmitted(true);
+    setLoading(false);
 
-    // Reset success message after 5 seconds
-    setTimeout(() => setSubmitted(false), 5000);
+    // Reset success message after 6 seconds
+    setTimeout(() => setSubmitted(false), 6000);
   };
 
   const renderStars = (rating: number) => {
@@ -132,17 +144,6 @@ export function Feedback() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-md p-6 md:p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Submit Feedback</h2>
-
-              {/* Success Message */}
-              {submitted && (
-                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                  <CheckCircle className="w-6 h-6 text-green-600 shrink-0" />
-                  <div>
-                    <p className="font-semibold text-green-900">Thank you for your feedback!</p>
-                    <p className="text-sm text-green-700">Your message has been submitted successfully.</p>
-                  </div>
-                </div>
-              )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Name and Email */}
@@ -249,15 +250,32 @@ export function Feedback() {
                   </p>
                 </div>
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={formData.message.length < 10}
-                  className="w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-                >
-                  <Send className="w-5 h-5" />
-                  <span>Submit Feedback</span>
-                </button>
+                {/* Success Message */}
+                {submitted ? (
+                  <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <CheckCircle className="w-6 h-6 text-green-600 shrink-0" />
+                    <div>
+                      <p className="font-semibold text-green-900">Thank you for your feedback!</p>
+                      <p className="text-sm text-green-700">Your message has been submitted successfully.</p>
+                    </div>
+                  </div>
+                ) : loading ? (
+                  <p
+                    className="w-full bg-linear-to-r from-blue-400 to-indigo-200 text-white py-4 rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  >
+                    <span>Submitting...</span>
+                  </p>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={formData.message.length < 10}
+                    className="w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  >
+                    <Send className="w-5 h-5" />
+                    <span>Submit Feedback</span>
+                  </button>
+                )}
+
               </form>
             </div>
           </div>
@@ -276,7 +294,7 @@ export function Feedback() {
                   <p className="text-blue-100 text-sm mb-1">Average Rating</p>
                   <div className="flex items-center space-x-2">
                     <p className="text-3xl font-bold">
-                      {(feedbackList.reduce((acc, f) => acc + f.rating, 0) / feedbackList.length).toFixed(1)}
+                      {feedbackList.length > 0 ? (feedbackList.reduce((acc, f) => acc + f.rating, 0) / feedbackList.length).toFixed(1) : '0.0'}
                     </p>
                     <Star className="w-6 h-6 fill-yellow-400 text-yellow-400" />
                   </div>
@@ -316,36 +334,42 @@ export function Feedback() {
             <p className="text-gray-600">See what others are saying about {webName}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {feedbackList.map((feedback) => (
-              <div
-                key={feedback.id}
-                className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow"
-              >
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
-                      {feedback.author[0]}
+          {feedbackList.length === 0 ? (
+            <p className="text-gray-500 border border-gray-300 rounded-lg p-4 shadow-sm text-center">
+              No feedback available yet.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {feedbackList.map((feedback) => (
+                <div
+                  key={feedback.id}
+                  className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow"
+                >
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                        {feedback.author[0]}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900">{feedback.author}</p>
+                        <p className="text-xs text-gray-500">{formatDate(feedback.created_at, false)}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">{feedback.author}</p>
-                      <p className="text-xs text-gray-500">{feedback.timestamp}</p>
-                    </div>
+                    {renderStars(feedback.rating)}
                   </div>
-                  {renderStars(feedback.rating)}
+
+                  {/* Category Badge */}
+                  <span className="inline-block text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full mb-3">
+                    {feedback.category}
+                  </span>
+
+                  {/* Message */}
+                  <p className="text-gray-700 leading-relaxed">{feedback.message}</p>
                 </div>
-
-                {/* Category Badge */}
-                <span className="inline-block text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full mb-3">
-                  {feedback.category}
-                </span>
-
-                {/* Message */}
-                <p className="text-gray-700 leading-relaxed">{feedback.message}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>
