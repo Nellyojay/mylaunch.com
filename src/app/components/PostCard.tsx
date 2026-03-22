@@ -112,13 +112,13 @@ export function PostCard({ post, deletePost, isOwner }: PostCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+    <div className="bg-white border border-gray-300 rounded-2xl shadow-md overflow-hidden">
       {/* Post Image */}
-      <div className="w-full aspect-square bg-gray-100">
+      <div className="flex justify-center items-center aspect-square bg-gray-200">
         <img
           src={getImageUrl(post.image_url) || '/default-post-image.jpg'}
           alt="Post"
-          className="w-full h-full object-cover"
+          className="w-auto h-auto max-w-100% object-contain"
         />
       </div>
 

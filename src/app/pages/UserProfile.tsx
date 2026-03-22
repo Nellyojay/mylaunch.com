@@ -43,7 +43,7 @@ export function UserProfile() {
               <img
                 src={getImageUrl(userData.profile_image) || undefined}
                 alt="Profile Picture"
-                className="w-32 h-32 rounded-full object-cover"
+                className="max-w-50 max-h-50 rounded-lg object-contain bg-gray-200 shadow-xl"
               />
             ) : (
               <div className="w-32 h-32 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 shrink-0 flex items-center justify-center shadow-lg">

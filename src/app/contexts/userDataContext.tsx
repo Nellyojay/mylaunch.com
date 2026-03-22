@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import supabase from "../supabaseClient";
+import { useAuth } from "./authContext";
 
 type userData = {
   id: string;
@@ -20,12 +21,15 @@ type UserDataContextType = {
   selectedProfile: string | null;
   setSelectedProfile: any;
   loadingUserData: boolean;
+  currentUser: userData | null;
 };
 
 const UserDataContext = createContext<UserDataContextType | null>(null);
 
 export const UserDataProvider = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
   const [userData, setUserData] = useState<userData | null>(null);
+  const [currentUser, setCurrentUser] = useState<userData | null>(null);
   const [selectedProfile, setSelectedProfileState] = useState<string | null>(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('selectedProfile');
@@ -65,13 +69,35 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
     setLoadingUserData(false);
   }
 
+  const fetchCurrentUser = async () => {
+    if (!user) {
+      setCurrentUser(null);
+      return;
+    }
+
+    setLoadingUserData(true);
+
+    const { data } = await supabase
+      .from('users')
+      .select('*')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (data) {
+      setCurrentUser(data);
+    }
+    setLoadingUserData(false);
+  }
+
   useEffect(() => {
-    if (selectedProfile) {
+    if (selectedProfile && user) {
       fetchUserData();
+      fetchCurrentUser();
     } else {
       setUserData(null);
+      setCurrentUser(null);
     }
-  }, [selectedProfile]);
+  }, [selectedProfile, user]);
 
   useEffect(() => {
     if (!selectedProfile) return;
@@ -95,7 +121,7 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
   }, [selectedProfile, setSelectedProfile, fetchUserData]);
 
   return (
-    <UserDataContext.Provider value={{ userData, loadingUserData, selectedProfile, setSelectedProfile }}>
+    <UserDataContext.Provider value={{ userData, loadingUserData, selectedProfile, setSelectedProfile, currentUser }}>
       {children}
     </UserDataContext.Provider>
   );

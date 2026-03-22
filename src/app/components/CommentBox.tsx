@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Send, Trash2, Edit2 } from 'lucide-react';
 import { useAuth } from '../contexts/authContext';
 import { useUserData } from '../contexts/userDataContext';
@@ -30,11 +30,13 @@ interface CommentBoxProps {
 
 export function CommentBox({ startupId, comments, loading, setComments, showComments, setShowComments }: CommentBoxProps) {
   const { session } = useAuth();
-  const { userData } = useUserData();
+  const { currentUser } = useUserData();
   const [newComment, setNewComment] = useState('');
+  const [openRepliesCommentId, setOpenRepliesCommentId] = useState<{ [key: string]: boolean }>({});
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState('');
+  const REPLY_DEPTH_LIMIT = 3;
 
   useEffect(() => {
     if (!startupId) return;
@@ -94,26 +96,37 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
     return roots;
   };
 
+  // Toggle replies visibility for a specific comment
+  const toggleReplies = useCallback((commentId: number | string) => {
+    const key = String(commentId);
+    setOpenRepliesCommentId(prev => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  }, []);
+
   const renderComments = (nodes: CommentNode[], level = 0): React.ReactNode[] =>
     nodes.map((node) => (
       <div
         key={node.id}
-        className={`bg-white p-1 rounded-xl border border-gray-200 ${level > 0 ? ' border-l-4 border-l-blue-100' : ''}`}
+        className={`bg-white p-1 rounded-xl ${level > 0 ? 'ml-4' : 'border border-gray-200'}`}
       >
         <div className="flex space-x-3">
-          <div className="w-8 h-8 rounded-full bg-blue-100 shrink-0 flex items-center justify-center">
-            <span className="text-sm font-medium text-blue-600">
-              {(node.user_name || 'U')[0].toUpperCase()}
-            </span>
+          <div>
+            <div className="w-8 h-8 rounded-full bg-blue-100 shrink-0 flex items-center justify-center">
+              <span className="text-sm font-medium text-blue-600">
+                {(node.user_name || 'U')[0].toUpperCase()}
+              </span>
+            </div>
+            {openRepliesCommentId[String(node.id)] && (
+              <div className={`${level >= 0 && node.children.length > 0 ? 'border-l-2 border-b-2 border-gray-300 rounded-b-lg' : ''} h-full w-4 ml-4`} />
+            )}
           </div>
           <div className="flex-1">
             <div className="flex items-center justify-between gap-2">
               <div>
-                <span className="text-sm font-medium text-gray-500">{node.user_name || 'Unknown'}</span>
+                <span className="text-xs md:text-sm font-medium text-gray-500">{node.user_name || 'Unknown'}</span>
                 <span className="text-xs text-gray-500 ml-2">{new Date(node.created_at).toLocaleDateString()}</span>
-                {node.user_id === userData?.id && (
-                  <span className="text-xs bg-blue-100 text-blue-800 px-1 rounded-full ml-2">owner</span>
-                )}
               </div>
               <div className="flex gap-1">
                 {level < 2 && (
@@ -121,12 +134,12 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
                     type="button"
                     title="Reply to this comment"
                     onClick={() => setReplyToCommentId(node.id)}
-                    className="text-xs text-blue-500 hover:underline"
+                    className="text-xs text-blue-500 hover:underline pr-2"
                   >
                     Reply
                   </button>
                 )}
-                {isAuthenticated && (userData?.id || session.user.id) === node.user_id && (
+                {isAuthenticated && (currentUser?.id || session.user.id) === node.user_id && (
                   <>
                     <button
                       type="button"
@@ -181,16 +194,29 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
             ) : (
               <p className="text-gray-700">{node.content}</p>
             )}
+
+            {node.children.length > 0 && level < REPLY_DEPTH_LIMIT - 1 && (
+              <button
+                type="button"
+                onClick={() => {
+                  toggleReplies(node.id);
+                }}
+                className="text-xs text-blue-500 hover:underline mt-1"
+              >
+                {openRepliesCommentId[String(node.id)] ? 'Hide Replies' : `View Replies (${node.children.length})`}
+              </button>
+            )}
           </div>
         </div>
 
         {node.children.length > 0 && (
-          <div className="mt-1 space-y-3">
+          <div className={`mt-1 space-y-3 ${!openRepliesCommentId[String(node.id)] ? 'hidden' : ''}`} id={`comment-${node.id}`}>
             {renderComments(node.children, level + 1)}
           </div>
         )}
       </div>
     ));
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated || !newComment.trim()) return;
@@ -201,14 +227,16 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
       .insert([
         {
           content,
-          user_id: userData?.id || session.user.id,
+          user_id: currentUser?.id || session.user.id,
           startup_id: startupId,
           parent_id: replyToCommentId,
-          user_name: userData?.user_name || `User${(userData?.id || session.user.id).slice(0, 5)}`,
+          user_name: currentUser?.user_name || `User${(currentUser?.id.slice(0, 5) || session.user.id).slice(0, 5)}`,
         }
       ])
       .select('*')
       .single();
+
+    console.log('Insert comment result:', { data, error });
 
     if (error) {
       alert('Failed to post comment. Please try again.');
@@ -223,7 +251,7 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
   };
 
   const handleDeleteComment = async (commentId: number, commentUserId: string) => {
-    if (!isAuthenticated || (userData?.id || session.user.id) !== commentUserId) {
+    if (!isAuthenticated || (currentUser?.id || session.user.id) !== commentUserId) {
       alert('You can only delete your own comments.');
       return;
     }
@@ -244,7 +272,7 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
   };
 
   const beginEdit = (comment: Comment) => {
-    if (!isAuthenticated || (userData?.id || session.user.id) !== comment.user_id) {
+    if (!isAuthenticated || (currentUser?.id || session.user.id) !== comment.user_id) {
       alert('You can only edit your own comments.');
       return;
     }
@@ -310,6 +338,7 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           disabled={!session}
+          autoFocus={replyToCommentId !== null}
           placeholder={session ? 'Add a comment...' : 'Log in to comment'}
           className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />

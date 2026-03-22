@@ -21,7 +21,6 @@ import {
   Edit,
   Plus,
   Trash2,
-  Ellipsis,
   AlertTriangle
 } from 'lucide-react';
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
@@ -45,7 +44,7 @@ export type Post = {
 
 export function StartupProfile() {
   const { session, user } = useAuth();
-  const { userData, selectedProfile } = useUserData();
+  const { userData, selectedProfile, currentUser } = useUserData();
   const { startupData } = useStartup();
 
   const profileId = selectedProfile || userData?.id || user?.id;
@@ -122,11 +121,16 @@ export function StartupProfile() {
       isMounted = false;
       supabase.removeChannel(postsChannel);
     };
-  }, [activeStartup?.id]);
+  }, [activeStartup?.id, following, session, currentUser]);
 
   useEffect(() => {
     setLoading(true);
     const fetchComments = async () => {
+      if (!startup?.id) {
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('opinions')
         .select('id, content, created_at, user_id, startup_id, parent_id, user_name')
@@ -195,6 +199,57 @@ export function StartupProfile() {
       window.location.href = '/feed';
     }
   };
+
+  const handleFollow = async () => {
+    if (!session) {
+      alert("Please log in to follow startups.");
+      return;
+    }
+
+    setFollowing(!following);
+
+    const { error } = !following
+      ? await supabase.from('follows').insert([{ startup_id: startup?.id, user_id: currentUser?.id }]).select('id').single()
+      : await supabase.from('follows').delete().match({ startup_id: startup?.id, user_id: currentUser?.id }).select('id').single();
+
+    if (error) {
+      console.error(error.message);
+      alert("Failed to update follow status. Please try again.");
+      setFollowing(following);
+    }
+
+  }
+
+  useEffect(() => {
+    if (!session || !currentUser || !startup) {
+      setFollowing(false);
+      setLiked(false);
+      return;
+    }
+
+    const reserveFollowingState = async () => {
+      if (!session) {
+        setFollowing(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('follows')
+        .select('id')
+        .eq('startup_id', startup?.id)
+        .eq('user_id', currentUser?.id)
+
+      if (error) {
+        console.error('Failed to fetch follow status', error);
+        setFollowing(false);
+      }
+
+      setFollowing(Boolean(data && data.length > 0));
+    }
+
+    reserveFollowingState();
+  }, [session, currentUser, startup]);
+
   if (!startupData || !activeStartup) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -242,14 +297,8 @@ export function StartupProfile() {
             <div className="flex-1 text-center md:text-left mt-2">
 
               {/* Startup Name */}
-              <h1 className="flex justify-between items-center text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
                 {startup?.name}
-                <span>
-                  <Ellipsis
-                    className="w-6 h-6 text-gray-500 hover:text-gray-700 cursor-pointer"
-                    onClick={() => { }}
-                  />
-                </span>
               </h1>
 
               {/* Founder Name */}
@@ -268,7 +317,7 @@ export function StartupProfile() {
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-sm text-gray-600 mb-3">
                 <div className="flex items-center space-x-1">
                   <Phone className="w-4 h-4" />
-                  <a href={`tel:${startup?.phone}`}>+{formatPhoneEA(startup?.phone)}</a>
+                  <a href={`tel:${startup?.phone}`} className='text-blue-600'>+{formatPhoneEA(startup?.phone)}</a>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Globe className="w-4 h-4" />
@@ -290,7 +339,7 @@ export function StartupProfile() {
                   className='text-gray-600 md:hover:text-blue-600 transition-colors flex items-center gap-1'
                 >
                   Opinions
-                  <span><strong>{comments.length}</strong></span>
+                  <span><strong>{comments.filter(c => c.parent_id === null).length}</strong></span>
                   <BsChevronDown className='w-3 h-3' />
                 </button>
               </div>
@@ -311,7 +360,7 @@ export function StartupProfile() {
 
                 <button
                   onClick={() => setOpenDeleteModal(true)}
-                  className="flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium transition-all bg-red-600 text-white hover:bg-red-700"
+                  className="flex items-center justify-center gap-1 px-4 py-3 rounded-xl font-medium transition-all bg-red-600 text-white hover:bg-red-700"
                 >
                   <Trash2 className="w-5 h-5" />
                   <span>Delete startup</span>
@@ -319,7 +368,7 @@ export function StartupProfile() {
               </>
             ) : (
               <button
-                onClick={() => setFollowing(!following)}
+                onClick={() => handleFollow()}
                 disabled={!session}
                 className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium transition-all ${following
                   ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
