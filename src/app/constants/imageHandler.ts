@@ -1,3 +1,4 @@
+import imageCompression from "browser-image-compression";
 import supabase from "../supabaseClient";
 
 export const FOLDER = {
@@ -26,6 +27,24 @@ const TABLE_MAP = {
     table: "startup_posts",
     column: "image_url",
   },
+};
+
+const compressImage = async (file: File | Blob, maxFileSize: number) => {
+
+  const options = {
+    maxSizeMB: maxFileSize,
+    maxWidthOrHeight: 1200,
+    useWebWorker: true,
+  };
+
+  try {
+    if (file.size * 0.000001 < maxFileSize) return file
+
+    const compressedFile = await imageCompression(file as any, options);
+    return compressedFile;
+  } catch (error) {
+    return file;
+  }
 };
 
 export const imageHandlerService = {
@@ -117,11 +136,34 @@ export const imageHandlerService = {
           break;
       }
 
+      /* COMPRESS IMAGE */
+
+      let maxFileSize = null
+
+      switch (folder) {
+        case FOLDER.USER_PROFILE:
+          maxFileSize = 0.5; // 0.5MB for user profile images
+          break;
+        case FOLDER.STARTUP_PROFILE:
+          maxFileSize = 0.5; // 0.5MB for startup profile images
+          break;
+        case FOLDER.STARTUP_BANNER:
+          maxFileSize = 1; // 1MB for profile and banner images
+          break;
+        case FOLDER.STARTUP_POST:
+          maxFileSize = 2; // 2MB for post images
+          break;
+        default:
+          maxFileSize = 1; // Default to 1MB if folder type is unknown
+      }
+
+      const compressedUploadImage = await compressImage(uploadData, maxFileSize);
+
       /* UPLOAD IMAGE */
 
       const { error: uploadError } = await supabase.storage
         .from("images")
-        .upload(filePath, uploadData, {
+        .upload(filePath, compressedUploadImage, {
           contentType: uploadData.type,
           upsert: true,
         });
@@ -171,4 +213,4 @@ export const getImageUrl = (filePath: string | undefined | null): string | null 
     .getPublicUrl(filePath);
 
   return data.publicUrl || null;
-}
+};
