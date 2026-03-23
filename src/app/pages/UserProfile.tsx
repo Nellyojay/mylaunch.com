@@ -7,7 +7,7 @@ import { useStartup } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
 import { Calendar, Briefcase } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
-import { getImageUrl } from '../constants/getImageUrl';
+import { getImageUrl } from '../constants/imageHandler';
 
 export function UserProfile() {
   const navigate = useNavigate();

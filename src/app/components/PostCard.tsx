@@ -6,7 +6,7 @@ import { formatDate } from '../constants/dateFormat';
 import supabase from '../supabaseClient';
 import { useUserData } from '../contexts/userDataContext';
 import { Modal } from './Modal';
-import { getImageUrl } from '../constants/getImageUrl';
+import { getImageUrl } from '../constants/imageHandler';
 
 interface PostCardProps {
   post: Post;

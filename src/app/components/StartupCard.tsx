@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import type { StartupData } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
-import { getImageUrl } from '../constants/getImageUrl';
+import { getImageUrl } from '../constants/imageHandler';
 
 export interface Startup {
   id: number;

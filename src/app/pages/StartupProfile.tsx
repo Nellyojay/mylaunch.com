@@ -30,7 +30,7 @@ import { useStartup } from '../contexts/StartupProfileContext';
 import { formatDate } from '../constants/dateFormat';
 import { useUserData } from '../contexts/userDataContext';
 import { formatPhoneEA } from '../constants/phoneNumberormater';
-import { getImageUrl } from '../constants/getImageUrl';
+import { getImageUrl } from '../constants/imageHandler';
 
 export type Post = {
   id: number;
