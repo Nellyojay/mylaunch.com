@@ -1,5 +1,4 @@
 import { Link } from 'react-router';
-import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { useWebData } from '../contexts/webData';
 
 export function Footer() {
@@ -17,7 +16,7 @@ export function Footer() {
               <span className="text-xl font-semibold text-gray-900">{webName}</span>
             </div>
             <p className="text-gray-600 max-w-md">
-              Empowering young entrepreneurs to showcase their startups and connect with supporters worldwide.
+              Empowering entrepreneurs to showcase their startups and businesses and connect with supporters worldwide.
             </p>
           </div>
 
@@ -26,19 +25,9 @@ export function Footer() {
             <h3 className="font-semibold text-gray-900 mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/#about" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  About
-                </Link>
-              </li>
-              <li>
                 <Link to="/feed" className="text-gray-600 hover:text-blue-600 transition-colors">
                   Explore
                 </Link>
-              </li>
-              <li>
-                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  Contact
-                </a>
               </li>
               <li>
                 <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
@@ -48,24 +37,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Social Links */}
-          <div>
-            <h3 className="font-semibold text-gray-900 mb-4">Follow Us</h3>
-            <div className="flex space-x-4">
-              <a title='Facebook' href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a title='Twitter' href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a title='Instagram' href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a title='LinkedIn' href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
-                <Linkedin className="w-5 h-5" />
-              </a>
-            </div>
-          </div>
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-200 text-center text-gray-600">

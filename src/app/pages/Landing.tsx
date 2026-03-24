@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
-import { Rocket, Users, TrendingUp } from 'lucide-react';
+import { Rocket, Users, TrendingUp, CheckCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import supabase from '../supabaseClient';
 import { useAuth } from '../contexts/authContext';
@@ -35,11 +35,11 @@ export function Landing() {
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Discover Startups by
-            <span className="block bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mt-2 pb-2">Young Graduates</span>
+            Launch. Showcase.
+            <span className="block bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mt-2 pb-2">Grow your business.</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10">
-            Support and discover businesses created by young entrepreneurs. Connect with the next generation of innovators.
+            {webName} is a platform where entrepreneurs, startups and business owners showcase their ideas, products and growing to the world.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
@@ -52,7 +52,7 @@ export function Landing() {
               to="/feed"
               className="bg-white text-blue-600 border-2 border-blue-600 px-8 py-4 rounded-full hover:bg-blue-50 transition-colors text-lg font-medium shadow-md hover:shadow-lg"
             >
-              Explore Startups
+              Explore Businesses
             </Link>
           </div>
         </div>
@@ -66,7 +66,7 @@ export function Landing() {
               Why {webName}?
             </h2>
             <p className="text-lg text-gray-600">
-              The perfect platform to showcase and discover youth startups
+              The perfect platform to showcase and discover businesses.
             </p>
           </div>
 
@@ -75,9 +75,9 @@ export function Landing() {
               <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Rocket className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Launch Your Startup</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Launching a business?</h3>
               <p className="text-gray-600">
-                Share your business with the world and attract customers and supporters
+                Get discovered by potential customers and investors and grow your startup business strategically with customer's or investor's opinions as a building bricks.
               </p>
             </div>
 
@@ -85,9 +85,9 @@ export function Landing() {
               <div className="w-16 h-16 bg-linear-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Connect & Engage</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Have an established business?</h3>
               <p className="text-gray-600">
-                Build a community around your brand with likes, comments, and direct support
+                Share your updates and build a community around your brand with comments, and direct support from follow investors.
               </p>
             </div>
 
@@ -97,7 +97,7 @@ export function Landing() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Grow Your Business</h3>
               <p className="text-gray-600">
-                Get discovered by potential customers and grow your startup organically
+                Connect with audiences and gain visibility. Allow reactions to your products and services from the business posts to help you grow accordingly
               </p>
             </div>
           </div>
@@ -112,7 +112,7 @@ export function Landing() {
               How It Works
             </h2>
             <p className="text-lg text-gray-600">
-              Get started in three simple steps
+              Get started in three simple steps.
             </p>
           </div>
 
@@ -123,7 +123,7 @@ export function Landing() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Create an Account</h3>
               <p className="text-gray-600">
-                Sign up for free and set up your profile in minutes
+                Sign up for free and set up your profile in minutes.
               </p>
             </div>
 
@@ -133,7 +133,10 @@ export function Landing() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Post Your Startup</h3>
               <p className="text-gray-600">
-                Share your business story, products, and services with beautiful images
+                Share your business story, products, and services with beautiful images.
+              </p>
+              <p className='text-gray-600'>
+                <strong>One user can have more than one business page.</strong>
               </p>
             </div>
 
@@ -150,14 +153,97 @@ export function Landing() {
         </div>
       </section>
 
+      <section id='for-who' className='py-20'>
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Who It Is For
+          </h2>
+        </div>
+
+        <div className='md:grid grid-cols-4'>
+          <div className="text-center border border-gray-300 p-2 m-2 rounded-xl shadow-md md:hover:shadow-xl">
+            <div className="w-16 h-16 bg-linear-to-br from-green-600 to-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
+              1
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Entrepreneurs</h3>
+            <p className="text-gray-600">
+              People building new startups and ideas
+            </p>
+          </div>
+          <div className="text-center border border-gray-300 p-2 m-2 rounded-xl shadow-md md:hover:shadow-xl">
+            <div className="w-16 h-16 bg-linear-to-br from-green-600 to-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
+              2
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Small business owners</h3>
+            <p className="text-gray-600">
+              Businesses looking for visibility and growth
+            </p>
+          </div>
+          <div className="text-center border border-gray-300 p-2 m-2 rounded-xl shadow-md md:hover:shadow-xl">
+            <div className="w-16 h-16 bg-linear-to-br from-green-600 to-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
+              3
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Innovators and Creators</h3>
+            <p className="text-gray-600">
+              Individuals launching products, services or projects
+            </p>
+          </div>
+          <div className="text-center border border-gray-300 p-2 m-2 rounded-xl shadow-md md:hover:shadow-xl">
+            <div className="w-16 h-16 bg-linear-to-br from-green-600 to-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
+              4
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Supporters and Customers.</h3>
+            <p className="text-gray-600">
+              Poeple who want to discover and support new business ventures
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id='what-you-can-do' className='pb-10'>
+        <div className="bg-white rounded-2xl shadow-md p-6 mx-4">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">What You Can Do In {webName}</h3>
+          <ul className="space-y-3 text-sm text-gray-700">
+            <li className="flex items-start space-x-2">
+              <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+              <span>Create a profile for your business or startup and introduce your brand to the community.</span>
+            </li>
+            <li className="flex items-start space-x-2">
+              <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+              <span>Post updates, milestones and product developments.</span>
+            </li>
+            <li className="flex items-start space-x-2">
+              <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+              <span>Gain followers and people interested in your business journey.</span>
+            </li>
+            <li className="flex items-start space-x-2">
+              <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+              <span>Reach potential customers, partners and supporters.</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section id='why-it-was-started' className='py-20'>
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            ~ Why <span className='text-blue-600'>{webName}</span> Exists ~
+          </h2>
+        </div>
+
+        <div className='border border-gray-400 my-10 mx-20 p-8 rounded-xl shadow-md'>
+          <p className='font-semibold'>Many entrepreneurs and small businesses struggle to get visibilty on their early stages. {webName} was created to give every idea and every business mutual visibility. It is a space where innovations, ambition, and entrepreneurship can be shared with the world.</p>
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className="py-20 bg-linear-to-br from-blue-600 via-indigo-600 to-purple-600">
+      <section className="py-20 bg-blue-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Launch Your Startup?
+            Ready to Showcase Your Business?
           </h2>
           <p className="text-xl text-blue-100 mb-10">
-            Join hundreds of young entrepreneurs already showcasing their businesses
+            Join hundreds of entrepreneurs already showcasing their businesses and ideas
           </p>
           <Link
             to={session ? "/create" : "/signup"}
