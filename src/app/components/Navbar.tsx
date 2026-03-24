@@ -1,6 +1,6 @@
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Search, User } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useWebData } from '../contexts/webData';
 import { useAuth } from '../contexts/authContext';
 import { useUserData } from '../contexts/userDataContext';
@@ -12,13 +12,23 @@ interface NavbarProps {
 }
 
 export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
+  const navigate = useNavigate();
   const { webName } = useWebData();
   const { session } = useAuth();
-  const { setSelectedProfile, currentUser } = useUserData();
+  const { setSelectedProfile, currentUser, agreeToTC } = useUserData();
   const [searchValue, setSearchValue] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hideLogoName, setHideLogoName] = useState(false);
 
+  const check = () => {
+    if (currentUser?.TC_agreed === false) {
+      navigate("/TC_agree")
+    }
+  }
+
+  useEffect(() => {
+    check();
+  }, [agreeToTC])
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

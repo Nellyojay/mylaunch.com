@@ -11,11 +11,16 @@ import { Signup } from "./pages/auth/signup";
 import { EditStartup } from "./pages/EditStartup";
 import { EditProfile } from "./pages/EditProfile";
 import { Feedback } from "./pages/Feedback";
+import TC_agree from "./pages/TC_agree";
 
 export const router = createHashRouter([
   {
     path: "/",
     Component: Landing,
+  },
+  {
+    path: "/TC_agree",
+    Component: TC_agree,
   },
   {
     path: "/feed",
