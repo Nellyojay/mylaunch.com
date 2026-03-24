@@ -6,6 +6,7 @@ import { useUserData } from '../contexts/userDataContext';
 import supabase from '../supabaseClient';
 import { Upload } from 'lucide-react';
 import { FOLDER, imageHandlerService } from '../constants/imageHandler';
+import SuccessMessage from '../components/SuccessMessage';
 
 export function EditProfile() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export function EditProfile() {
   const [userName, setUserName] = useState(userData?.user_name || '');
   const [bio, setBio] = useState(userData?.bio || '');
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -86,7 +88,11 @@ export function EditProfile() {
     }
 
     setSelectedProfile(profileId);
-    navigate('/profile');
+    setSubmitted(true);
+    setTimeout(() => {
+      setSubmitted(false);
+      navigate('/profile');
+    }, 4000);
   };
 
   return (
@@ -172,22 +178,30 @@ export function EditProfile() {
 
             {error && <p className="text-sm text-red-600">{error}</p>}
 
-            <div className="flex items-center gap-3">
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300"
-              >
-                {loading ? 'Saving...' : 'Save Changes'}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/profile')}
-                className="px-5 py-2 border rounded-lg border-gray-300 hover:bg-gray-100"
-              >
-                Cancel
-              </button>
-            </div>
+            {submitted ? (
+              <SuccessMessage
+                header='Profile Updated Successfully'
+                message={null}
+                error={!submitted}
+              />
+            ) : (
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300"
+                >
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/profile')}
+                  className="px-5 py-2 border rounded-lg border-gray-300 hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
           </form>
         </div>
       </main>

@@ -1,15 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Navbar } from '../components/Navbar';
-import { Upload, X } from 'lucide-react';
 import { useWebData } from '../contexts/webData';
 import supabase from '../supabaseClient';
 import { useUserData } from '../contexts/userDataContext';
+import { useAuth } from '../contexts/authContext';
+import SuccessMessage from '../components/SuccessMessage';
 
 export function CreateStartup() {
   const navigate = useNavigate();
-  const { userData } = useUserData();
+  const { user } = useAuth();
+  const { userData, currentUser, setSelectedProfile } = useUserData();
   const { webName } = useWebData();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     founder: userData?.full_name,
@@ -21,13 +26,20 @@ export function CreateStartup() {
     category: 'Fashion',
     productOrSevices: ''
   });
-  const [images, setImages] = useState<string[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // In a real app, this would submit to a backend
+    if (!user) return;
 
-    const { error } = await supabase
+    setLoading(true);
+
+    const productsAndServices = formData.productOrSevices
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    const { data, error } = await supabase
       .from('startups')
       .insert({
         user_id: userData?.id,
@@ -39,29 +51,24 @@ export function CreateStartup() {
         phone: formData.phone ?? "",
         email: formData.email ?? "",
         address: formData.address ?? "",
-        products_and_services: [formData.productOrSevices ?? ""]
+        products_and_services: productsAndServices
       })
-      .select();
+      .select()
+      .single();
 
     if (error) {
+      setLoading(false);
+      setError(true)
       return;
     } else {
-      alert('Startup published successfully!');
-      navigate('/feed');
+      setLoading(false)
+      setSubmitted(true)
+      setTimeout(() => {
+        setSubmitted(false)
+        navigate(`/startup/${data.id}`)
+        setSelectedProfile(currentUser?.id)
+      }, 4000);
     }
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      // In a real app, this would upload files
-      const newImages = Array.from(files).map(file => URL.createObjectURL(file));
-      setImages([...images, ...newImages]);
-    }
-  };
-
-  const removeImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
   };
 
   return (
@@ -159,49 +166,8 @@ export function CreateStartup() {
               />
             </div>
 
-            {/* Image Upload */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Product/Service Images
-              </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-500 transition-colors">
-                <input
-                  type="file"
-                  id="images"
-                  multiple
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                <label htmlFor="images" className="cursor-pointer">
-                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 mb-2">Click to upload images</p>
-                  <p className="text-sm text-gray-500">PNG, JPG up to 10MB</p>
-                </label>
-              </div>
-
-              {/* Image Preview */}
-              {images.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
-                  {images.map((img, index) => (
-                    <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100">
-                      <img src={img} alt={`Upload ${index + 1}`} className="w-full h-full object-cover" />
-                      <button
-                        title='button'
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
             {/* Contact Information */}
-            <div className="border-t border-gray-200 pt-6">
+            <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
 
               <div className="space-y-4">
@@ -244,28 +210,39 @@ export function CreateStartup() {
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="City or State"
+                    placeholder="e.g. Aqua Complex level 4 Room 75"
                   />
                 </div>
               </div>
             </div>
 
             {/* Submit Button */}
-            <div className="flex items-center justify-end space-x-4 pt-6">
-              <button
-                type="button"
-                onClick={() => navigate('/profile')}
-                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg"
-              >
-                Publish Startup
-              </button>
-            </div>
+
+            {submitted ? (
+              <SuccessMessage
+                header={error ? 'Something went wrong, please try again.' : 'Business Published Successfully.'}
+                message={null}
+                error={error}
+              />
+            ) : (
+              <div className="flex items-center justify-end space-x-4 pt-6">
+                <button
+                  type="button"
+                  onClick={() => navigate('/profile')}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-3 bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg"
+                >
+                  {loading ? 'Publishing Business...' : 'Publish Business'}
+                </button>
+              </div>
+            )}
+
           </form>
         </div>
       </main>

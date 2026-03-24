@@ -7,6 +7,7 @@ import { useStartup } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
 import { Upload, X } from 'lucide-react';
 import { FOLDER, imageHandlerService } from '../constants/imageHandler';
+import SuccessMessage from '../components/SuccessMessage';
 
 type FormData = {
   name: string;
@@ -50,6 +51,8 @@ export function EditStartup() {
     x_username: '',
     products_and_services: '' // comma-separated input for UI
   });
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const dismissSelectedDisplayImage = () => setFormData({ ...formData, display_image: null });
   const dismissSelectedCoverImage = () => setFormData({ ...formData, cover_image: null });
@@ -84,6 +87,8 @@ export function EditStartup() {
       return;
     }
 
+    setLoading(true);
+
     const productsAndServices = formData.products_and_services
       .split(',')
       .map((item) => item.trim())
@@ -108,7 +113,6 @@ export function EditStartup() {
       .eq('id', startup.id);
 
     if (error) {
-      console.error('Failed to update startup', error);
       alert('Error updating startup. Please try again.');
     }
 
@@ -123,10 +127,10 @@ export function EditStartup() {
 
       if (!updatedDisplayImage) {
         alert('Startup updated but failed to upload display image');
+        setLoading(false);
         return;
       }
 
-      console.log('Display image uploaded successfully!', updatedDisplayImage);
     }
 
     if (formData.cover_image) {
@@ -140,14 +144,21 @@ export function EditStartup() {
 
       if (!updatedCoverImage) {
         alert('Startup updated but failed to upload cover image');
+        setLoading(false);
         return;
       }
 
       console.log('Cover image uploaded successfully!', updatedCoverImage);
     }
 
-    alert('Startup updated successfully!');
-    navigate('/startup');
+    setLoading(false);
+    setSubmitted(true);
+
+    setTimeout(() => {
+      setSubmitted(false);
+      navigate('/startup');
+    }, 4000);
+
   };
 
   if (!startup) {
@@ -366,22 +377,31 @@ export function EditStartup() {
               </label>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => navigate('/startup')}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={!session || !formData.name || !formData.founder_name}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Update Startup
-              </button>
-            </div>
+            {submitted ? (
+              <SuccessMessage
+                header='Submitted successfully'
+                message={null}
+                error={false}
+              />
+            ) : (
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => navigate('/startup')}
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={!session || !formData.name || !formData.founder_name || loading}
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Submitting...' : 'Update Business Profile'}
+                </button>
+              </div>
+            )}
+
           </form>
         </div>
       </main >

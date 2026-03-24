@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import supabase from "../supabaseClient";
+import { useUserData } from "./userDataContext";
 
 export type StartupData = {
   id: string;
@@ -28,11 +29,13 @@ export type StartupData = {
 type StartupContextType = {
   startupData: StartupData[] | null;
   startupLoading: boolean;
+  getStartupData: () => void;
 };
 
 const StartupContext = createContext<StartupContextType | null>(null);
 
 export const StartupProvider = ({ children }: { children: React.ReactNode }) => {
+  const { currentUser } = useUserData();
   const [startupLoading, setStartupLoading] = useState(false);
   const [startupData, setStartupData] = useState<StartupData[] | null>([]);
 
@@ -50,7 +53,7 @@ export const StartupProvider = ({ children }: { children: React.ReactNode }) => 
     }
     setStartupLoading(false);
 
-  }, [])
+  }, [currentUser])
 
   useEffect(() => {
     getStartupData();
@@ -87,10 +90,10 @@ export const StartupProvider = ({ children }: { children: React.ReactNode }) => 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [getStartupData]);
+  }, [getStartupData, currentUser]);
 
   return (
-    <StartupContext.Provider value={{ startupData, startupLoading }}>
+    <StartupContext.Provider value={{ startupData, startupLoading, getStartupData }}>
       {children}
     </StartupContext.Provider>
   );

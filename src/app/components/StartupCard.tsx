@@ -26,12 +26,11 @@ export function StartupCard({ startup, userId }: StartupCardProps) {
     <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 duration-300">
       {/* Startup Image */}
       <Link
-        to="/startup"
-        onClick={() => setSelectedProfile(userId)}
+        to={`/startup/${startup.id}`}
       >
         <div className="aspect-square overflow-hidden bg-gray-100">
           <img
-            src={getImageUrl(startup.display_image) || '/default-startup-image.jpg'}
+            src={getImageUrl(startup.display_image) || 'https://user-images.githubusercontent.com/237508/90246627-ecbda400-de2c-11ea-8bfb-b4307bfb975d.png'}
             alt={startup.name}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
           />

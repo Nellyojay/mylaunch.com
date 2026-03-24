@@ -26,7 +26,7 @@ export const router = createHashRouter([
     Component: Feedback,
   },
   {
-    path: "/startup",
+    path: "/startup/:id",
     Component: StartupProfile,
   },
   {

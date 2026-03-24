@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { PostCard } from '../components/PostCard';
 import { Modal } from '../components/Modal';
@@ -43,12 +43,13 @@ export type Post = {
 }
 
 export function StartupProfile() {
+  const navigate = useNavigate();
   const { session, user } = useAuth();
-  const { userData, selectedProfile, currentUser } = useUserData();
+  const { userData, currentUser } = useUserData();
   const { startupData } = useStartup();
+  const { id } = useParams();
 
-  const profileId = selectedProfile || userData?.id || user?.id;
-  const rawStartup = startupData?.find(s => s.user_id === profileId) || null;
+  const rawStartup = startupData?.find(s => s.id === id) || null;
   const isOwner = Boolean(rawStartup && userData && user && rawStartup.user_id === userData.id && userData.auth_id === user.id);
 
   const activeStartup = rawStartup;
@@ -196,7 +197,7 @@ export function StartupProfile() {
       alert("Failed to delete startup. Please try again.");
     } else {
       alert("Startup deleted successfully.");
-      window.location.href = '/feed';
+      navigate(-1)
     }
   };
 
@@ -272,7 +273,7 @@ export function StartupProfile() {
         {/* Banner Image */}
         <div className="relative w-full h-48 md:h-64 bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600">
           <img
-            src={getImageUrl(startup?.cover_image) || '/default-startup-banner.jpg'}
+            src={getImageUrl(startup?.cover_image) || 'https://user-images.githubusercontent.com/237508/90246627-ecbda400-de2c-11ea-8bfb-b4307bfb975d.png'}
             alt={`${startup?.name} banner`}
             className="w-full h-full object-cover"
           />
@@ -285,7 +286,7 @@ export function StartupProfile() {
             <div className="w-28 h-28 rounded-full shadow-xl -mt-14 bg-gray-200 flex items-center justify-center border border-gray-300">
               {startup?.display_image ? (
                 <img
-                  src={getImageUrl(startup.display_image) || '/default-startup-image.jpg'}
+                  src={getImageUrl(startup.display_image) || 'https://user-images.githubusercontent.com/237508/90246627-ecbda400-de2c-11ea-8bfb-b4307bfb975d.png'}
                   alt=""
                   className="object-cover w-28 h-28 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 shrink-0 flex items-center justify-center shadow-xl border-4 border-white"
                 />
@@ -334,14 +335,15 @@ export function StartupProfile() {
 
               <div className='flex gap-6'>
                 <p className='text-gray-600'>Followers <strong>{startup?.followers}</strong></p>
-                <button
+                <Link
+                  to='#opinions'
                   onClick={() => setShowComments(!showComments)}
                   className='text-gray-600 md:hover:text-blue-600 transition-colors flex items-center gap-1'
                 >
                   Opinions
                   <span><strong>{comments.filter(c => c.parent_id === null).length}</strong></span>
                   <BsChevronDown className='w-3 h-3' />
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -410,14 +412,17 @@ export function StartupProfile() {
           </div>
 
           {showComments ? (
-            <CommentBox
-              startupId={startup?.id ?? ''}
-              loading={loading}
-              comments={comments}
-              setComments={setComments}
-              showComments={showComments}
-              setShowComments={setShowComments}
-            />
+            <div id='opinions'>
+              <CommentBox
+                startupId={startup?.id ?? ''}
+                loading={loading}
+                comments={comments}
+                setComments={setComments}
+                showComments={showComments}
+                setShowComments={setShowComments}
+              />
+            </div>
+
           ) : (
             <>
               {/* View More Button */}

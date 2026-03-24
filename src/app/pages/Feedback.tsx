@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/authContext';
 import supabase from '../supabaseClient';
 import { useUserData } from '../contexts/userDataContext';
 import { formatDate } from '../constants/dateFormat';
+import SuccessMessage from '../components/SuccessMessage';
 
 interface FeedbackMessage {
   id: number;
@@ -252,13 +253,11 @@ export function Feedback() {
 
                 {/* Success Message */}
                 {submitted ? (
-                  <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <CheckCircle className="w-6 h-6 text-green-600 shrink-0" />
-                    <div>
-                      <p className="font-semibold text-green-900">Thank you for your feedback!</p>
-                      <p className="text-sm text-green-700">Your message has been submitted successfully.</p>
-                    </div>
-                  </div>
+                  <SuccessMessage
+                    header='Thank you for your feedback.'
+                    message='Your message has been submitted successfully.'
+                    error={!submitted}
+                  />
                 ) : loading ? (
                   <p
                     className="w-full bg-linear-to-r from-blue-400 to-indigo-200 text-white py-4 rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
