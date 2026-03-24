@@ -1,1 +1,55 @@
 @import "tailwindcss";
+
+/* Launch from top */
+.launch-top {
+  animation: launchTop 0.5s ease-out forwards;
+}
+
+@keyframes launchTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-80px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Fade from left */
+.fade-left {
+  animation: fadeLeft 0.8s ease-out forwards;
+}
+
+@keyframes fadeLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+/* Letter pop animation */
+.letter-pop {
+  display: inline-block;
+  animation: letterPop 1s ease-out forwards;
+}
+
+@keyframes letterPop {
+  0% {
+    opacity: 0;
+    transform: scale(0) translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

@@ -5,6 +5,7 @@ import { Rocket, Users, TrendingUp, CheckCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import supabase from '../supabaseClient';
 import { useAuth } from '../contexts/authContext';
+import Loader from '../constants/loader';
 
 export function Landing() {
   const { session } = useAuth();
@@ -26,6 +27,10 @@ export function Landing() {
   useEffect(() => {
     fetchWebName();
   }, []);
+
+  if (!webName) {
+    return <Loader />
+  }
 
   return (
     <div className="min-h-screen bg-white">

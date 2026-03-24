@@ -38,7 +38,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
               <span className="text-white font-bold text-lg">{webName.charAt(0).toLocaleUpperCase()}</span>
             </div>
             {!hideLogoName && (
-              <span className="text-xl font-semibold text-gray-900">{webName}</span>
+              <span className="text-xl font-semibold text-gray-900">{webName ? webName : 'Loading...'}</span>
             )}
           </Link>
 
