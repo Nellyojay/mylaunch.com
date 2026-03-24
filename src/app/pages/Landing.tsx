@@ -231,7 +231,7 @@ export function Landing() {
           </h2>
         </div>
 
-        <div className='border border-gray-400 my-10 mx-20 p-8 rounded-xl shadow-md'>
+        <div className='border border-gray-400 my-10 mx-8 md:mx-20 p-8 rounded-xl shadow-md'>
           <p className='font-semibold'>Many entrepreneurs and small businesses struggle to get visibilty on their early stages. {webName} was created to give every idea and every business mutual visibility. It is a space where innovations, ambition, and entrepreneurship can be shared with the world.</p>
         </div>
       </section>
