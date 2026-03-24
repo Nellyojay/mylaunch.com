@@ -156,7 +156,7 @@ export function EditStartup() {
 
     setTimeout(() => {
       setSubmitted(false);
-      navigate('/startup');
+      navigate(`/startup/${startup.id}`);
     }, 4000);
 
   };
