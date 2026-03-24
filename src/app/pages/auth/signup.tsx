@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { useWebData } from '../../contexts/webData';
 import supabase from '../../supabaseClient';
+import ScrollToTop from '../../constants/scrollToTop';
 
 export function Signup() {
   const navigate = useNavigate();
@@ -83,6 +84,8 @@ export function Signup() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-12">
+      <ScrollToTop />
+
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link to="/" className="flex items-center justify-center space-x-2 mb-8">

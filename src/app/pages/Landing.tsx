@@ -37,7 +37,7 @@ export function Landing() {
       <Navbar showAuth={true} />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-32 lg:pt-48 pb-20 px-4 sm:px-6 lg:px-8 lg:h-screen">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
             Launch. Showcase.
@@ -242,7 +242,7 @@ export function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-blue-600">
+      <section className="py-20 bg-blue-600 lg:max-w-7xl lg:mx-auto rounded-xl shadow-md shadow-blue-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Showcase Your Business?
