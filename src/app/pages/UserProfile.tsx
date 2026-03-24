@@ -32,7 +32,7 @@ export function UserProfile() {
 
   const userStartups = startupData?.filter(s => s.user_id === profileId) || [];
 
-  if (!userData || !profileId || !startupData || !user) {
+  if (!userData || !profileId || !startupData) {
     return <Loader />;
   }
 

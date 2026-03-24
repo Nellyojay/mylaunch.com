@@ -90,8 +90,9 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
   }
 
   useEffect(() => {
-    if (selectedProfile && user) {
+    if (selectedProfile) {
       fetchUserData();
+    } else if (user) {
       fetchCurrentUser();
     } else {
       setUserData(null);

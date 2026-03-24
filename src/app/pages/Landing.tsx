@@ -160,9 +160,9 @@ export function Landing() {
           </h2>
         </div>
 
-        <div className='md:grid grid-cols-4'>
-          <div className="text-center border border-gray-300 p-2 m-2 rounded-xl shadow-md md:hover:shadow-xl">
-            <div className="w-16 h-16 bg-linear-to-br from-green-600 to-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 md:grid grid-cols-4">
+          <div className="text-center border border-gray-300 p-8 m-2 rounded-xl shadow-md md:hover:shadow-xl">
+            <div className="w-8 h-8 bg-teal-600 opacity-60 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold shadow-lg">
               1
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Entrepreneurs</h3>
@@ -170,8 +170,8 @@ export function Landing() {
               People building new startups and ideas
             </p>
           </div>
-          <div className="text-center border border-gray-300 p-2 m-2 rounded-xl shadow-md md:hover:shadow-xl">
-            <div className="w-16 h-16 bg-linear-to-br from-green-600 to-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
+          <div className="text-center border border-gray-300 p-8 m-2 rounded-xl shadow-md md:hover:shadow-xl">
+            <div className="w-8 h-8 bg-teal-600 opacity-60 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold shadow-lg">
               2
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Small business owners</h3>
@@ -179,8 +179,8 @@ export function Landing() {
               Businesses looking for visibility and growth
             </p>
           </div>
-          <div className="text-center border border-gray-300 p-2 m-2 rounded-xl shadow-md md:hover:shadow-xl">
-            <div className="w-16 h-16 bg-linear-to-br from-green-600 to-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
+          <div className="text-center border border-gray-300 p-8 m-2 rounded-xl shadow-md md:hover:shadow-xl">
+            <div className="w-8 h-8 bg-teal-600 opacity-60 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold shadow-lg">
               3
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Innovators and Creators</h3>
@@ -188,8 +188,8 @@ export function Landing() {
               Individuals launching products, services or projects
             </p>
           </div>
-          <div className="text-center border border-gray-300 p-2 m-2 rounded-xl shadow-md md:hover:shadow-xl">
-            <div className="w-16 h-16 bg-linear-to-br from-green-600 to-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg">
+          <div className="text-center border border-gray-300 p-8 m-2 rounded-xl shadow-md md:hover:shadow-xl">
+            <div className="w-8 h-8 bg-teal-600 opacity-60 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold shadow-lg">
               4
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Supporters and Customers.</h3>
@@ -201,8 +201,8 @@ export function Landing() {
       </section>
 
       <section id='what-you-can-do' className='pb-10'>
-        <div className="bg-white rounded-2xl shadow-md p-6 mx-4">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">What You Can Do In {webName}</h3>
+        <div className="bg-white rounded-2xl shadow-md p-6 mx-8 max-w-4xl lg:mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="text-lg font-bold text-gray-900 text-center mb-4">What You Can Do In {webName}</h3>
           <ul className="space-y-3 text-sm text-gray-700">
             <li className="flex items-start space-x-2">
               <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
@@ -231,8 +231,8 @@ export function Landing() {
           </h2>
         </div>
 
-        <div className='border border-gray-400 my-10 mx-8 md:mx-20 p-8 rounded-xl shadow-md'>
-          <p className='font-semibold'>Many entrepreneurs and small businesses struggle to get visibilty on their early stages. {webName} was created to give every idea and every business mutual visibility. It is a space where innovations, ambition, and entrepreneurship can be shared with the world.</p>
+        <div className='border border-gray-400 bg-blue-950 opacity-80 m-10 lg:mx-auto lg:max-w-xl p-8 rounded-xl shadow-md'>
+          <p className='font-semibold text-white'>Many entrepreneurs and small businesses struggle to get visibilty on their early stages. {webName} was created to give every idea and every business mutual visibility. It is a space where innovations, ambition, and entrepreneurship can be shared with the world.</p>
         </div>
       </section>
 
