@@ -8,6 +8,8 @@ import { useUserData } from '../contexts/userDataContext';
 import { Calendar, Briefcase } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { getImageUrl } from '../constants/imageHandler';
+import ScrollToTop from '../constants/scrollToTop';
+import Loader from '../constants/loader';
 
 export function UserProfile() {
   const navigate = useNavigate();
@@ -30,9 +32,14 @@ export function UserProfile() {
 
   const userStartups = startupData?.filter(s => s.user_id === profileId) || [];
 
+  if (!userData || !profileId || !startupData || !user) {
+    return <Loader />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
+      <ScrollToTop />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         {/* Profile Header */}

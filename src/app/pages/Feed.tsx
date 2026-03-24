@@ -4,6 +4,7 @@ import { CategoryFilter } from '../components/CategoryFilter';
 import { StartupCard } from '../components/StartupCard';
 import { ArrowUpDown } from 'lucide-react';
 import { useStartup } from '../contexts/StartupProfileContext';
+import ScrollToTop from '../constants/scrollToTop';
 
 export function Feed() {
   const { startupData } = useStartup();
@@ -43,6 +44,7 @@ export function Feed() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar showSearch={true} onSearch={setSearchQuery} />
+      <ScrollToTop />
 
       {/* Category Filter */}
       <CategoryFilter

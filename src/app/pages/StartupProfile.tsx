@@ -31,6 +31,7 @@ import { formatDate } from '../constants/dateFormat';
 import { useUserData } from '../contexts/userDataContext';
 import { formatPhoneEA } from '../constants/phoneNumberormater';
 import { getImageUrl } from '../constants/imageHandler';
+import ScrollToTop from '../constants/scrollToTop';
 
 export type Post = {
   id: number;
@@ -268,6 +269,7 @@ export function StartupProfile() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar showAuth={false} />
+      <ScrollToTop />
 
       <main className="max-w-4xl mx-auto pt-16 pb-12">
         {/* Banner Image */}

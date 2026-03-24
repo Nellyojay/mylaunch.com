@@ -70,9 +70,8 @@ export function StartupCard({ startup, userId }: StartupCardProps) {
         {/* Interaction Buttons */}
         <div className="pt-2 border-t border-gray-100">
           <Link
-            to="/startup"
+            to={`/startup/${startup.id}`}
             className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-            onClick={() => setSelectedProfile(userId)}
           >
             View Startup
           </Link>
