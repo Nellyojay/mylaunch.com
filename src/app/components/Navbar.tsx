@@ -109,7 +109,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
             )}
           </div>
 
-          <div>
+          <div className='md:hidden'>
             {/* Mobile Menu Button */}
             <button
               title='Toggle menu'

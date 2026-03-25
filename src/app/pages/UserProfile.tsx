@@ -41,7 +41,7 @@ export function UserProfile() {
       <Navbar />
       <ScrollToTop />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         {/* Profile Header */}
         <div className="bg-white rounded-2xl shadow-md p-8 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
@@ -115,7 +115,7 @@ export function UserProfile() {
           </div>
 
           {(userStartups ?? []).length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {userStartups?.map((startup) => (
                 <StartupCard key={startup.id} startup={startup} userId={startup.user_id} />
               ))}

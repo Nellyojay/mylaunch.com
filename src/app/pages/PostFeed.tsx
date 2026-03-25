@@ -1,13 +1,23 @@
+import { useEffect } from "react";
 import { Navbar } from "../components/Navbar"
 import { PostCard } from "../components/PostCard";
 import { useStartup } from "../contexts/StartupProfileContext";
 import { useUserData } from "../contexts/userDataContext";
+import Loader from "../constants/loader";
 
 function PostFeed() {
-  const { loadingPosts, posts, handleDeletePost } = useStartup();
+  const { loadingPosts, posts, handleDeletePost, fetchStartupPosts } = useStartup();
   const { currentUser } = useUserData();
 
+  useEffect(() => {
+    fetchStartupPosts();
+  }, [])
+
   const isOwner = currentUser?.id === posts.find(p => p.user_id)
+
+  if (loadingPosts || !posts) {
+    return <Loader />
+  }
 
   return (
     <div className="bg-gray-100 min-h-screen pt-12">
@@ -36,10 +46,6 @@ function PostFeed() {
         </div>
 
         <div className="col-span-12 md:col-span-6 space-y-2">
-          <div className="bg-white rounded-xl shadow-sm p-4">
-            <p className="font-semibold">Create Post</p>
-            <p>Share an update about your startup...</p>
-          </div>
 
           {!loadingPosts && posts.length > 0 && (
             posts.map((post) => (
