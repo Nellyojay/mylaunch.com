@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Bookmark, Heart, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/authContext';
-import type { Post } from '../pages/StartupProfile';
 import { formatDate } from '../constants/dateFormat';
 import supabase from '../supabaseClient';
 import { useUserData } from '../contexts/userDataContext';
 import { Modal } from './Modal';
 import { getImageUrl } from '../constants/imageHandler';
+import type { Post } from '../contexts/StartupProfileContext';
 
 interface PostCardProps {
   post: Post;
@@ -112,7 +112,7 @@ export function PostCard({ post, deletePost, isOwner }: PostCardProps) {
   };
 
   return (
-    <div className="bg-white border border-gray-300 rounded-2xl shadow-md overflow-hidden">
+    <div className="bg-white border border-gray-300 rounded-md shadow-md overflow-hidden">
       {/* Post Image */}
       <div className="flex justify-center items-center aspect-square bg-gray-200">
         <img

@@ -33,21 +33,19 @@ import { formatPhoneEA } from '../constants/phoneNumberormater';
 import { getImageUrl } from '../constants/imageHandler';
 import ScrollToTop from '../constants/scrollToTop';
 
-export type Post = {
-  id: number;
-  image_url: string;
-  content: string;
-  created_at: string;
-  likes: number;
-  saves: number;
-  user_id: string;
-}
-
 export function StartupProfile() {
   const navigate = useNavigate();
   const { session, user } = useAuth();
   const { userData, currentUser } = useUserData();
-  const { startupData } = useStartup();
+  const {
+    startupData,
+    loadingPosts,
+    posts,
+    fetchStartupPosts,
+    setLoadingPosts,
+    setPosts,
+    handleDeletePost
+  } = useStartup();
   const { id } = useParams();
 
   const rawStartup = startupData?.find(s => s.id === id) || null;
@@ -55,15 +53,14 @@ export function StartupProfile() {
 
   const activeStartup = rawStartup;
   const startup = activeStartup;
+  const StartupOwnPosts = posts.filter(p => p.startup_id === startup?.id)
 
   const [following, setFollowing] = useState(false);
   const [liked, setLiked] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const [posts, setPosts] = useState<Post[]>([]);
   const [comments, setComments] = useState<StartupComment[]>([]);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [loadingPosts, setLoadingPosts] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -76,21 +73,6 @@ export function StartupProfile() {
     setLoadingPosts(true);
 
     let isMounted = true;
-
-    const fetchStartupPosts = async () => {
-      const { data, error } = await supabase
-        .from('startup_posts')
-        .select('id, content, image_url, created_at, likes, saves, user_id')
-        .eq('startup_id', activeStartup.id)
-        .order('created_at', { ascending: false });
-
-      if (isMounted) {
-        setLoadingPosts(false);
-        if (!error && data) {
-          setPosts(data as any[]);
-        }
-      }
-    };
 
     fetchStartupPosts();
 
@@ -161,23 +143,6 @@ export function StartupProfile() {
     } else {
       navigator.clipboard.writeText(window.location.href);
       alert("Link copied to clipboard");
-    }
-  };
-
-  const handleDeletePost = async (postId: number) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this post?");
-    if (!confirmDelete) return;
-
-    const { error } = await supabase
-      .from('startup_posts')
-      .delete()
-      .eq('id', postId);
-
-    if (error) {
-      alert("Failed to delete post. Please try again.");
-    } else {
-      alert("Post deleted successfully.");
-      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
     }
   };
 
@@ -549,7 +514,7 @@ export function StartupProfile() {
 
           {!loadingPosts && posts.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {posts.map((post) => (
+              {StartupOwnPosts.map((post) => (
                 <PostCard
                   key={post.id}
                   post={post}

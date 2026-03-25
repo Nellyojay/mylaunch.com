@@ -78,21 +78,21 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
           <div className="hidden md:flex items-center space-x-6">
             {!session ? (
               <>
+                <Link to="/postFeed" className="text-gray-700 hover:text-gray-900 transition-colors">
+                  Posts
+                </Link>
                 <Link to="/feed" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Explore
                 </Link>
                 <Link to="/login" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Sign In
                 </Link>
-                <Link
-                  to="/signup"
-                  className="bg-linear-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
-                >
-                  Create Account
-                </Link>
               </>
             ) : (
               <>
+                <Link to="/postFeed" className="text-gray-700 hover:text-gray-900 transition-colors">
+                  Posts
+                </Link>
                 <Link to="/feed" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Explore
                 </Link>
@@ -128,21 +128,21 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
           <div className="md:hidden mt-2 space-y-4">
             {!session ? (
               <div className="md:hidden py-2 border-t border-gray-200">
+                <Link to="/postFeed" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                  Posts
+                </Link>
                 <Link to="/feed" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                   Explore
                 </Link>
                 <Link to="/login" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                   Sign In
                 </Link>
-                <Link
-                  to="/signup"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                >
-                  Create Account
-                </Link>
               </div>
             ) : (
               <div className="md:hidden py-4 border-t border-gray-200">
+                <Link to="/postFeed" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                  Posts
+                </Link>
                 <Link to="/feed" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
                   Explore
                 </Link>
