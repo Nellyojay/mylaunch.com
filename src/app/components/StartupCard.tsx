@@ -46,7 +46,9 @@ export function StartupCard({ startup, userId }: StartupCardProps) {
               to='/startup'
               onClick={() => setSelectedProfile(userId)}
             >
-              <h3 className="font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+              <h3
+                className="font-semibold text-gray-900 hover:text-blue-600 transition-colors line-clamp-1"
+              >
                 {startup.name}
               </h3>
             </Link>
@@ -63,7 +65,7 @@ export function StartupCard({ startup, userId }: StartupCardProps) {
         </div>
 
         {/* Description */}
-        <p className="text-sm text-gray-700 line-clamp-2">
+        <p className="text-sm text-gray-700 line-clamp-3">
           {startup.intro_description}
         </p>
 

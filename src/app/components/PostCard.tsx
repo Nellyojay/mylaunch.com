@@ -7,17 +7,17 @@ import { useUserData } from '../contexts/userDataContext';
 import { Modal } from './Modal';
 import { getImageUrl } from '../constants/imageHandler';
 import type { Post } from '../contexts/StartupProfileContext';
+import { Link } from 'react-router-dom';
 
 interface PostCardProps {
   post: Post;
   deletePost: () => void;
-  isOwner: boolean;
 
 }
 
-export function PostCard({ post, deletePost, isOwner }: PostCardProps) {
+export function PostCard({ post, deletePost }: PostCardProps) {
   const { session } = useAuth();
-  const { userData } = useUserData();
+  const { userData, currentUser } = useUserData();
   const [liked, setLiked] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [likes, setLikes] = useState(post.likes);
@@ -25,6 +25,8 @@ export function PostCard({ post, deletePost, isOwner }: PostCardProps) {
   const [saved, setSaved] = useState(false);
   const [saves, setSaves] = useState(post.saves || 0);
   const [savingSave, setSavingSave] = useState(false);
+
+  const postOwner = Boolean(currentUser?.id === post.user_id)
 
   useEffect(() => {
     if (!session || !userData) return;
@@ -113,43 +115,37 @@ export function PostCard({ post, deletePost, isOwner }: PostCardProps) {
 
   return (
     <div className="bg-white border border-gray-300 rounded-md shadow-md overflow-hidden">
+
       {/* Post Image */}
       <div className="flex justify-center items-center aspect-square bg-gray-200">
         <img
           src={getImageUrl(post.image_url) || '/default-post-image.jpg'}
           alt="Post"
-          className="w-auto h-auto max-w-100% object-contain"
+          className="w-auto max-w-100% object-contain"
         />
       </div>
 
       {/* Post Content */}
       <div className="p-4">
         {/* Action Buttons */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-4">
-            <button
-              title='Like'
-              onClick={handleLike}
-              disabled={!session || savingLike}
-              className={`flex items-center space-x-1 transition-colors ${liked ? 'text-red-500' : 'text-gray-700 hover:text-red-500'}`}
+        <div className="flex items-center justify-between -mt-10">
+          <Link
+            to={`/startup/${post.startup_id}`}
+            className=''
+          >
+            <img
+              src={getImageUrl(post.startups.display_image) || undefined}
+              alt=""
+              className='w-14 h-14 rounded-full'
+            />
+            <p
+              className='line-clamp-1 text-gray-500'
             >
-              <Heart
-                className={`w-6 h-6 text-gray-500 ${liked ? 'fill-red-500 text-red-500' : ''}`}
-              />
-              <p className="font-semibold text-gray-500">{likes.toLocaleString()}</p>
-            </button>
-            <button
-              title='Save'
-              onClick={handleSave}
-              disabled={!session || savingSave}
-              className={`flex items-center space-x-1 transition-colors ${saved ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'}`}
-            >
-              <Bookmark className={`w-6 h-6 ${saved ? 'fill-blue-500 text-blue-500' : 'text-gray-500'}`} />
-              <p className="font-semibold text-gray-500">{saves.toLocaleString()}</p>
-            </button>
-          </div>
+              {post.startups.name}
+            </p>
+          </Link>
 
-          {isOwner && (
+          {postOwner && (
             <button
               title='Delete Post'
               onClick={() => setIsConfirmOpen(true)}
@@ -174,14 +170,39 @@ export function PostCard({ post, deletePost, isOwner }: PostCardProps) {
         />
 
         {/* Caption */}
-        <div className="mb-2">
-          <p className="text-gray-700 text-sm leading-relaxed">
+        <div>
+          <p className="text-gray-800 leading-relaxed mb-2">
             {post.content}
           </p>
         </div>
 
         {/* Timestamp */}
-        <p className="text-xs text-gray-400 uppercase">{formatDate(post.created_at, false)}</p>
+        <div className='flex justify-between items-center'>
+          <p className="text-xs text-gray-400 uppercase">{formatDate(post.created_at, false)}</p>
+
+          <div className="flex items-center space-x-4">
+            <button
+              title='Like'
+              onClick={handleLike}
+              disabled={!session || savingLike}
+              className={`flex items-center space-x-1 transition-colors ${liked ? 'text-red-500' : 'text-gray-700 hover:text-red-500'}`}
+            >
+              <Heart
+                className={`w-6 h-6 text-gray-500 ${liked ? 'fill-red-500 text-red-500' : ''}`}
+              />
+              <p className="font-semibold text-gray-500">{likes.toLocaleString()}</p>
+            </button>
+            <button
+              title='Save'
+              onClick={handleSave}
+              disabled={!session || savingSave}
+              className={`flex items-center space-x-1 transition-colors ${saved ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'}`}
+            >
+              <Bookmark className={`w-6 h-6 ${saved ? 'fill-blue-500 text-blue-500' : 'text-gray-500'}`} />
+              <p className="font-semibold text-gray-500">{saves.toLocaleString()}</p>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

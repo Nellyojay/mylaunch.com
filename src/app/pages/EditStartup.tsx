@@ -176,7 +176,7 @@ export function EditStartup() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <main className="max-w-4xl mx-auto pt-24 pb-12">
+      <main className="max-w-6xl mx-auto pt-24 pb-12">
         <div className="bg-white rounded-3xl shadow-lg p-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Edit Startup</h1>
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -72,8 +72,6 @@ export function StartupProfile() {
 
     setLoadingPosts(true);
 
-    let isMounted = true;
-
     fetchStartupPosts();
 
     const postsChannel = supabase
@@ -102,7 +100,6 @@ export function StartupProfile() {
       .subscribe();
 
     return () => {
-      isMounted = false;
       supabase.removeChannel(postsChannel);
     };
   }, [activeStartup?.id, following, session, currentUser]);
@@ -236,7 +233,7 @@ export function StartupProfile() {
       <Navbar showAuth={false} />
       <ScrollToTop />
 
-      <main className="max-w-4xl mx-auto pt-16 pb-12">
+      <main className="max-w-6xl mx-auto pt-16 pb-12">
         {/* Banner Image */}
         <div className="relative w-full h-48 md:h-64 bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600">
           <img
@@ -513,13 +510,12 @@ export function StartupProfile() {
           )}
 
           {!loadingPosts && posts.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {StartupOwnPosts.map((post) => (
                 <PostCard
                   key={post.id}
                   post={post}
                   deletePost={() => handleDeletePost(post.id)}
-                  isOwner={isOwner}
                 />
               ))}
             </div>
