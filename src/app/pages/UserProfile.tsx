@@ -5,7 +5,7 @@ import { formatDate } from '../constants/dateFormat';
 import { useAuth } from '../contexts/authContext';
 import { useStartup } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
-import { Calendar, Briefcase } from 'lucide-react';
+import { Calendar, Briefcase, Bookmark } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { getImageUrl } from '../constants/imageHandler';
 import ScrollToTop from '../constants/scrollToTop';
@@ -61,19 +61,19 @@ export function UserProfile() {
             {/* Profile Info */}
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{userData?.full_name}</h1>
-              <p className="text-sm text-gray-500 mb-4">@{userData?.user_name}</p>
-              <p className="text-lg text-gray-600 mb-4">
+              <p className="text-sm text-gray-400 mb-4">@{userData?.user_name}</p>
+              <p className="text-gray-600 mb-4">
                 {userData?.bio || 'This user has not added a bio yet.'}
               </p>
 
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-gray-600">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-gray-400">
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-4 h-4" />
                   <span>Joined MyLaunch {formatDate(userData?.created_at, false)}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Briefcase className="w-4 h-4" />
-                  <span>{userStartups?.length} Startup{userStartups?.length === 1 ? '' : 's'}</span>
+                  <span>{userStartups?.length} Business{userStartups?.length === 1 ? '' : 'es'}</span>
                 </div>
               </div>
             </div>
@@ -102,14 +102,28 @@ export function UserProfile() {
 
         {/* Startups Section */}
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">My Startups</h2>
-            {isOwner && (
+          <div className="sticky top-18 h-fit z-50 flex items-center justify-between mb-6">
+            <div className='bg-gray-100 flex space-x-2 border-2 border-gray-300 rounded-lg py-2 px-4 mr-1 justify-between not-md:w-full'>
+              <h2 className="font-bold text-gray-900">Mine</h2>
+
+              <div className='flex items-center justify-center'>
+                <Bookmark className='fill-gray-800' size={18} color='' />
+                <p className='font-semibold'>Businesses</p>
+              </div>
+
+              <div className='flex items-center'>
+                <Bookmark className='fill-gray-800' size={18} color='' />
+                <p className='font-semibold'>Posts</p>
+              </div>
+            </div>
+
+            {true && (
               <Link
                 to="/create"
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                className="flex justify-center items-center text-blue-600 hover:text-blue-400 border-2 border-blue-600 hover:border-blue-400 rounded-lg py-2 px-4 font-medium"
               >
-                + Create New
+                +
+                <span className='hidden md:block'>Create Business</span>
               </Link>
             )}
           </div>
