@@ -11,7 +11,6 @@ import {
   Mail,
   Phone,
   MapPin,
-  Heart,
   UserPlus,
   Share2,
   ChevronDown,
@@ -21,7 +20,8 @@ import {
   Edit,
   Plus,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  Star
 } from 'lucide-react';
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { BsChevronDown, BsTwitterX } from 'react-icons/bs';
@@ -56,7 +56,7 @@ export function StartupProfile() {
   const StartupOwnPosts = posts.filter(p => p.startup_id === startup?.id)
 
   const [following, setFollowing] = useState(false);
-  const [liked, setLiked] = useState(false);
+  const [favorites, setFavorites] = useState(false)
   const [showMore, setShowMore] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState<StartupComment[]>([]);
@@ -177,9 +177,24 @@ export function StartupProfile() {
       : await supabase.from('follows').delete().match({ startup_id: startup?.id, user_id: currentUser?.id }).select('id').single();
 
     if (error) {
-      console.error(error.message);
       alert("Failed to update follow status. Please try again.");
       setFollowing(following);
+    }
+
+  }
+
+  const handleFavorites = async () => {
+    if (!user) return;
+
+    setFavorites(!favorites);
+
+    const { error } = !favorites
+      ? await supabase.from('favorites').insert({ user_id: currentUser?.id, startup_id: startup?.id })
+      : await supabase.from('favorites').delete().match({ user_id: currentUser?.id, startup_id: startup?.id })
+
+    if (error) {
+      alert("Failed to add to favorites. please try again.")
+      setFavorites(favorites)
     }
 
   }
@@ -187,7 +202,7 @@ export function StartupProfile() {
   useEffect(() => {
     if (!session || !currentUser || !startup) {
       setFollowing(false);
-      setLiked(false);
+      setFavorites(false);
       return;
     }
 
@@ -211,6 +226,27 @@ export function StartupProfile() {
       setFollowing(Boolean(data && data.length > 0));
     }
 
+    const reserveFavoriteState = async () => {
+      if (!session) {
+        setFavorites(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('favorites')
+        .select('id')
+        .eq('startup_id', startup?.id)
+        .eq('user_id', currentUser?.id)
+
+      if (error) {
+        console.error('Failed to fetch favorite status', error);
+        setFavorites(false);
+      }
+
+      setFavorites(Boolean(data && data.length > 0));
+    }
+
+    reserveFavoriteState();
     reserveFollowingState();
   }, [session, currentUser, startup]);
 
@@ -355,15 +391,15 @@ export function StartupProfile() {
             </a>
 
             <button
-              onClick={() => setLiked(!liked)}
+              onClick={handleFavorites}
               disabled={!session}
-              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium transition-all ${liked
+              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium transition-all ${favorites
                 ? 'bg-red-50 text-red-500 border-2 border-red-200'
                 : 'bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50'
                 }`}
             >
-              <Heart className={`w-5 h-5 ${liked ? 'fill-red-500' : ''}`} />
-              <span>Like</span>
+              <Star className={`w-5 h-5 ${favorites ? 'fill-red-500' : ''}`} />
+              <span>Favorite</span>
             </button>
 
             <button

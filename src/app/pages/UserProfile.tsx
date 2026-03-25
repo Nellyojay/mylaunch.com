@@ -1,21 +1,24 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Navbar } from '../components/Navbar';
 import { StartupCard } from '../components/StartupCard';
 import { formatDate } from '../constants/dateFormat';
 import { useAuth } from '../contexts/authContext';
 import { useStartup } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
-import { Calendar, Briefcase, Bookmark } from 'lucide-react';
+import { Calendar, Briefcase, Bookmark, Star } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { getImageUrl } from '../constants/imageHandler';
 import ScrollToTop from '../constants/scrollToTop';
 import Loader from '../constants/loader';
+import supabase from '../supabaseClient';
 
 export function UserProfile() {
   const navigate = useNavigate();
   const { startupData } = useStartup();
   const { userData, setSelectedProfile, selectedProfile } = useUserData();
   const { logout, user } = useAuth();
+
+  const [startupsFollwing, setStartupsFollowing] = useState<number | null>(0)
 
   const profileId = selectedProfile || userData?.id || user?.id || null;
   const isOwner = Boolean(
@@ -24,8 +27,22 @@ export function UserProfile() {
     userData?.auth_id === user?.id
   );
 
+  const fetchLikedBusinesses = async () => {
+    const { data, error } = await supabase
+      .from('follows')
+      .select('user_id')
+      .eq('user_id', userData?.id)
+
+    if (error) {
+      return;
+    } else {
+      setStartupsFollowing(data.length)
+    }
+  };
+
   useEffect(() => {
     if (profileId) {
+      fetchLikedBusinesses();
       setSelectedProfile(profileId);
     }
   }, [profileId, setSelectedProfile]);
@@ -62,11 +79,11 @@ export function UserProfile() {
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{userData?.full_name}</h1>
               <p className="text-sm text-gray-400 mb-4">@{userData?.user_name}</p>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-700 mb-4">
                 {userData?.bio || 'This user has not added a bio yet.'}
               </p>
 
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-gray-400">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-gray-500">
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-4 h-4" />
                   <span>Joined MyLaunch {formatDate(userData?.created_at, false)}</span>
@@ -75,6 +92,10 @@ export function UserProfile() {
                   <Briefcase className="w-4 h-4" />
                   <span>{userStartups?.length} Business{userStartups?.length === 1 ? '' : 'es'}</span>
                 </div>
+              </div>
+
+              <div className="flex items-center justify-center md:block text-gray-500 mt-2">
+                <p>Businesses Following <span className='font-semibold text-gray-800'>{startupsFollwing}</span></p>
               </div>
             </div>
 
@@ -103,15 +124,15 @@ export function UserProfile() {
         {/* Startups Section */}
         <div>
           <div className="sticky top-18 h-fit z-50 flex items-center justify-between mb-6">
-            <div className='bg-gray-100 flex space-x-2 border-2 border-gray-300 rounded-lg py-2 px-4 mr-1 justify-between not-md:w-full'>
+            <div className='flex space-x-2 border-2 border-gray-500 rounded-lg py-2 px-4 mr-1 justify-between not-md:w-full backdrop-blur-xl'>
               <h2 className="font-bold text-gray-900">Mine</h2>
 
-              <div className='flex items-center justify-center'>
-                <Bookmark className='fill-gray-800' size={18} color='' />
+              <div className='flex items-center justify-center gap-1'>
+                <Star className='fill-gray-800' size={18} color='' />
                 <p className='font-semibold'>Businesses</p>
               </div>
 
-              <div className='flex items-center'>
+              <div className='flex items-center gap-1'>
                 <Bookmark className='fill-gray-800' size={18} color='' />
                 <p className='font-semibold'>Posts</p>
               </div>
@@ -120,7 +141,7 @@ export function UserProfile() {
             {true && (
               <Link
                 to="/create"
-                className="flex justify-center items-center text-blue-600 hover:text-blue-400 border-2 border-blue-600 hover:border-blue-400 rounded-lg py-2 px-4 font-medium"
+                className="flex justify-center items-center text-blue-600 hover:text-blue-400 border-2 border-blue-600 hover:border-blue-400 bg-blue-50 rounded-lg py-2 px-4 font-medium"
               >
                 +
                 <span className='hidden md:block'>Create Business</span>

@@ -8,10 +8,7 @@ type userData = {
   created_at: string;
   user_name: string;
   bio: string;
-  start_ups: number;
-  followers: number;
   following: number;
-  likes: number;
   profile_image: string;
   TC_agreed: boolean;
 }
