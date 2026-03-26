@@ -204,7 +204,7 @@ export function UserProfile() {
               </div>
             </div>
 
-            {true && (
+            {isOwner && (
               <Link
                 to="/create"
                 className="flex justify-center items-center text-blue-600 hover:text-blue-400 border-2 border-blue-600 hover:border-blue-400 bg-blue-50 rounded-lg py-2 px-4 font-medium"
