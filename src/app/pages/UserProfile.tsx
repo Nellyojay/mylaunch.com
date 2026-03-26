@@ -11,14 +11,28 @@ import { getImageUrl } from '../constants/imageHandler';
 import ScrollToTop from '../constants/scrollToTop';
 import Loader from '../constants/loader';
 import supabase from '../supabaseClient';
+import { PostCard } from '../components/PostCard';
+
+type Tab = 'mine' | 'favorites' | 'savedPosts';
+
+type Favorites = {
+  startup_id: string
+}
+
+type SavedPosts = {
+  post_id: string | number;
+}
 
 export function UserProfile() {
   const navigate = useNavigate();
-  const { startupData } = useStartup();
-  const { userData, setSelectedProfile, selectedProfile } = useUserData();
+  const { startupData, posts, fetchStartupPosts, handleDeletePost } = useStartup();
+  const { userData, currentUser, setSelectedProfile, selectedProfile } = useUserData();
   const { logout, user } = useAuth();
 
   const [startupsFollwing, setStartupsFollowing] = useState<number | null>(0)
+  const [tab, setTab] = useState<Tab>('mine');
+  const [favoritesId, setFavoritesId] = useState<Favorites[]>([]);
+  const [savedPosts, setSavedPosts] = useState<SavedPosts[]>([])
 
   const profileId = selectedProfile || userData?.id || user?.id || null;
   const isOwner = Boolean(
@@ -27,7 +41,9 @@ export function UserProfile() {
     userData?.auth_id === user?.id
   );
 
-  const fetchLikedBusinesses = async () => {
+  const fetchFollowedBusinesses = async () => {
+    if (!userData?.id) return;
+
     const { data, error } = await supabase
       .from('follows')
       .select('user_id')
@@ -40,25 +56,66 @@ export function UserProfile() {
     }
   };
 
+  const fetchFavoriteBusinesses = async () => {
+    if (!currentUser?.id) return;
+
+    const { data, error } = await supabase
+      .from('favorites')
+      .select('startup_id')
+      .eq('user_id', currentUser?.id)
+      .select();
+
+    if (error) {
+      return;
+    } else {
+      setFavoritesId(data)
+    }
+  };
+
+  const fetchSavedPosts = async () => {
+    if (!currentUser?.id) return;
+
+    const { data, error } = await supabase
+      .from('saves')
+      .select('post_id')
+      .eq('user_id', currentUser?.id)
+      .select();
+
+    if (error) {
+      return;
+    } else {
+      setSavedPosts(data)
+    }
+  };
+
   useEffect(() => {
     if (profileId) {
-      fetchLikedBusinesses();
+      fetchStartupPosts();
+      fetchSavedPosts();
+      fetchFavoriteBusinesses();
+      fetchFollowedBusinesses();
       setSelectedProfile(profileId);
     }
   }, [profileId, setSelectedProfile]);
+
+  const favIds = favoritesId.map(f => f.startup_id);
+  const favStartups = startupData?.filter(s => favIds.includes(s.id));
+
+  const savedPostIds = savedPosts.map(s => s.post_id);
+  const savPosts = posts?.filter(p => savedPostIds.includes(p.id));
 
   const userStartups = startupData?.filter(s => s.user_id === profileId) || [];
 
   if (!userData || !profileId || !startupData) {
     return <Loader />;
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <ScrollToTop />
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
         {/* Profile Header */}
         <div className="bg-white rounded-2xl shadow-md p-8 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
@@ -124,17 +181,26 @@ export function UserProfile() {
         {/* Startups Section */}
         <div>
           <div className="sticky top-18 h-fit z-50 flex items-center justify-between mb-6">
-            <div className='flex space-x-2 border-2 border-gray-500 rounded-lg py-2 px-4 mr-1 justify-between not-md:w-full backdrop-blur-xl'>
-              <h2 className="font-bold text-gray-900">Mine</h2>
+            <div className='flex text-gray-500 space-x-2 border-2 border-gray-400 rounded-lg py-2 px-4 mr-1 justify-between not-md:w-full backdrop-blur-xl'>
+              <button
+                onClick={() => setTab('mine')}
+                className={`font-bold cursor-pointer md:hover:text-gray-800 transition-all duration-200 ${tab === 'mine' && 'text-gray-800 border-b-2'}`}
+              >Mine</button>
 
-              <div className='flex items-center justify-center gap-1'>
-                <Star className='fill-gray-800' size={18} color='' />
-                <p className='font-semibold'>Businesses</p>
+              <div className='flex items-center justify-center gap-1 md:hover:text-gray-800'>
+                <Star className='fill-gray-500' size={18} color='' />
+                <button
+                  onClick={() => setTab('favorites')}
+                  className={`font-semibold cursor-pointer transition-all duration-200 ${tab === 'favorites' && 'text-gray-800 border-b-2'}`}
+                >Businesses</button>
               </div>
 
-              <div className='flex items-center gap-1'>
-                <Bookmark className='fill-gray-800' size={18} color='' />
-                <p className='font-semibold'>Posts</p>
+              <div className='flex items-center gap-1 md:hover:text-gray-800'>
+                <Bookmark className='fill-gray-500' size={18} color='' />
+                <button
+                  onClick={() => setTab('savedPosts')}
+                  className={`font-semibold cursor-pointer transition-all duration-200 ${tab === 'savedPosts' && 'text-gray-800 border-b-2'}`}
+                >Posts</button>
               </div>
             </div>
 
@@ -149,22 +215,54 @@ export function UserProfile() {
             )}
           </div>
 
-          {(userStartups ?? []).length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userStartups?.map((startup) => (
-                <StartupCard key={startup.id} startup={startup} userId={startup.user_id} />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-white rounded-2xl shadow-md p-12 text-center">
-              <p className="text-gray-500 mb-4">You haven't created any startups yet</p>
-              <Link
-                to="/create"
-                className="inline-block bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition-colors font-medium"
-              >
-                Create Your First Startup
-              </Link>
-            </div>
+          {tab === 'mine' && (
+            (userStartups ?? []).length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {userStartups?.map((startup) => (
+                  <StartupCard key={startup.id} startup={startup} userId={startup.user_id} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl shadow-md p-12 text-center">
+                <p className="text-gray-500 mb-4">You haven't created any startups yet</p>
+                <Link
+                  to="/create"
+                  className="inline-block bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Create Your First Startup
+                </Link>
+              </div>
+            )
+          )}
+          {tab === 'favorites' && (
+            (userStartups ?? []).length > 0 ? (
+              <div className="sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {favStartups?.map((startup) => (
+                  <StartupCard key={startup.id} startup={startup} userId={startup.user_id} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl shadow-md p-12 text-center">
+                <p className="text-gray-500 mb-4">You doo not follow any business.</p>
+              </div>
+            )
+          )}
+          {tab === 'savedPosts' && (
+            (userStartups ?? []).length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {savPosts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    deletePost={() => handleDeletePost(post.id)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl shadow-md p-12 text-center">
+                <p className="text-gray-500 mb-4">You have not saved any posts yet.</p>
+              </div>
+            )
           )}
         </div>
       </main>
