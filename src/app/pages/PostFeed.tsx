@@ -69,7 +69,7 @@ function PostFeed() {
 
         </div>
 
-        <div className="col-span-12 md:col-span-6 space-y-2">
+        <div className="col-span-12 md:col-span-5 space-y-2">
           {!loadingPosts && posts.length > 0 && (
             posts.map((post) => (
               <PostCard
@@ -81,7 +81,7 @@ function PostFeed() {
           )}
         </div>
 
-        <div className="sticky top-18 h-fit hidden md:block col-span-12 md:col-span-3 space-y-2">
+        <div className="sticky top-18 h-fit hidden md:block col-span-12 md:col-span-4 space-y-2">
 
           <div className="bg-white rounded-md shadow-sm p-4">
             <p className="font-semibold">Trending Startup</p>

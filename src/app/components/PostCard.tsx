@@ -16,7 +16,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, deletePost }: PostCardProps) {
-  const { session } = useAuth();
+  const { session, user } = useAuth();
   const { userData, currentUser } = useUserData();
   const [liked, setLiked] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -26,7 +26,7 @@ export function PostCard({ post, deletePost }: PostCardProps) {
   const [saves, setSaves] = useState(post.saves || 0);
   const [savingSave, setSavingSave] = useState(false);
 
-  const postOwner = Boolean(currentUser?.id === post.user_id)
+  const postOwner = Boolean(currentUser?.id === post.user_id && user?.id == currentUser.auth_id)
 
   useEffect(() => {
     if (!session || !userData) return;
