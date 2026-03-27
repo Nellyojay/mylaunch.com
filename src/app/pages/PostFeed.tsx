@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navbar } from "../components/Navbar"
 import { PostCard } from "../components/PostCard";
 import { useStartup } from "../contexts/StartupProfileContext";
@@ -14,11 +14,18 @@ function PostFeed() {
   const { currentUser, setSelectedProfile } = useUserData();
   const { loadingPosts, posts, handleDeletePost, fetchStartupPosts, startupData } = useStartup();
   const [searchText, setSearchText] = useState('');
+  const [visibleCount, setVisibleCount] = useState(10);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const userStartups = startupData?.filter(s => s.user_id === currentUser?.id)
 
   useEffect(() => {
     fetchStartupPosts();
   }, [])
+
+  const handleSearch = (value: string) => {
+    setSearchText(value);
+    setVisibleCount(10);
+  };
 
   const filteredPosts = (posts ?? []).filter((post) => {
     const query = searchText.trim().toLowerCase();
@@ -30,9 +37,30 @@ function PostFeed() {
     return Boolean(contentMatch || startupNameMatch);
   });
 
-  const handleSearch = (value: string) => {
-    setSearchText(value);
-  };
+  const displayedPosts = filteredPosts.slice(0, visibleCount);
+
+  useEffect(() => {
+    if (loadingPosts || displayedPosts.length >= filteredPosts.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((prev) => Math.min(prev + 10, filteredPosts.length));
+        }
+      },
+      { root: null, rootMargin: '0px', threshold: 0.1 }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (loadMoreRef.current) {
+        observer.unobserve(loadMoreRef.current);
+      }
+    };
+  }, [filteredPosts.length, displayedPosts.length, loadingPosts]);
 
   if (loadingPosts || !posts) {
     return <Loader />
@@ -93,19 +121,26 @@ function PostFeed() {
 
         </div>
 
-        <div className="col-span-12 md:col-span-5 space-y-2">
-          {!loadingPosts && filteredPosts.length > 0 ? (
-            filteredPosts.map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                deletePost={() => handleDeletePost(post.id)}
-              />
-            ))
+        <div className="col-span-12 md:col-span-5">
+          {!loadingPosts && displayedPosts.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4">
+              {displayedPosts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  deletePost={() => handleDeletePost(post.id)}
+                />
+              ))}
+            </div>
           ) : (
             <div className="bg-white rounded-md shadow-sm p-4 text-center">
               <p className="text-gray-500">No posts match your search.</p>
             </div>
+          )}
+
+          <div ref={loadMoreRef} className="h-4" />
+          {displayedPosts.length < filteredPosts.length && (
+            <div className="text-center text-gray-500 mt-3 mb-4">Loading more posts...</div>
           )}
         </div>
 

@@ -121,7 +121,7 @@ export function PostCard({ post, deletePost }: PostCardProps) {
         <img
           src={getImageUrl(post.image_url) || '/default-post-image.jpg'}
           alt="Post"
-          className="w-auto max-w-100% object-contain"
+          className="w-auto max-w-100% max-h-96 object-contain"
         />
       </div>
 

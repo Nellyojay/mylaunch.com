@@ -151,7 +151,9 @@ export function UserProfile() {
               </div>
 
               <div className="flex items-center justify-center md:block text-gray-500 mt-2">
-                <p>Businesses Following <span className='font-semibold text-gray-800'>{startupsFollwing}</span></p>
+                <Link to={'/following'} className="text-blue-600 hover:text-blue-400">
+                  Businesses Following <span className='font-semibold text-gray-800'>{startupsFollwing}</span>
+                </Link>
               </div>
             </div>
 
@@ -223,13 +225,15 @@ export function UserProfile() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl shadow-md p-12 text-center">
-                <p className="text-gray-500 mb-4">You haven't created any startups yet</p>
-                <Link
-                  to="/create"
-                  className="inline-block bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition-colors font-medium"
-                >
-                  Create Your First Startup
-                </Link>
+                <p className="text-gray-500 mb-4">No Businesses created yet</p>
+                {isOwner && (
+                  <Link
+                    to="/create"
+                    className="inline-block bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    Create Your First Business Page
+                  </Link>
+                )}
               </div>
             )
           )}
@@ -242,7 +246,7 @@ export function UserProfile() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl shadow-md p-12 text-center">
-                <p className="text-gray-500 mb-4">You do not follow any business.</p>
+                <p className="text-gray-500 mb-4">User has not favorited any businesses yet.</p>
               </div>
             )
           )}
@@ -259,7 +263,7 @@ export function UserProfile() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl shadow-md p-12 text-center">
-                <p className="text-gray-500 mb-4">You have not saved any posts yet.</p>
+                <p className="text-gray-500 mb-4">User has not saved any posts yet.</p>
               </div>
             )
           )}

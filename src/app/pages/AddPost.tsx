@@ -1,23 +1,18 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { Navbar } from '../components/Navbar';
-import { useAuth } from '../contexts/authContext';
-import { useStartup } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
 import supabase from '../supabaseClient';
 import { FOLDER, imageHandlerService } from '../constants/imageHandler';
 
 export function AddPost() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { startupData } = useStartup();
-  const { userData, selectedProfile } = useUserData();
-
-  const profileId = selectedProfile || userData?.id || user?.id;
-  const startup = startupData?.find((s) => s.user_id === profileId) || null;
+  const { id } = useParams<{ id: string }>();
+  const { userData } = useUserData();
 
   const [content, setContent] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,8 +21,11 @@ export function AddPost() {
 
     if (!file) {
       setImagePreview(null);
+      setImageFile(null);
       return;
     }
+
+    setImageFile(file);
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -39,7 +37,7 @@ export function AddPost() {
   const handlePostSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!startup) {
+    if (!id) {
       setError('Startup not found for current profile.');
       return;
     }
@@ -55,7 +53,7 @@ export function AddPost() {
       .from('startup_posts')
       .insert([
         {
-          startup_id: startup.id,
+          startup_id: id,
           user_id: userData?.id || null,
           content: content.trim(),
         },
@@ -67,13 +65,12 @@ export function AddPost() {
       setError(insertError.message || 'Could not save post');
       return;
     }
-    console.log('Post created with ID:', data.id);
 
     const insertImage = await imageHandlerService.uploadImage(
-      imagePreview as File | null,
+      imageFile,
       FOLDER.STARTUP_POST,
       userData?.id || '',
-      startup.id,
+      id,
       data.id
     )
 
@@ -84,20 +81,20 @@ export function AddPost() {
     }
 
     setSaving(false);
-    navigate('/startup');
+    navigate(`/startup/${id}`);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar showAuth={false} />
-      <main className="max-w-3xl mx-auto pt-16 pb-12 px-4">
+      <main className="max-w-3xl mx-auto pt-16 pb-20 px-4">
         <div className="mb-6 flex justify-between items-center">
           <h1 className="text-3xl font-bold">Add Post</h1>
-          <Link className="text-blue-600 hover:text-blue-800" to="/startup">Back to Startup</Link>
+          <Link className="text-blue-600 hover:text-blue-800" to={`/startup/${id}`}>Back to Startup</Link>
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-md">
-          {!startup ? (
+          {!id ? (
             <p className="text-red-600">No startup selected. Go back to the profile and choose a startup first.</p>
           ) : (
             <form onSubmit={handlePostSubmit} className="space-y-4">
@@ -115,19 +112,31 @@ export function AddPost() {
 
               <div>
                 <label htmlFor="post-image" className="block text-sm font-medium text-gray-700">Image</label>
-                <input
-                  id="post-image"
-                  type="file"
-                  accept="image/*"
-                  onChange={onImageChange}
-                  className="mt-1 block w-full text-sm text-gray-600"
-                />
-                {imagePreview && (
-                  <img
-                    src={imagePreview as string}
-                    alt="Preview"
-                    className="mt-3 w-full max-h-64 object-cover rounded-lg"
+                <div className="mt-1 rounded-lg border-2 border-dashed border-blue-200 p-4 text-center transition-colors hover:border-blue-400 bg-blue-50">
+                  <p className="text-xs text-blue-600 mb-2">Upload a post image (PNG, JPG). Max 10MB.</p>
+                  <input
+                    id="post-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={onImageChange}
+                    className="hidden"
                   />
+                  <label
+                    htmlFor="post-image"
+                    className="inline-flex items-center rounded-md border border-blue-500 bg-white px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100 cursor-pointer"
+                  >
+                    Select Image
+                  </label>
+                </div>
+                {imagePreview && (
+                  <div className="mt-3 rounded-lg overflow-hidden border border-gray-200">
+                    <img
+                      src={imagePreview as string}
+                      alt="Preview"
+                      className="w-full max-h-64 object-cover"
+                    />
+                    <p className="p-2 text-xs text-gray-500">Image preview</p>
+                  </div>
                 )}
               </div>
 

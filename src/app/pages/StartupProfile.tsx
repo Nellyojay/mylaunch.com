@@ -269,7 +269,7 @@ export function StartupProfile() {
       <Navbar showAuth={false} />
       <ScrollToTop />
 
-      <main className="max-w-6xl mx-auto pt-16 pb-12">
+      <main className="max-w-6xl mx-auto pt-16 pb-20">
         {/* Banner Image */}
         <div className="relative w-full h-48 md:h-64 bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600">
           <img
@@ -526,7 +526,7 @@ export function StartupProfile() {
             <div className='flex justify-between mb-2 pb-2 border-b border-gray-400'>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Posts</h2>
               {isOwner && (
-                <Link to="/startup/add-post" className='flex items-center px-2 gap-2 text-blue-600 md:text-gray-500 md:hover:text-blue-600 border-2 border-blue-600 md:border-gray-400 rounded-lg md:hover:border-blue-600 md:hover:shadow-' >
+                <Link to={`/startup/${startup?.id}/add-post`} className='flex items-center px-2 gap-2 text-blue-600 md:text-gray-500 md:hover:text-blue-600 border-2 border-blue-600 md:border-gray-400 rounded-lg md:hover:border-blue-600 md:hover:shadow-' >
                   Add Post
                   <Plus />
                 </Link>

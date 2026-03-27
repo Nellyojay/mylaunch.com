@@ -13,6 +13,7 @@ import { EditProfile } from "./pages/EditProfile";
 import { Feedback } from "./pages/Feedback";
 import TC_agree from "./pages/TC_agree";
 import PostFeed from "./pages/PostFeed";
+import { FollowingStartups } from "./pages/FollowingStartups";
 
 export const router = createHashRouter([
   {
@@ -36,15 +37,19 @@ export const router = createHashRouter([
     Component: Feedback,
   },
   {
+    path: "/following",
+    Component: FollowingStartups,
+  },
+  {
     path: "/startup/:id",
     Component: StartupProfile,
   },
   {
-    path: "/startup/edit",
+    path: "/startup/:id/edit",
     Component: EditStartup,
   },
   {
-    path: "/startup/add-post",
+    path: "/startup/:id/add-post",
     Component: AddPost,
   },
   {
