@@ -114,7 +114,7 @@ export function PostCard({ post, deletePost }: PostCardProps) {
   };
 
   return (
-    <div className="bg-white border border-gray-300 rounded-md shadow-md overflow-hidden">
+    <div className="bg-white border border-gray-300 rounded-md shadow-sm overflow-hidden">
 
       {/* Post Image */}
       <div className="flex justify-center items-center aspect-square bg-gray-200">

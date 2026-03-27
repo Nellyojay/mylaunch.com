@@ -77,11 +77,15 @@ function PostFeed() {
           <div className="bg-white rounded-md shadow-sm p-4">
             {session ? (
               <Link to={`/profile/${currentUser?.id}`} onClick={() => setSelectedProfile(currentUser?.id)}>
-                <img
-                  src={getImageUrl(currentUser?.profile_image) || undefined}
-                  alt="Profile-image"
-                  className="w-12 h-12 rounded-full object-cover"
-                />
+                {currentUser?.profile_image ? (
+                  <img
+                    src={getImageUrl(currentUser?.profile_image) || undefined}
+                    alt="Profile-image"
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <User className="w-10 h-10 rounded-full object-cover text-gray-400" />
+                )}
                 <p className="font-semibold text-lg">{currentUser?.full_name}</p>
               </Link>
             ) : (
@@ -123,7 +127,7 @@ function PostFeed() {
 
         <div className="col-span-12 md:col-span-5">
           {!loadingPosts && displayedPosts.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-2">
               {displayedPosts.map((post) => (
                 <PostCard
                   key={post.id}

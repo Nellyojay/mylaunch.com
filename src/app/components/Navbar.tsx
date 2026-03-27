@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useWebData } from '../contexts/webData';
 import { useAuth } from '../contexts/authContext';
 import { useUserData } from '../contexts/userDataContext';
+import Loader from '../constants/loader';
 
 interface NavbarProps {
   showSearch?: boolean;
@@ -19,6 +20,10 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   const { setSelectedProfile, currentUser, agreeToTC } = useUserData();
   const [searchValue, setSearchValue] = useState('');
   const [hideLogoName, setHideLogoName] = useState(false);
+
+  if (!currentUser) {
+    <Loader />
+  }
 
   const check = () => {
     if (currentUser?.TC_agreed === false || currentUser?.user_roles.length === 0) {
@@ -75,34 +80,34 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
           )}
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-6 transition-all">
             {!session ? (
               <>
-                <Link to="/" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link to="/" className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname === '/' ? 'text-gray-800 border-b border-gray-800' : ''}`}>
                   Posts
                 </Link>
-                <Link to="/feed" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link to="/feed" className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname === '/feed' ? 'text-gray-800 border-b border-gray-800' : ''}`}>
                   Explore
                 </Link>
-                <Link to="/login" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link to="/login" className="text-gray-500 hover:text-gray-800 transition-colors">
                   Sign In
                 </Link>
               </>
             ) : (
               <>
-                <Link to="/" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link to="/" className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname === '/' ? 'text-gray-800 border-b border-gray-800' : ''}`}>
                   Posts
                 </Link>
-                <Link to="/feed" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link to="/feed" className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname === '/feed' ? 'text-gray-800 border-b border-gray-800' : ''}`}>
                   Explore
                 </Link>
-                <Link to="/feedback" className="text-gray-700 hover:text-gray-900 transition-colors hidden sm:block">
+                <Link to="/feedback" className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname === '/feedback' ? 'text-gray-800 border-b border-gray-800' : ''} hidden sm:block`}>
                   Feedback
                 </Link>
-                <Link to="/create" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link to="/create" className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname === '/create' ? 'text-gray-800 border-b border-gray-800' : ''}`}>
                   Create Startup
                 </Link>
-                <Link to={`/profile/${currentUser?.id}`} className="text-gray-700 hover:text-gray-900 transition-colors" onClick={() => setSelectedProfile(currentUser?.id)}>
+                <Link to={`/profile/${currentUser?.id}`} className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname.startsWith('/profile') ? 'text-gray-800' : ''}`} onClick={() => setSelectedProfile(currentUser?.id)}>
                   <User className="w-6 h-6" />
                 </Link>
               </>

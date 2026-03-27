@@ -41,7 +41,8 @@ export function Signup() {
         data: {
           full_name: formData.fullName,
           is_agreed: formData.agreeToTerms
-        }
+        },
+        emailRedirectTo: 'https://nellyojay.github.io/mylaunch.com/thankyou'
       }
     });
 
@@ -68,7 +69,7 @@ export function Signup() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://nellyojay.github.io/mylaunch.com/'
+        redirectTo: 'https://nellyojay.github.io/mylaunch.com/thankyou'
       }
     })
 

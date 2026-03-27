@@ -28,11 +28,10 @@ export function Login() {
       });
 
     if (error) {
-      console.error('Login error:', error);
       setErrorMessage('Invalid email or password. Please try again.');
     } else {
       setErrorMessage('');
-      navigate('/feed');
+      navigate('/');
       setFormData({ email: '', password: '' });
     }
     setLoading(false);
@@ -42,7 +41,7 @@ export function Login() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://nellyojay.github.io/mylaunch.com/'
+        redirectTo: 'https://nellyojay.github.io/mylaunch.com/thankyou'
       }
     });
 

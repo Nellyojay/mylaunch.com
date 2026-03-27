@@ -38,25 +38,25 @@ export function Landing() {
 
       <div className='max-w-6xl mx-auto'>
         {/* Hero Section */}
-        <section className="pt-32 lg:pt-48 pb-20 px-4 sm:px-6 lg:px-8 lg:h-screen">
+        <section className="pt-32 md:pt-48 pb-20 px-4 sm:px-6 lg:px-8 h-screen">
           <div className="max-w-7xl mx-auto text-center">
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
               Launch. Showcase.
               <span className="block bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mt-2 pb-2">Grow your business.</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10">
+            <p className="md:text-xl text-gray-600 max-w-2xl mx-auto mb-10">
               {webName} is a platform where entrepreneurs, startups and business owners showcase their ideas, products and growing to the world.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 to="/signup"
-                className="bg-linear-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl text-lg font-medium"
+                className="bg-linear-to-r from-blue-600 to-indigo-600 text-white px-4 md:px-8 py-2 md:py-4 rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl text-lg font-medium"
               >
                 Create Account
               </Link>
               <Link
                 to="/feed"
-                className="bg-white text-blue-600 border-2 border-blue-600 px-8 py-4 rounded-full hover:bg-blue-50 transition-colors text-lg font-medium shadow-md hover:shadow-lg"
+                className="bg-white text-blue-600 border-2 border-blue-600 px-4 md:px-8 py-2 md:py-4 rounded-full hover:bg-blue-50 transition-colors text-lg font-medium shadow-md hover:shadow-lg"
               >
                 Explore Businesses
               </Link>
