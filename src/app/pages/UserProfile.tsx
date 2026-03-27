@@ -254,7 +254,7 @@ export function UserProfile() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl shadow-md p-12 text-center">
-                <p className="text-gray-500 mb-4">User has not favorited any businesses yet.</p>
+                <p className="text-gray-500 mb-4">User has no favorite businesses yet.</p>
               </div>
             )
           )}

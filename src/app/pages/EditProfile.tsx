@@ -220,7 +220,6 @@ export function EditProfile() {
               </label>
               <select
                 id="category"
-                required
                 value={roles.join(', ')}
                 onChange={(e) => {
                   roles.push(e.target.value);

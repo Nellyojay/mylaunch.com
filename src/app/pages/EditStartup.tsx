@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import supabase from '../supabaseClient';
 import { useAuth } from '../contexts/authContext';
@@ -31,9 +31,10 @@ export function EditStartup() {
   const { session, user } = useAuth();
   const { userData, selectedProfile } = useUserData();
   const { startupData } = useStartup();
+  const { id } = useParams<{ id: string }>();
 
   const profileId = selectedProfile || userData?.id || user?.id;
-  const startup = startupData?.find((s) => s.user_id === profileId) || null;
+  const startup = startupData?.find((s) => s.id === id && s.user_id === profileId) || null;
 
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -178,11 +179,11 @@ export function EditStartup() {
       <Navbar />
       <main className="max-w-6xl mx-auto pt-24 pb-12">
         <div className="bg-white rounded-3xl shadow-lg p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Edit Startup</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Edit Business profile</h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <label className="block">
-                <span className="text-sm font-medium text-gray-700">Startup Name</span>
+                <span className="text-sm font-medium text-gray-700">Business Name</span>
                 <input
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -205,6 +206,7 @@ export function EditStartup() {
               <span className="text-sm font-medium text-gray-700">Category</span>
               <input
                 value={formData.cartegory}
+                placeholder='e.g. Technology, Finance, agriculture'
                 onChange={(e) => setFormData({ ...formData, cartegory: e.target.value })}
                 className="mt-1 w-full p-2 border border-gray-300 rounded-lg"
               />
@@ -317,18 +319,20 @@ export function EditStartup() {
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <label className="block">
-                <span className="text-sm font-medium text-gray-700">Phone</span>
+                <span className="text-sm font-medium text-gray-700">Business Phone Line</span>
                 <input
                   value={formData.phone}
+                  placeholder="e.g. 07123456789"
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="mt-1 w-full p-2 border border-gray-300 rounded-lg"
                 />
               </label>
               <label className="block">
-                <span className="text-sm font-medium text-gray-700">Email</span>
+                <span className="text-sm font-medium text-gray-700">Business Email</span>
                 <input
                   type="email"
                   value={formData.email}
+                  placeholder="e.g. business@example.com"
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="mt-1 w-full p-2 border border-gray-300 rounded-lg"
                 />
@@ -384,10 +388,10 @@ export function EditStartup() {
                 error={false}
               />
             ) : (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 not-md:text-xs font-semibold">
                 <button
                   type="button"
-                  onClick={() => navigate('/startup')}
+                  onClick={() => navigate(-1)}
                   className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100 transition-colors"
                 >
                   Cancel
@@ -397,7 +401,7 @@ export function EditStartup() {
                   disabled={!session || !formData.name || !formData.founder_name || loading}
                   className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Submitting...' : 'Update Business Profile'}
+                  {loading ? 'Submitting...' : 'Update Profile'}
                 </button>
               </div>
             )}

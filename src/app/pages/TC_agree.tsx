@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import { useUserData } from "../contexts/userDataContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import supabase from "../supabaseClient";
 import SuccessMessage from "../components/SuccessMessage";
 
@@ -12,6 +12,18 @@ export default function TC_agree() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const checkAgreedStatus = () => {
+    if (currentUser?.TC_agreed) {
+      setAgreed(true);
+    } else {
+      setAgreed(false);
+    }
+  };
+
+  useEffect(() => {
+    checkAgreedStatus();
+  }, [currentUser]);
 
   const updateRoles = async () => {
     if (!currentUser?.id) return;

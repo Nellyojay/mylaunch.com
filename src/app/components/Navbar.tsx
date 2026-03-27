@@ -21,7 +21,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   const [hideLogoName, setHideLogoName] = useState(false);
 
   const check = () => {
-    if (currentUser?.TC_agreed === false) {
+    if (currentUser?.TC_agreed === false || currentUser?.user_roles.length === 0) {
       navigate("/TC_agree")
     }
   }

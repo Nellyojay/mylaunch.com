@@ -4,6 +4,7 @@ import { Navbar } from '../components/Navbar';
 import { useUserData } from '../contexts/userDataContext';
 import supabase from '../supabaseClient';
 import { FOLDER, imageHandlerService } from '../constants/imageHandler';
+import SuccessMessage from '../components/SuccessMessage';
 
 export function AddPost() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export function AddPost() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,12 +78,15 @@ export function AddPost() {
 
     if (!insertImage) {
       setError('Post saved but image upload failed');
-      console.log('Post created with ID:', data.id, 'but image upload failed', insertImage);
       return;
     }
 
     setSaving(false);
-    navigate(`/startup/${id}`);
+    setSubmitted(true);
+    setTimeout(() => {
+      setSubmitted(false);
+      navigate(`/startup/${id}`);
+    }, 4000);
   };
 
   return (
@@ -142,13 +147,21 @@ export function AddPost() {
 
               {error && <p className="text-sm text-red-600">{error}</p>}
 
-              <button
-                type="submit"
-                disabled={saving}
-                className="w-full inline-flex justify-center items-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-blue-300"
-              >
-                {saving ? 'Saving...' : 'Publish Post'}
-              </button>
+              {!submitted ? (
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="w-full inline-flex justify-center items-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-blue-300"
+                >
+                  {saving ? 'Saving...' : 'Publish Post'}
+                </button>
+              ) : (
+                <SuccessMessage
+                  header="Post Published!"
+                  message="Your post has been published successfully."
+                  error={false}
+                />
+              )}
             </form>
           )}
         </div>

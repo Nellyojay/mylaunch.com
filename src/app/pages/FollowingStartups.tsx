@@ -7,6 +7,7 @@ import supabase from '../supabaseClient';
 import Loader from '../constants/loader';
 import { useStartup } from '../contexts/StartupProfileContext';
 import { getImageUrl } from '../constants/imageHandler';
+import { Search } from 'lucide-react';
 
 export function FollowingStartups() {
   const { user } = useAuth();
@@ -80,13 +81,14 @@ export function FollowingStartups() {
           <div className="bg-red-50 text-red-700 rounded-lg p-4 mb-6">{error}</div>
         )}
 
-        <div className="mb-4">
+        <div className="mb-2 gap-2 w-full flex not-md:text-sm rounded-xl border border-gray-300 shadow-sm px-4 py-2">
+          <Search className="inline-block w-5 h-5 text-gray-400" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search followed businesses"
-            className="w-full not-md:text-sm rounded-xl border border-gray-300 shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className='w-full focus:outline-none focus:ring-0 focus:border-transparent'
           />
         </div>
 
@@ -116,6 +118,7 @@ export function FollowingStartups() {
                 />
                 <div>
                   <h2 className="text-base font-semibold text-gray-900 truncate">{startup.name}</h2>
+                  <h2 className="text-sm text-gray-500">Founder: {startup.founder_name}</h2>
                 </div>
               </Link>
             ))}

@@ -64,7 +64,7 @@ export function StartupProfile() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!activeStartup?.id) {
+    if (!id) {
       setPosts([]);
       setLoadingPosts(false);
       return;
@@ -75,10 +75,10 @@ export function StartupProfile() {
     fetchStartupPosts();
 
     const postsChannel = supabase
-      .channel(`realtime-posts-${activeStartup.id}`)
+      .channel(`realtime-posts-${id}`)
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'posts', filter: `startup_id=eq.${activeStartup.id}` },
+        { event: '*', schema: 'public', table: 'posts', filter: `startup_id=eq.${id}` },
         (payload: any) => {
           setPosts((prevPosts) => {
             const record = payload.new || payload.old;
@@ -107,7 +107,7 @@ export function StartupProfile() {
   useEffect(() => {
     setLoading(true);
     const fetchComments = async () => {
-      if (!startup?.id) {
+      if (!activeStartup?.id) {
         setLoading(false);
         return;
       }
@@ -115,7 +115,7 @@ export function StartupProfile() {
       const { data, error } = await supabase
         .from('opinions')
         .select('id, content, created_at, user_id, startup_id, parent_id, user_name')
-        .eq('startup_id', startup?.id)
+        .eq('startup_id', id)
         .order('created_at', { ascending: false });
 
       setLoading(false);
@@ -154,7 +154,7 @@ export function StartupProfile() {
     const { error } = await supabase
       .from('startups')
       .delete()
-      .eq('id', startup.id);
+      .eq('id', id);
 
     if (error) {
       alert("Failed to delete startup. Please try again.");
@@ -173,8 +173,8 @@ export function StartupProfile() {
     setFollowing(!following);
 
     const { error } = !following
-      ? await supabase.from('follows').insert([{ startup_id: startup?.id, user_id: currentUser?.id }]).select('id').single()
-      : await supabase.from('follows').delete().match({ startup_id: startup?.id, user_id: currentUser?.id }).select('id').single();
+      ? await supabase.from('follows').insert([{ startup_id: id, user_id: currentUser?.id }]).select('id').single()
+      : await supabase.from('follows').delete().match({ startup_id: id, user_id: currentUser?.id }).select('id').single();
 
     if (error) {
       alert("Failed to update follow status. Please try again.");
@@ -189,8 +189,8 @@ export function StartupProfile() {
     setFavorites(!favorites);
 
     const { error } = !favorites
-      ? await supabase.from('favorites').insert({ user_id: currentUser?.id, startup_id: startup?.id })
-      : await supabase.from('favorites').delete().match({ user_id: currentUser?.id, startup_id: startup?.id })
+      ? await supabase.from('favorites').insert({ user_id: currentUser?.id, startup_id: id })
+      : await supabase.from('favorites').delete().match({ user_id: currentUser?.id, startup_id: id })
 
     if (error) {
       alert("Failed to add to favorites. please try again.")
@@ -215,7 +215,7 @@ export function StartupProfile() {
       const { data, error } = await supabase
         .from('follows')
         .select('id')
-        .eq('startup_id', startup?.id)
+        .eq('startup_id', id)
         .eq('user_id', currentUser?.id)
 
       if (error) {
@@ -235,7 +235,7 @@ export function StartupProfile() {
       const { data, error } = await supabase
         .from('favorites')
         .select('id')
-        .eq('startup_id', startup?.id)
+        .eq('startup_id', id)
         .eq('user_id', currentUser?.id)
 
       if (error) {
@@ -322,8 +322,8 @@ export function StartupProfile() {
                 </div>
                 <div className="flex items-center space-x-1">
                   <Globe className="w-4 h-4" />
-                  <a className="text-blue-600 hover:underline">
-                    {startup?.website ? startup.website : 'www.startup.com'}
+                  <a href={startup?.website ? `https://${startup?.website}` : 'https://www.example.com'} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    {startup?.website ? startup.website : 'www.example.com'}
                   </a>
                 </div>
               </div>
@@ -349,11 +349,11 @@ export function StartupProfile() {
           </div>
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 text-xs md:text-sm">
             {isOwner ? (
               <>
                 <Link
-                  to="/startup/edit"
+                  to={`/startup/${id}/edit`}
                   className='flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium transition-all bg-linear-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg'
                 >
                   <Edit className="w-5 h-5" />
@@ -456,8 +456,8 @@ export function StartupProfile() {
                         </div>
                         <div className="flex items-center space-x-2">
                           <Globe className="w-4 h-4 text-blue-600" />
-                          <a className="text-blue-600 hover:underline">
-                            {startup?.website ? startup.website : 'www.startup.com'}
+                          <a href={startup?.website ? `https://${startup?.website}` : 'https://www.example.com'} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                            {startup?.website ? startup.website : 'www.example.com'}
                           </a>
                         </div>
                       </div>

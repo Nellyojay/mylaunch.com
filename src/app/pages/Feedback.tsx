@@ -135,7 +135,7 @@ export function Feedback() {
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
             Share Your Feedback
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto">
             Help us improve {webName}! Your feedback is valuable and helps us create a better platform for young entrepreneurs.
           </p>
         </div>

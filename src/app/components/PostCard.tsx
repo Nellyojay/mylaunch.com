@@ -136,7 +136,7 @@ export function PostCard({ post, deletePost }: PostCardProps) {
             <img
               src={getImageUrl(post.startups.display_image) || undefined}
               alt=""
-              className='w-14 h-14 rounded-full'
+              className='w-12 h-12 rounded-full'
             />
             <p
               className='line-clamp-1 text-gray-500'
