@@ -303,7 +303,7 @@ export function StartupProfile() {
               </h1>
 
               {/* Founder Name */}
-              <Link to="/profile" className="text-lg text-gray-600 mb-2 md:hover:text-blue-600">
+              <Link to={`/profile/${startup?.user_id ?? ''}`} className="text-lg text-gray-600 mb-2 md:hover:text-blue-600">
                 Founded by {startup?.founder_name}
               </Link>
 

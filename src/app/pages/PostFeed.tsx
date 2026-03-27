@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Navbar } from "../components/Navbar"
 import { PostCard } from "../components/PostCard";
 import { useStartup } from "../contexts/StartupProfileContext";
@@ -13,11 +13,26 @@ function PostFeed() {
   const { session } = useAuth();
   const { currentUser, setSelectedProfile } = useUserData();
   const { loadingPosts, posts, handleDeletePost, fetchStartupPosts, startupData } = useStartup();
+  const [searchText, setSearchText] = useState('');
   const userStartups = startupData?.filter(s => s.user_id === currentUser?.id)
 
   useEffect(() => {
     fetchStartupPosts();
   }, [])
+
+  const filteredPosts = (posts ?? []).filter((post) => {
+    const query = searchText.trim().toLowerCase();
+    if (!query) return true;
+
+    const contentMatch = post.content?.toLowerCase().includes(query);
+    const startupNameMatch = post.startups?.name?.toLowerCase().includes(query);
+
+    return Boolean(contentMatch || startupNameMatch);
+  });
+
+  const handleSearch = (value: string) => {
+    setSearchText(value);
+  };
 
   if (loadingPosts || !posts) {
     return <Loader />
@@ -25,15 +40,15 @@ function PostFeed() {
 
   return (
     <div className="bg-gray-100 min-h-screen pt-12">
-      <Navbar showSearch={true} />
+      <Navbar showSearch={true} onSearch={handleSearch} />
 
-      <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-12 gap-4">
+      <div className="max-w-6xl mx-auto px-4 pt-6 pb-20 grid grid-cols-12 gap-4">
 
         <div className="sticky top-18 h-fit hidden md:block col-span-12 md:col-span-3 space-y-2">
 
           <div className="bg-white rounded-md shadow-sm p-4">
             {session ? (
-              <Link to={'/profile'} onClick={() => setSelectedProfile(currentUser?.id)}>
+              <Link to={`/profile/${currentUser?.id}`} onClick={() => setSelectedProfile(currentUser?.id)}>
                 <img
                   src={getImageUrl(currentUser?.profile_image) || undefined}
                   alt="Profile-image"
@@ -79,14 +94,18 @@ function PostFeed() {
         </div>
 
         <div className="col-span-12 md:col-span-5 space-y-2">
-          {!loadingPosts && posts.length > 0 && (
-            posts.map((post) => (
+          {!loadingPosts && filteredPosts.length > 0 ? (
+            filteredPosts.map((post) => (
               <PostCard
                 key={post.id}
                 post={post}
                 deletePost={() => handleDeletePost(post.id)}
               />
             ))
+          ) : (
+            <div className="bg-white rounded-md shadow-sm p-4 text-center">
+              <p className="text-gray-500">No posts match your search.</p>
+            </div>
           )}
         </div>
 

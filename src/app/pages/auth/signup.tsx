@@ -64,11 +64,6 @@ export function Signup() {
   };
 
   const signInWithGoogle = async () => {
-    if (formData.agreeToTerms === false) {
-      alert('Please agree to the terms and conditions');
-      setLoading(false);
-      return;
-    }
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -88,7 +83,7 @@ export function Signup() {
 
       <div className="w-full max-w-md">
         {/* Logo */}
-        <Link to="/" className="flex items-center justify-center space-x-2 mb-8">
+        <Link to="/about" className="flex items-center justify-center space-x-2 mb-8">
           <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-2xl">{webName.charAt(0).toLocaleUpperCase()}</span>
           </div>

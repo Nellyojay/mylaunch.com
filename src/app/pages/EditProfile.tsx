@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { useAuth } from '../contexts/authContext';
 import { useUserData } from '../contexts/userDataContext';
@@ -10,10 +10,11 @@ import SuccessMessage from '../components/SuccessMessage';
 
 export function EditProfile() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const { userData, selectedProfile, setSelectedProfile } = useUserData();
 
-  const profileId = selectedProfile || userData?.id || user?.id || null;
+  const profileId = id || selectedProfile || userData?.id || user?.id || null;
 
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [fullName, setFullName] = useState(userData?.full_name || '');
@@ -91,7 +92,11 @@ export function EditProfile() {
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
-      navigate('/profile');
+      if (profileId) {
+        navigate(`/profile/${profileId}`);
+      } else {
+        navigate('/');
+      }
     }, 4000);
   };
 
@@ -195,7 +200,7 @@ export function EditProfile() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => navigate('/profile')}
+                  onClick={() => navigate(profileId ? `/profile/${profileId}` : '/')}
                   className="px-5 py-2 border rounded-lg border-gray-300 hover:bg-gray-100"
                 >
                   Cancel

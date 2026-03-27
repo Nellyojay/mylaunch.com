@@ -17,6 +17,10 @@ import PostFeed from "./pages/PostFeed";
 export const router = createHashRouter([
   {
     path: "/",
+    Component: PostFeed,
+  },
+  {
+    path: "/about",
     Component: Landing,
   },
   {
@@ -26,10 +30,6 @@ export const router = createHashRouter([
   {
     path: "/feed",
     Component: Feed,
-  },
-  {
-    path: "/postFeed",
-    Component: PostFeed,
   },
   {
     path: "/feedback",
@@ -60,11 +60,11 @@ export const router = createHashRouter([
     Component: Signup,
   },
   {
-    path: "/profile",
+    path: "/profile/:id",
     Component: UserProfile,
   },
   {
-    path: "/profile/edit",
+    path: "/profile/:id/edit",
     Component: EditProfile,
   },
   {

@@ -19,7 +19,7 @@ type UserDataContextType = {
   setSelectedProfile: any;
   loadingUserData: boolean;
   currentUser: userData | null;
-  agreeToTC: () => void;
+  agreeToTC: () => Promise<boolean>;
 };
 
 const UserDataContext = createContext<UserDataContextType | null>(null);
@@ -49,20 +49,27 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
     return () => listener.subscription.unsubscribe()
   }, [])
 
-  const agreeToTC = async () => {
-    if (!currentUser?.id) return;
-    console.log(currentUser.id)
+  const agreeToTC = async (): Promise<boolean> => {
+    if (!currentUser?.id) return false;
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('users')
       .update({ TC_agreed: true })
-      .eq('id', currentUser?.id)
-      .select('TC_agreed')
+      .eq('id', currentUser.id)
+      .select('*')
       .single();
 
-    if (error) {
-      return;
+    if (error || !data) {
+      return false;
     }
+
+    setCurrentUser(data);
+
+    if (selectedProfile === data.id) {
+      setUserData(data);
+    }
+
+    return Boolean(data.TC_agreed);
   }
 
   const setSelectedProfile = (id: string | null) => {

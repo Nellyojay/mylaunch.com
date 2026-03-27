@@ -1,5 +1,5 @@
-import { Link, useNavigate } from 'react-router';
-import { Search, User } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router';
+import { Search, User, Home, Compass, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useWebData } from '../contexts/webData';
 import { useAuth } from '../contexts/authContext';
@@ -13,11 +13,11 @@ interface NavbarProps {
 
 export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { webName } = useWebData();
   const { session } = useAuth();
   const { setSelectedProfile, currentUser, agreeToTC } = useUserData();
   const [searchValue, setSearchValue] = useState('');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hideLogoName, setHideLogoName] = useState(false);
 
   const check = () => {
@@ -39,11 +39,11 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
+    <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-60">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to={session ? "/" : "/about"} className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm">
               <span className="text-white font-bold text-lg">{webName.charAt(0).toLocaleUpperCase()}</span>
             </div>
@@ -78,7 +78,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
           <div className="hidden md:flex items-center space-x-6">
             {!session ? (
               <>
-                <Link to="/postFeed" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link to="/" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Posts
                 </Link>
                 <Link to="/feed" className="text-gray-700 hover:text-gray-900 transition-colors">
@@ -90,7 +90,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
               </>
             ) : (
               <>
-                <Link to="/postFeed" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link to="/" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Posts
                 </Link>
                 <Link to="/feed" className="text-gray-700 hover:text-gray-900 transition-colors">
@@ -102,63 +102,64 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
                 <Link to="/create" className="text-gray-700 hover:text-gray-900 transition-colors">
                   Create Startup
                 </Link>
-                <Link to="/profile" className="text-gray-700 hover:text-gray-900 transition-colors" onClick={() => setSelectedProfile(currentUser?.id)}>
+                <Link to={`/profile/${currentUser?.id}`} className="text-gray-700 hover:text-gray-900 transition-colors" onClick={() => setSelectedProfile(currentUser?.id)}>
                   <User className="w-6 h-6" />
                 </Link>
               </>
             )}
           </div>
 
-          <div className='md:hidden'>
-            {/* Mobile Menu Button */}
-            <button
-              title='Toggle menu'
-              className="md:hidden text-gray-700 hover:text-gray-900 focus:outline-none"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
+          <div className='md:hidden'></div>
         </div>
 
-        {/* Mobile Menu - shown when mobile menu button is clicked */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden mt-2 space-y-4">
-            {!session ? (
-              <div className="md:hidden py-2 border-t border-gray-200">
-                <Link to="/postFeed" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
-                  Posts
-                </Link>
-                <Link to="/feed" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
-                  Explore
-                </Link>
-                <Link to="/login" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
-                  Sign In
-                </Link>
-              </div>
-            ) : (
-              <div className="md:hidden py-4 border-t border-gray-200">
-                <Link to="/postFeed" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
-                  Posts
-                </Link>
-                <Link to="/feed" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
-                  Explore
-                </Link>
-                <Link to="/feedback" className="text-gray-700 hover:text-gray-900 transition-colors hidden sm:block">
-                  Feedback
-                </Link>
-                <Link to="/create" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
-                  Create Startup
-                </Link>
-                <Link to="/profile" onClick={() => setSelectedProfile(currentUser?.id)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
-                  <User className="w-5 h-5 inline" /> Profile
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
+
+      </div>
+
+      {/* Mobile bottom tab bar */}
+      <div className="md:hidden fixed inset-x-0 bottom-0 z-50 bg-white border-t border-gray-200">
+        <div className="flex justify-between items-center h-16 px-2">
+          <Link
+            to="/"
+            className={`flex flex-col items-center justify-center gap-1 rounded-md px-2 py-1 ${location.pathname === '/' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+          >
+            <Home className="w-5 h-5" />
+            <span className="text-xs">Posts</span>
+          </Link>
+          <Link
+            to="/feed"
+            className={`flex flex-col items-center justify-center gap-1 rounded-md px-2 py-1 ${location.pathname === '/feed' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+          >
+            <Compass className="w-5 h-5" />
+            <span className="text-xs">Explore</span>
+          </Link>
+          {session && (
+            <Link
+              to="/feedback"
+              className={`flex flex-col items-center justify-center gap-1 rounded-md px-2 py-1 ${location.pathname === '/feedback' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span className="text-xs">Feedback</span>
+            </Link>
+          )}
+          {session ? (
+            <Link
+              to={`/profile/${currentUser?.id}`}
+              onClick={() => setSelectedProfile(currentUser?.id)}
+              className={`flex flex-col items-center justify-center gap-1 rounded-md px-2 py-1 ${location.pathname.startsWith('/profile') ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+            >
+              <User className="w-5 h-5" />
+              <span className="text-xs">Profile</span>
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className={`flex flex-col items-center justify-center gap-1 rounded-md px-2 py-1 ${location.pathname === '/login' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+            >
+              <User className="w-5 h-5" />
+              <span className="text-xs">Sign In</span>
+            </Link>
+          )}
+        </div>
       </div>
     </nav>
   );

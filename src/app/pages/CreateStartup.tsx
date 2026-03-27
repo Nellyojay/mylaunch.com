@@ -77,7 +77,7 @@ export function CreateStartup() {
       <Navbar showAuth={false} />
       <ScrollToTop />
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         <div className="bg-white rounded-2xl shadow-md p-8">
           <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-2">Create Your Business Page</h1>
           <p className="text-gray-600 mb-8">Share your business with the {webName} community</p>
@@ -230,15 +230,15 @@ export function CreateStartup() {
               <div className="flex items-center justify-end space-x-4 pt-6">
                 <button
                   type="button"
-                  onClick={() => navigate('/profile')}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                  onClick={() => navigate(`/profile/${currentUser?.id}`)}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 text-xs md:text-sm rounded-xl hover:bg-gray-50 transition-colors font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-3 bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg"
+                  className="px-6 py-3 bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs md:text-sm rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg"
                 >
                   {loading ? 'Publishing Business...' : 'Publish Business'}
                 </button>

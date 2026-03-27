@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { StartupCard } from '../components/StartupCard';
 import { formatDate } from '../constants/dateFormat';
@@ -6,7 +7,6 @@ import { useAuth } from '../contexts/authContext';
 import { useStartup } from '../contexts/StartupProfileContext';
 import { useUserData } from '../contexts/userDataContext';
 import { Calendar, Briefcase, Bookmark, Star } from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
 import { getImageUrl } from '../constants/imageHandler';
 import ScrollToTop from '../constants/scrollToTop';
 import Loader from '../constants/loader';
@@ -25,8 +25,9 @@ type SavedPosts = {
 
 export function UserProfile() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const { startupData, posts, fetchStartupPosts, handleDeletePost } = useStartup();
-  const { userData, currentUser, setSelectedProfile, selectedProfile } = useUserData();
+  const { userData, setSelectedProfile, selectedProfile } = useUserData();
   const { logout, user } = useAuth();
 
   const [startupsFollwing, setStartupsFollowing] = useState<number | null>(0)
@@ -34,7 +35,7 @@ export function UserProfile() {
   const [favoritesId, setFavoritesId] = useState<Favorites[]>([]);
   const [savedPosts, setSavedPosts] = useState<SavedPosts[]>([])
 
-  const profileId = selectedProfile || userData?.id || user?.id || null;
+  const profileId = id || selectedProfile || userData?.id || user?.id || null;
   const isOwner = Boolean(
     profileId &&
     userData?.id === profileId &&
@@ -57,34 +58,32 @@ export function UserProfile() {
   };
 
   const fetchFavoriteBusinesses = async () => {
-    if (!currentUser?.id) return;
+    if (!userData?.id) return;
 
     const { data, error } = await supabase
       .from('favorites')
       .select('startup_id')
-      .eq('user_id', currentUser?.id)
-      .select();
+      .eq('user_id', userData?.id);
 
     if (error) {
       return;
     } else {
-      setFavoritesId(data)
+      setFavoritesId(data || [])
     }
   };
 
   const fetchSavedPosts = async () => {
-    if (!currentUser?.id) return;
+    if (!userData?.id) return;
 
     const { data, error } = await supabase
       .from('saves')
       .select('post_id')
-      .eq('user_id', currentUser?.id)
-      .select();
+      .eq('user_id', userData?.id);
 
     if (error) {
       return;
     } else {
-      setSavedPosts(data)
+      setSavedPosts(data || [])
     }
   };
 
@@ -115,7 +114,7 @@ export function UserProfile() {
       <Navbar />
       <ScrollToTop />
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         {/* Profile Header */}
         <div className="bg-white rounded-2xl shadow-md p-8 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
@@ -159,7 +158,7 @@ export function UserProfile() {
             {isOwner ? (
               <div className="flex flex-col gap-2">
                 <Link
-                  to="/profile/edit"
+                  to={`/profile/${profileId}/edit`}
                   className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg">
                   Edit profile
                 </Link>
@@ -181,7 +180,7 @@ export function UserProfile() {
         {/* Startups Section */}
         <div>
           <div className="sticky top-18 h-fit z-50 flex items-center justify-between mb-6">
-            <div className='flex text-gray-500 space-x-2 border-2 border-gray-400 rounded-lg py-2 px-4 mr-1 justify-between not-md:w-full backdrop-blur-xl'>
+            <div className='flex text-gray-500 space-x-2 border-2 border-gray-400 rounded-lg py-1 px-4 mr-1 justify-between not-md:w-full backdrop-blur-xl'>
               <button
                 onClick={() => setTab('mine')}
                 className={`font-bold cursor-pointer md:hover:text-gray-800 transition-all duration-200 ${tab === 'mine' && 'text-gray-800 border-b-2'}`}
@@ -207,7 +206,7 @@ export function UserProfile() {
             {isOwner && (
               <Link
                 to="/create"
-                className="flex justify-center items-center text-blue-600 hover:text-blue-400 border-2 border-blue-600 hover:border-blue-400 bg-blue-50 rounded-lg py-2 px-4 font-medium"
+                className="flex justify-center items-center text-blue-600 hover:text-blue-400 border-2 border-blue-600 hover:border-blue-400 bg-blue-50 rounded-lg py-1 px-4 font-medium"
               >
                 +
                 <span className='hidden md:block'>Create Business</span>
@@ -235,20 +234,20 @@ export function UserProfile() {
             )
           )}
           {tab === 'favorites' && (
-            (userStartups ?? []).length > 0 ? (
-              <div className="sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            (favStartups ?? []).length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {favStartups?.map((startup) => (
                   <StartupCard key={startup.id} startup={startup} userId={startup.user_id} />
                 ))}
               </div>
             ) : (
               <div className="bg-white rounded-2xl shadow-md p-12 text-center">
-                <p className="text-gray-500 mb-4">You doo not follow any business.</p>
+                <p className="text-gray-500 mb-4">You do not follow any business.</p>
               </div>
             )
           )}
           {tab === 'savedPosts' && (
-            (userStartups ?? []).length > 0 ? (
+            (savPosts ?? []).length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {savPosts.map((post) => (
                   <PostCard
