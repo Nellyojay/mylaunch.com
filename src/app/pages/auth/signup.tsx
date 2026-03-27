@@ -42,7 +42,7 @@ export function Signup() {
           full_name: formData.fullName,
           is_agreed: formData.agreeToTerms
         },
-        emailRedirectTo: 'https://nellyojay.github.io/mylaunch.com/thankyou'
+        emailRedirectTo: 'https://nellyojay.github.io/adumun/'
       }
     });
 
@@ -69,7 +69,7 @@ export function Signup() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://nellyojay.github.io/mylaunch.com/thankyou'
+        redirectTo: 'https://nellyojay.github.io/adumun/'
       }
     })
 
