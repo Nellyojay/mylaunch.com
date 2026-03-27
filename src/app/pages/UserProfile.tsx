@@ -133,9 +133,17 @@ export function UserProfile() {
 
             {/* Profile Info */}
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{userData?.full_name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{userData?.full_name}</h1>
               <p className="text-sm text-gray-400 mb-4">@{userData?.user_name}</p>
-              <p className="text-gray-700 mb-4">
+              <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
+                {userData?.user_roles?.map((role, index) => (
+                  <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+                    {role}
+                  </span>
+                ))}
+              </div>
+
+              <p className="text-gray-700">
                 {userData?.bio || 'This user has not added a bio yet.'}
               </p>
 

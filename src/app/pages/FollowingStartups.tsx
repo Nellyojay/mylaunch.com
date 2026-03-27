@@ -69,7 +69,7 @@ export function FollowingStartups() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-18 pb-20">
-        <div className="bg-white rounded-2xl shadow-md p-4 mb-2">
+        <div className="bg-white rounded-2xl border border-gray-200 p-4 mb-2">
           <h1 className="text-lg md:text-2xl font-bold">Following Businesses</h1>
           <p className="text-gray-500 not-md:text-xs">
             This page shows all businesses you are currently following.
@@ -85,8 +85,8 @@ export function FollowingStartups() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search followed startups by name or founder"
-            className="w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Search followed businesses"
+            className="w-full not-md:text-sm rounded-xl border border-gray-300 shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
 
@@ -99,7 +99,7 @@ export function FollowingStartups() {
           </div>
         ) : filteredStartups.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-md p-8 text-center">
-            <p className="text-gray-500">No startups match your search.</p>
+            <p className="text-gray-500">No businesses match your search.</p>
           </div>
         ) : (
           <div className="space-y-3">

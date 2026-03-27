@@ -11,6 +11,7 @@ type userData = {
   following: number;
   profile_image: string;
   TC_agreed: boolean;
+  user_roles: string[];
 }
 
 type UserDataContextType = {

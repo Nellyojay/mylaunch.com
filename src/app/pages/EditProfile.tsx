@@ -20,6 +20,7 @@ export function EditProfile() {
   const [fullName, setFullName] = useState(userData?.full_name || '');
   const [userName, setUserName] = useState(userData?.user_name || '');
   const [bio, setBio] = useState(userData?.bio || '');
+  const [roles, setRoles] = useState<string[]>(userData?.user_roles || []);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +66,12 @@ export function EditProfile() {
 
     const { error: updateError } = await supabase
       .from('users')
-      .update({ full_name: fullName, user_name: userName, bio })
+      .update({
+        full_name: fullName,
+        user_name: userName,
+        bio,
+        user_roles: roles,
+      })
       .eq('id', profileId);
 
     if (updateError) {
@@ -179,6 +185,55 @@ export function EditProfile() {
                 className="mt-1 block w-full p-2 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 rows={4}
               />
+            </div>
+
+            <div className="mb-6">
+              <label htmlFor="selected-roles" className="block text-sm font-medium text-gray-700 mb-2">
+                Designated roles
+              </label>
+              <div className="flex items-center justify-center gap-2">
+                <input
+                  title="designated-roles"
+                  type="text"
+                  placeholder="Selected roles are shown here"
+                  value={roles.join(', ')}
+                  disabled
+                  onChange={(e) => setRoles(e.target.value.split(', '))}
+                  className="w-full not-md:text-sm px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button
+                  onClick={() => {
+                    if (roles.length > 0) {
+                      setRoles([]);
+                    }
+                  }}
+                  className="text-white text-sm w-10 h-10 font-semibold border border-gray-300 bg-gray-400 shadow-sm rounded-lg"
+                >
+                  X
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                Select roles *
+              </label>
+              <select
+                id="category"
+                required
+                value={roles.join(', ')}
+                onChange={(e) => {
+                  roles.push(e.target.value);
+                  setRoles([...roles]);
+                }}
+                className="w-full not-md:text-sm px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">--Select--</option>
+                <option value="business personnel">Business personnel</option>
+                <option value="customer">Customer</option>
+                <option value="investor">Investor</option>
+                <option value="mentor">Mentor</option>
+              </select>
             </div>
 
             {error && <p className="text-sm text-red-600">{error}</p>}
