@@ -2,7 +2,7 @@
   "name": "mylaunch",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://nellyojay.github.io/mylaunch.com/",
+  "homepage": "https://nellyojay.github.io/adumun/",
   "type": "module",
   "scripts": {
     "dev": "vite",
