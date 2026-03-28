@@ -13,7 +13,6 @@ function PostFeed() {
   const { session } = useAuth();
   const { currentUser, setSelectedProfile } = useUserData();
   const { loadingPosts, posts, handleDeletePost, fetchStartupPosts, startupData } = useStartup();
-  const [searchText, setSearchText] = useState('');
   const [visibleCount, setVisibleCount] = useState(10);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const userStartups = startupData?.filter(s => s.user_id === currentUser?.id)
@@ -22,30 +21,15 @@ function PostFeed() {
     fetchStartupPosts();
   }, [])
 
-  const handleSearch = (value: string) => {
-    setSearchText(value);
-    setVisibleCount(10);
-  };
-
-  const filteredPosts = (posts ?? []).filter((post) => {
-    const query = searchText.trim().toLowerCase();
-    if (!query) return true;
-
-    const contentMatch = post.content?.toLowerCase().includes(query);
-    const startupNameMatch = post.startups?.name?.toLowerCase().includes(query);
-
-    return Boolean(contentMatch || startupNameMatch);
-  });
-
-  const displayedPosts = filteredPosts.slice(0, visibleCount);
+  const displayedPosts = posts?.slice(0, visibleCount);
 
   useEffect(() => {
-    if (loadingPosts || displayedPosts.length >= filteredPosts.length) return;
+    if (loadingPosts || displayedPosts.length >= posts?.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setVisibleCount((prev) => Math.min(prev + 10, filteredPosts.length));
+          setVisibleCount((prev) => Math.min(prev + 10, posts?.length));
         }
       },
       { root: null, rootMargin: '0px', threshold: 0.1 }
@@ -60,7 +44,7 @@ function PostFeed() {
         observer.unobserve(loadMoreRef.current);
       }
     };
-  }, [filteredPosts.length, displayedPosts.length, loadingPosts]);
+  }, [posts?.length, displayedPosts.length, loadingPosts]);
 
   if (loadingPosts || !posts) {
     return <Loader />
@@ -68,7 +52,7 @@ function PostFeed() {
 
   return (
     <div className="bg-gray-100 min-h-screen pt-12">
-      <Navbar showSearch={true} onSearch={handleSearch} />
+      <Navbar showSearch={true} />
 
       <div className="max-w-6xl mx-auto px-4 pt-6 pb-20 grid grid-cols-12 gap-4">
 
@@ -143,7 +127,7 @@ function PostFeed() {
           )}
 
           <div ref={loadMoreRef} className="h-4" />
-          {displayedPosts.length < filteredPosts.length && (
+          {displayedPosts.length < posts?.length && (
             <div className="text-center text-gray-500 mt-3 mb-4">Loading more posts...</div>
           )}
         </div>

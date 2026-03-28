@@ -117,13 +117,11 @@ export function PostCard({ post, deletePost }: PostCardProps) {
     <div className="bg-white border border-gray-300 rounded-md shadow-sm overflow-hidden">
 
       {/* Post Image */}
-      <div className="flex justify-center items-center aspect-square bg-gray-200">
-        <img
-          src={getImageUrl(post.image_url) || '/default-post-image.jpg'}
-          alt="Post"
-          className="w-auto max-w-100% max-h-96 object-contain"
-        />
-      </div>
+      <img
+        src={getImageUrl(post.image_url) || '/default-post-image.jpg'}
+        alt="Post"
+        className="w-full h-auto object-cover"
+      />
 
       {/* Post Content */}
       <div className="p-4">

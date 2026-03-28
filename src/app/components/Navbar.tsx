@@ -66,10 +66,12 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
                   type="text"
                   onFocus={() => {
                     setHideLogoName(true);
+                    navigate('/feed');
                   }}
                   onBlur={() => {
                     setHideLogoName(false);
                   }}
+                  autoFocus={location.pathname === '/feed'}
                   value={searchValue}
                   onChange={handleSearchChange}
                   placeholder="Search for businesses..."

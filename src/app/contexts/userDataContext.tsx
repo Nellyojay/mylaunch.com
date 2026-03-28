@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import supabase from "../supabaseClient";
 
-type userData = {
+export type userData = {
   id: string;
   auth_id: string;
   full_name: string;

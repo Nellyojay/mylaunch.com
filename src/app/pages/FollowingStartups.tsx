@@ -11,7 +11,7 @@ import { Search } from 'lucide-react';
 
 export function FollowingStartups() {
   const { user } = useAuth();
-  const { userData } = useUserData();
+  const { userData, currentUser } = useUserData();
   const { startupData } = useStartup();
   const [searchTerm, setSearchTerm] = useState('');
   const [followingStartupIds, setFollowingStartupIds] = useState<string[]>([]);
@@ -94,10 +94,12 @@ export function FollowingStartups() {
 
         {followedStartups.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-md p-8 text-center">
-            <p className="text-gray-500">You are not following any businesses yet.</p>
-            <Link to="/feed" className="mt-3 inline-block text-blue-600 hover:underline">
-              Explore businesses to follow
-            </Link>
+            <p className="text-gray-500">No Businesses followed yet.</p>
+            {currentUser?.id === userId && (
+              <Link to="/feed" className="mt-3 inline-block text-blue-600 hover:underline">
+                Explore businesses to follow
+              </Link>
+            )}
           </div>
         ) : filteredStartups.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-md p-8 text-center">

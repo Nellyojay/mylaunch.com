@@ -23,7 +23,7 @@ export function CategoryFilter({ selectedCategory, onSelectCategory }: CategoryF
             <button
               key={category}
               onClick={() => onSelectCategory(category)}
-              className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${selectedCategory === category
+              className={`px-2 rounded-full whitespace-nowrap transition-colors ${selectedCategory === category
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
