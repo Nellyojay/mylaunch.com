@@ -99,7 +99,7 @@ function PostFeed() {
 
           {session && (
             <div className="bg-white rounded-md shadow-sm p-4 space-y-2">
-              <p className="font-semibold">Businesses ({userStartups?.length})</p>
+              <p className="font-semibold">My Businesses ({userStartups?.length})</p>
 
               <div>
                 {(userStartups?.length ?? 0) > 0 ? (

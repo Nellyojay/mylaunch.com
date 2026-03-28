@@ -105,7 +105,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
                   Feedback
                 </Link>
                 <Link to="/create" className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname === '/create' ? 'text-gray-800 border-b border-gray-800' : ''}`}>
-                  Create Startup
+                  Create Page
                 </Link>
                 <Link to={`/profile/${currentUser?.id}`} className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname.startsWith('/profile') ? 'text-gray-800' : ''}`} onClick={() => setSelectedProfile(currentUser?.id)}>
                   <User className="w-6 h-6" />
@@ -113,11 +113,8 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
               </>
             )}
           </div>
-
           <div className='md:hidden'></div>
         </div>
-
-
       </div>
 
       {/* Mobile bottom tab bar */}
