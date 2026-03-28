@@ -136,11 +136,13 @@ export function UserProfile() {
               <h1 className="text-3xl font-bold text-gray-900">{userData?.full_name}</h1>
               <p className="text-sm text-gray-400 mb-4">@{userData?.user_name || 'Username'}</p>
               <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
-                {userData?.user_roles?.map((role, index) => (
-                  <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
-                    {role}
-                  </span>
-                ))}
+                {userData.user_roles && userData.user_roles.length > 0 ? (
+                  userData.user_roles.map((role, index) => (
+                    <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+                      {role}
+                    </span>
+                  ))
+                ) : null}
               </div>
 
               <p className="text-gray-700">
