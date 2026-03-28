@@ -21,11 +21,11 @@ interface FeedbackMessage {
 export function Feedback() {
   const { webName } = useWebData();
   const { user } = useAuth();
-  const { userData } = useUserData();
+  const { currentUser } = useUserData();
   const [loading, setLoading] = useState(false);
   const [feedbackList, setFeedbackList] = useState<FeedbackMessage[]>([]);
   const [formData, setFormData] = useState({
-    author: userData?.full_name || '',
+    author: currentUser?.full_name || '',
     email: user?.email || '',
     rating: 5,
     category: 'General Feedback',
@@ -72,7 +72,7 @@ export function Feedback() {
         rating: formData.rating,
         category: formData.category,
         message: formData.message,
-        user_id: userData?.id || null
+        user_id: currentUser?.id || null
       })
       .select()
       .single();
@@ -91,7 +91,7 @@ export function Feedback() {
 
     setFeedbackList([data, ...feedbackList]);
     setFormData({
-      author: userData?.full_name || '',
+      author: currentUser?.full_name || '',
       email: user?.email || '',
       rating: 5,
       category: 'General Feedback',
