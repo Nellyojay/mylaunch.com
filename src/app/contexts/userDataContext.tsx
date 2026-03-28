@@ -92,11 +92,16 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
 
     setLoadingUserData(true);
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('users')
       .select('*')
       .eq('id', selectedProfile)
-      .single();
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching user data:', error.message);
+      setUserData(null);
+    }
 
     if (data) {
       setUserData(data);

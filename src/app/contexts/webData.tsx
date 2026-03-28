@@ -15,13 +15,12 @@ export const WebDataProvider = ({ children }: { children: React.ReactNode }) => 
     // For example, using supabase:
     const { data, error } = await supabase
       .from('changes')
-      .select('web_name')
-      .single();
+      .select('web_name');
 
     if (error) {
       setWebNameError('Web name error');
     } else {
-      setWebName(data.web_name);
+      setWebName(data[0].web_name);
     }
   }
 

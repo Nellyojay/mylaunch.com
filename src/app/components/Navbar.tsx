@@ -26,7 +26,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   }
 
   const check = () => {
-    if (currentUser?.TC_agreed === false || currentUser?.user_roles.length === 0) {
+    if (currentUser?.TC_agreed === false) {
       navigate("/TC_agree")
     }
   }
