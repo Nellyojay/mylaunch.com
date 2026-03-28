@@ -30,7 +30,6 @@ export function UserProfile() {
   const { userData, setSelectedProfile, selectedProfile } = useUserData();
   const { logout, user } = useAuth();
 
-  const [startupsFollwing, setStartupsFollowing] = useState<number | null>(0)
   const [tab, setTab] = useState<Tab>('mine');
   const [favoritesId, setFavoritesId] = useState<Favorites[]>([]);
   const [savedPosts, setSavedPosts] = useState<SavedPosts[]>([])
@@ -41,21 +40,6 @@ export function UserProfile() {
     userData?.id === profileId &&
     userData?.auth_id === user?.id
   );
-
-  const fetchFollowedBusinesses = async () => {
-    if (!userData?.id) return;
-
-    const { data, error } = await supabase
-      .from('follows')
-      .select('user_id')
-      .eq('user_id', userData?.id)
-
-    if (error) {
-      return;
-    } else {
-      setStartupsFollowing(data.length)
-    }
-  };
 
   const fetchFavoriteBusinesses = async () => {
     if (!userData?.id) return;
@@ -92,7 +76,6 @@ export function UserProfile() {
       fetchStartupPosts();
       fetchSavedPosts();
       fetchFavoriteBusinesses();
-      fetchFollowedBusinesses();
       setSelectedProfile(profileId);
     }
   }, [profileId, setSelectedProfile]);
@@ -162,7 +145,7 @@ export function UserProfile() {
 
               <div className="flex items-center justify-center md:block text-gray-500 mt-2">
                 <Link to={'/following'} className="text-blue-600 hover:text-blue-400">
-                  Businesses Following <span className='font-semibold text-gray-800'>{startupsFollwing}</span>
+                  Businesses Following <span className='font-semibold text-gray-800'>{userData.following}</span>
                 </Link>
               </div>
             </div>

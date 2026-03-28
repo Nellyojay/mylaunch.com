@@ -28,12 +28,7 @@ const UserDataContext = createContext<UserDataContextType | null>(null);
 export const UserDataProvider = ({ children }: { children: React.ReactNode }) => {
   const [userData, setUserData] = useState<userData | null>(null);
   const [currentUser, setCurrentUser] = useState<userData | null>(null);
-  const [selectedProfile, setSelectedProfileState] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('selectedProfile');
-    }
-    return null;
-  });
+  const [selectedProfile, setSelectedProfile] = useState<string | null>(null);
   const [loadingUserData, setLoadingUserData] = useState(false);
 
   useEffect(() => {
@@ -71,17 +66,6 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
     }
 
     return Boolean(data.TC_agreed);
-  }
-
-  const setSelectedProfile = (id: string | null) => {
-    if (typeof window !== 'undefined') {
-      if (id) {
-        localStorage.setItem('selectedProfile', id);
-      } else {
-        localStorage.removeItem('selectedProfile');
-      }
-    }
-    setSelectedProfileState(id);
   };
 
   const fetchUserData = useCallback(async () => {
