@@ -20,6 +20,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   const { setSelectedProfile, currentUser, agreeToTC } = useUserData();
   const [searchValue, setSearchValue] = useState('');
   const [hideLogoName, setHideLogoName] = useState(false);
+  const [searchBarNavigateToFeed, setSearchBarNavigateToFeed] = useState(false);
 
   if (!currentUser) {
     <Loader />
@@ -34,6 +35,12 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   useEffect(() => {
     check();
   }, [agreeToTC])
+
+  useEffect(() => {
+    if (searchBarNavigateToFeed && location.pathname !== '/feed') {
+      navigate('/feed');
+    }
+  }, [searchBarNavigateToFeed, location.pathname, navigate])
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -66,7 +73,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
                   type="text"
                   onFocus={() => {
                     setHideLogoName(true);
-                    navigate('/feed');
+                    setSearchBarNavigateToFeed(true);
                   }}
                   onBlur={() => {
                     setHideLogoName(false);

@@ -83,7 +83,7 @@ export function Landing() {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Launching a business?</h3>
                 <p className="text-gray-600">
-                  Get discovered by potential customers and investors and grow your startup business strategically with customer's or investor's opinions as a building bricks.
+                  Get discovered by potential customers and investors and grow your startup business strategically with customer's or investor's opinions as building bricks.
                 </p>
               </div>
 
@@ -93,7 +93,7 @@ export function Landing() {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Have an established business?</h3>
                 <p className="text-gray-600">
-                  Share your updates and build a community around your brand with comments, and direct support from follow investors.
+                  Share your updates and build a community around your brand with comments, and direct support from fellow investors.
                 </p>
               </div>
 
@@ -103,7 +103,7 @@ export function Landing() {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Grow Your Business</h3>
                 <p className="text-gray-600">
-                  Connect with audiences and gain visibility. Allow reactions to your products and services from the business posts to help you grow accordingly
+                  Connect with audiences and gain visibility. Allow reactions to your products and services from the business posts to help you grow accordingly.
                 </p>
               </div>
             </div>

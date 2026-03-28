@@ -190,7 +190,7 @@ export function Feed() {
           (filteredUsers ?? []).length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {filteredUsers?.map((user) => (
-                <div key={user.id} className="bg-white rounded-lg shadow-sm p-4 flex items-center space-x-4">
+                <div key={user.id} className="bg-white rounded-lg shadow-sm p-2 flex items-center space-x-4">
                   {user.profile_image ? (
                     <img
                       src={getImageUrl(user.profile_image) || undefined}
