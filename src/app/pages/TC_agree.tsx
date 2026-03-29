@@ -94,6 +94,7 @@ export default function TC_agree() {
     <div className="flex h-screen justify-center items-center bg-linear-to-br from-blue-100 via-indigo-50 to-purple-100">
       {!onboardingMessage && (
         <div className="border border-gray-300 p-6 mx-2 rounded-xl shadow-lg bg-gray-50">
+          <h1 className="text-2xl font-bold mb-4">Welcome to {webName}!</h1>
           <h1 className="text-lg font-bold mb-4">What role do you wish to hold in this platform?</h1>
           <div className="mb-6">
             <label htmlFor="selected-roles" className="block text-sm font-medium text-gray-700 mb-2">

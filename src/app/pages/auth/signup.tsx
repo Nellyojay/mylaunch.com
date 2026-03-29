@@ -47,7 +47,7 @@ export function Signup() {
     });
 
     if (signupError) {
-      alert('Failed to create account. Please try again.');
+      alert('Failed to create account. Please try again later.');
       setLoading(false);
       return;
     }

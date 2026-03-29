@@ -122,7 +122,7 @@ function PostFeed() {
             </div>
           ) : (
             <div className="bg-white rounded-md shadow-sm p-4 text-center">
-              <p className="text-gray-500">No posts match your search.</p>
+              <p className="text-gray-500">Visit your Business page and start sharing updates using posts.</p>
             </div>
           )}
 
