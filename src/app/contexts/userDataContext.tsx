@@ -1,6 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import supabase from "../supabaseClient";
 
+export const BUSINESS_PERSONNEL_ROLE = 'business personnel';
+export const INVESTOR_ROLE = 'investor';
+export const CUSTOMER_ROLE = 'customer';
+export const MENTOR_ROLE = 'mentor';
+export const ADMIN_ROLE = 'admin';
+
 export type userData = {
   id: string;
   auth_id: string;
@@ -11,6 +17,7 @@ export type userData = {
   following: number;
   profile_image: string;
   TC_agreed: boolean;
+  favorites: number;
   user_roles: string[];
 }
 
@@ -20,6 +27,11 @@ type UserDataContextType = {
   setSelectedProfile: any;
   loadingUserData: boolean;
   currentUser: userData | null;
+  isBusinessPersonnel: boolean;
+  isInvestor: boolean;
+  isCustomer: boolean;
+  isMentor: boolean;
+  isAdmin: boolean;
   agreeToTC: () => Promise<boolean>;
 };
 
@@ -30,6 +42,12 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
   const [currentUser, setCurrentUser] = useState<userData | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<string | null>(null);
   const [loadingUserData, setLoadingUserData] = useState(false);
+
+  const isBusinessPersonnel = Boolean(currentUser?.user_roles.includes(BUSINESS_PERSONNEL_ROLE));
+  const isInvestor = Boolean(currentUser?.user_roles.includes(INVESTOR_ROLE));
+  const isCustomer = Boolean(currentUser?.user_roles.includes(CUSTOMER_ROLE));
+  const isMentor = Boolean(currentUser?.user_roles.includes(MENTOR_ROLE));
+  const isAdmin = Boolean(currentUser?.user_roles.includes(ADMIN_ROLE));
 
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange(
@@ -96,7 +114,7 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
   const fetchCurrentUser = async (userId: string) => {
     setLoadingUserData(true);
 
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('users')
       .select('*')
       .eq('auth_id', userId)
@@ -104,7 +122,6 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
 
     if (data) {
       setCurrentUser(data);
-    } else if (error) {
     }
     setLoadingUserData(false);
   }
@@ -139,7 +156,19 @@ export const UserDataProvider = ({ children }: { children: React.ReactNode }) =>
   }, [selectedProfile, setSelectedProfile, fetchUserData]);
 
   return (
-    <UserDataContext.Provider value={{ userData, loadingUserData, selectedProfile, setSelectedProfile, currentUser, agreeToTC }}>
+    <UserDataContext.Provider value={{
+      userData,
+      loadingUserData,
+      selectedProfile,
+      setSelectedProfile,
+      currentUser,
+      isBusinessPersonnel,
+      isInvestor,
+      isCustomer,
+      isMentor,
+      isAdmin,
+      agreeToTC
+    }}>
       {children}
     </UserDataContext.Provider>
   );

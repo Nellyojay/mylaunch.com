@@ -14,6 +14,7 @@ import { Feedback } from "./pages/Feedback";
 import TC_agree from "./pages/TC_agree";
 import PostFeed from "./pages/PostFeed";
 import { FollowingStartups } from "./pages/FollowingStartups";
+import CreateMentorshipPage from "./components/CreateMentorshipPage";
 
 export const router = createHashRouter([
   {
@@ -55,6 +56,14 @@ export const router = createHashRouter([
   {
     path: "/create",
     Component: CreateStartup,
+  },
+  {
+    path: "/create",
+    Component: CreateStartup,
+  },
+  {
+    path: "/create-mentorship",
+    Component: CreateMentorshipPage,
   },
   {
     path: "/login",

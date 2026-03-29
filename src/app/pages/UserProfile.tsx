@@ -1,17 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { StartupCard } from '../components/StartupCard';
 import { formatDate } from '../constants/dateFormat';
 import { useAuth } from '../contexts/authContext';
 import { useStartup } from '../contexts/StartupProfileContext';
-import { useUserData } from '../contexts/userDataContext';
-import { Calendar, Briefcase, Bookmark, Star } from 'lucide-react';
+import { ADMIN_ROLE, BUSINESS_PERSONNEL_ROLE, CUSTOMER_ROLE, INVESTOR_ROLE, MENTOR_ROLE, useUserData } from '../contexts/userDataContext';
+import { Calendar, Briefcase, Bookmark, Star, ChevronUp, ChevronDown } from 'lucide-react';
 import { getImageUrl } from '../constants/imageHandler';
 import ScrollToTop from '../constants/scrollToTop';
 import Loader from '../constants/loader';
 import supabase from '../supabaseClient';
 import { PostCard } from '../components/PostCard';
+import { ActionsPopup } from '../components/Popup';
 
 type Tab = 'mine' | 'favorites' | 'savedPosts';
 
@@ -23,6 +24,29 @@ type SavedPosts = {
   post_id: string | number;
 }
 
+const noteMessage = [
+  {
+    role: INVESTOR_ROLE,
+    message: 'As an Investor, you can follow businesses and engage with their posts, but you cannot create your own business page.'
+  },
+  {
+    role: CUSTOMER_ROLE,
+    message: 'As a Customer, you can follow businesses and engage with their posts, but you cannot create your own business page.'
+  },
+  {
+    role: BUSINESS_PERSONNEL_ROLE,
+    message: 'As a Business Personnel, you can create and manage your own business page.'
+  },
+  {
+    role: MENTOR_ROLE,
+    message: 'As a Mentor, you can create and manage your own mentorship page.'
+  },
+  {
+    role: ADMIN_ROLE,
+    message: 'As an Admin, you have full access to all features, including creating and managing business pages.'
+  }
+]
+
 export function UserProfile() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -30,9 +54,13 @@ export function UserProfile() {
   const { userData, setSelectedProfile, selectedProfile } = useUserData();
   const { logout, user } = useAuth();
 
-  const [tab, setTab] = useState<Tab>('mine');
+  const [tab, setTab] = useState<Tab>(userData?.user_roles.includes(BUSINESS_PERSONNEL_ROLE) ? 'mine' : 'favorites');
   const [favoritesId, setFavoritesId] = useState<Favorites[]>([]);
   const [savedPosts, setSavedPosts] = useState<SavedPosts[]>([])
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [openActionsPopup, setOpenActiionsPopup] = useState(false);
+
+  const actionsRef = useRef<HTMLDivElement | null>(null);
 
   const profileId = id || selectedProfile || userData?.id || user?.id || null;
   const isOwner = Boolean(
@@ -40,6 +68,20 @@ export function UserProfile() {
     userData?.id === profileId &&
     userData?.auth_id === user?.id
   );
+
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (actionsRef.current && !actionsRef.current.contains(event.target as Node)) {
+        setOpenActiionsPopup(false);
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   const fetchFavoriteBusinesses = async () => {
     if (!userData?.id) return;
@@ -99,8 +141,8 @@ export function UserProfile() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         {/* Profile Header */}
-        <div className="bg-white rounded-2xl shadow-md p-8 mb-8">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+        <div className="bg-white rounded-2xl shadow-md pb-4 mb-8">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-6 p-6">
             {/* Profile Picture */}
             {userData?.profile_image ? (
               <img
@@ -168,25 +210,56 @@ export function UserProfile() {
                 </button>
               </div>
             ) : null}
-
           </div>
+
+          <div className='flex justify-center items-center gap-1'>
+            <button
+              title={moreOpen ? 'Hide role information' : 'View more about user roles'}
+              onClick={() => setMoreOpen(!moreOpen)}
+              className='text-xs md:text-sm text-blue-600 md:hover:text-blue-400 transition-colors flex items-center'
+            >
+              View more about your roles
+            </button>
+            {moreOpen ? (
+              <ChevronUp className='w-4 h-4 text-blue-600' />
+            ) : (
+              <ChevronDown className='w-4 h-4 text-blue-600' />
+            )}
+          </div>
+
+          {moreOpen && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mx-6 mt-2 rounded-lg text-xs md:text-sm">
+              {noteMessage.map(n => {
+                if (userData.user_roles.includes(n.role)) {
+                  return (
+                    <>
+                      <p key={n.role}>- {n.message}</p>
+                    </>
+                  )
+                }
+              })}
+              <p className="font-bold mt-1">To change your role, edit your profile to the role of your choice.</p>
+            </div>
+          )}
         </div>
 
         {/* Startups Section */}
         <div>
           <div className="sticky top-18 h-fit z-50 flex items-center justify-between mb-6">
-            <div className='flex text-gray-500 space-x-2 border-2 border-gray-400 rounded-lg py-1 px-4 mr-1 justify-between not-md:w-full backdrop-blur-xl'>
-              <button
-                onClick={() => setTab('mine')}
-                className={`font-bold cursor-pointer md:hover:text-gray-800 transition-all duration-200 ${tab === 'mine' && 'text-gray-800 border-b-2'}`}
-              >Mine</button>
+            <div className='flex text-gray-500 space-x-2 border-2 border-gray-400 rounded-lg py-1 px-4 mr-1 justify-around not-md:w-full backdrop-blur-xl'>
+              {userData.user_roles.includes(BUSINESS_PERSONNEL_ROLE) && (
+                <button
+                  onClick={() => setTab('mine')}
+                  className={`font-bold cursor-pointer md:hover:text-gray-800 transition-all duration-200 ${tab === 'mine' && 'text-gray-800 border-b-2'}`}
+                >Mine</button>
+              )}
 
               <div className='flex items-center justify-center gap-1 md:hover:text-gray-800'>
                 <Star className='fill-gray-500' size={18} color='' />
                 <button
                   onClick={() => setTab('favorites')}
                   className={`font-semibold cursor-pointer transition-all duration-200 ${tab === 'favorites' && 'text-gray-800 border-b-2'}`}
-                >Businesses</button>
+                >Favorites</button>
               </div>
 
               <div className='flex items-center gap-1 md:hover:text-gray-800'>
@@ -198,15 +271,19 @@ export function UserProfile() {
               </div>
             </div>
 
-            {isOwner && (
-              <Link
-                to="/create"
-                className="flex justify-center items-center text-blue-600 hover:text-blue-400 border-2 border-blue-600 hover:border-blue-400 bg-blue-50 rounded-lg py-1 px-4 font-medium"
-              >
-                +
-                <span className='hidden md:block'>Create Business</span>
-              </Link>
-            )}
+            <div ref={actionsRef} className='relative'>
+              {isOwner && (
+                <button
+                  onClick={() => setOpenActiionsPopup(prev => !prev)}
+                  className="flex justify-center items-center text-blue-600 hover:text-blue-400 border-2 border-blue-600 hover:border-blue-400 bg-blue-50 rounded-lg py-1 px-4 font-medium"
+                >
+                  +
+                  <span className='hidden md:block'>Create page</span>
+                </button>
+              )}
+
+              {openActionsPopup && <ActionsPopup {...userData} />}
+            </div>
           </div>
 
           {tab === 'mine' && (
@@ -218,11 +295,11 @@ export function UserProfile() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl shadow-md p-12 text-center">
-                <p className="text-gray-500 mb-4">No Businesses created yet</p>
+                <p className="text-gray-500 mb-4">No Business page created yet.</p>
                 {isOwner && (
                   <Link
                     to="/create"
-                    className="inline-block bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition-colors font-medium"
+                    className="inline-block not-md:text-sm bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition-colors font-medium"
                   >
                     Create Your First Business Page
                   </Link>
@@ -239,7 +316,7 @@ export function UserProfile() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl shadow-md p-12 text-center">
-                <p className="text-gray-500 mb-4">User has no favorite businesses yet.</p>
+                <p className="text-gray-500 mb-4">{userData?.full_name?.split(' ')[1] || 'User'} has no favorite businesses yet.</p>
               </div>
             )
           )}
@@ -256,7 +333,7 @@ export function UserProfile() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl shadow-md p-12 text-center">
-                <p className="text-gray-500 mb-4">User has not saved any posts yet.</p>
+                <p className="text-gray-500 mb-4">{userData?.full_name?.split(' ')[1] || 'User'} has not saved any posts yet.</p>
               </div>
             )
           )}

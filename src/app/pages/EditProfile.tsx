@@ -46,22 +46,24 @@ export function EditProfile() {
     setError(null);
 
     // Username uniqueness check
-    const { data: existingUser, error: checkError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('user_name', userName)
-      .maybeSingle();
+    if (userName) {
+      const { data: existingUser, error: checkError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('user_name', userName)
+        .maybeSingle();
 
-    if (checkError) {
-      setLoading(false);
-      setError(checkError.message || 'Could not verify username uniqueness.');
-      return;
-    }
+      if (checkError) {
+        setLoading(false);
+        setError(checkError.message || 'Could not verify username uniqueness.');
+        return;
+      }
 
-    if (existingUser && existingUser.id !== profileId) {
-      setLoading(false);
-      setError('Username is already taken. Please choose another one.');
-      return;
+      if (existingUser && existingUser.id !== profileId) {
+        setLoading(false);
+        setError('Username is already taken. Please choose another one.');
+        return;
+      }
     }
 
     const { error: updateError } = await supabase
@@ -155,6 +157,7 @@ export function EditProfile() {
               <input
                 id="full-name"
                 value={fullName}
+                placeholder='e.g. John Doe'
                 onChange={(e) => setFullName(e.target.value)}
                 className="mt-1 block w-full p-2 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
@@ -168,9 +171,9 @@ export function EditProfile() {
               <input
                 id="username"
                 value={userName}
+                placeholder='e.g. johnDoe123'
                 onChange={(e) => setUserName(e.target.value)}
                 className="mt-1 block w-full p-2 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                required
               />
             </div>
 

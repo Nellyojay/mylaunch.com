@@ -41,6 +41,7 @@ export type StartupData = {
   website: string;
   founded_in: string;
   x_username: string;
+  favorite_count: number;
 }
 
 type StartupContextType = {
