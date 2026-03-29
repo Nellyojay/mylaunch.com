@@ -15,6 +15,7 @@ import TC_agree from "./pages/TC_agree";
 import PostFeed from "./pages/PostFeed";
 import { FollowingStartups } from "./pages/FollowingStartups";
 import CreateMentorshipPage from "./components/CreateMentorshipPage";
+import { MentorshipPage } from "./pages/MentorshipPage";
 
 export const router = createHashRouter([
   {
@@ -80,6 +81,10 @@ export const router = createHashRouter([
   {
     path: "/profile/:id/edit",
     Component: EditProfile,
+  },
+  {
+    path: "/mentorship-page/:id",
+    Component: MentorshipPage,
   },
   {
     path: "*",

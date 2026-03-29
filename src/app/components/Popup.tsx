@@ -5,7 +5,8 @@ export const ActionsPopup = (user: userData) => {
 
   return (
     <div
-      className="absolute top-10 right-0 bg-white rounded-md border-2 border-gray-300 shadow-lg p-2 w-52 z-10 font-semibold ">
+      className="absolute top-10 right-0 flex flex-col bg-white rounded-md border-2 border-gray-300 shadow-lg p-2 w-52 z-10 font-semibold "
+    >
       {user.user_roles?.includes(BUSINESS_PERSONNEL_ROLE) && (
         <Link
           to="/create"
@@ -22,6 +23,13 @@ export const ActionsPopup = (user: userData) => {
           Create Mentorship Page
         </Link>
       )}
+
+      <Link
+        to="/mentorship-page/1"
+        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+      >
+        View mentorship page
+      </Link>
     </div>
   );
 }

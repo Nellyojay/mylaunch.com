@@ -83,7 +83,7 @@ export const StartupProvider = ({ children }: { children: React.ReactNode }) => 
 
   const fetchStartupPosts = async () => {
     const { data, error } = await supabase
-      .from('startup_posts')
+      .from('posts')
       .select('id, content, image_url, created_at, likes, saves, user_id, startup_id, startups(id, display_image, name)')
       .order('created_at', { ascending: false });
 
@@ -98,7 +98,7 @@ export const StartupProvider = ({ children }: { children: React.ReactNode }) => 
     if (!confirmDelete) return;
 
     const { error } = await supabase
-      .from('startup_posts')
+      .from('posts')
       .delete()
       .eq('id', postId);
 
@@ -157,7 +157,7 @@ export const StartupProvider = ({ children }: { children: React.ReactNode }) => 
 export const useStartup = () => {
   const context = useContext(StartupContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error("useStartup must be used within a StartupProvider");
   }
   return context;
 };

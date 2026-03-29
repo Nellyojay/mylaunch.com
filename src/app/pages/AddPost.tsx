@@ -52,7 +52,7 @@ export function AddPost() {
     setSaving(true);
 
     const { data, error: insertError } = await supabase
-      .from('startup_posts')
+      .from('posts')
       .insert([
         {
           startup_id: id,
