@@ -8,6 +8,7 @@ interface MentorHeaderProps {
 export function MentorHeader({ topic, description }: MentorHeaderProps) {
   return (
     <div className="relative bg-gray-900 text-white py-8 px-4 md:py-12">
+
       <img
         src="https://cms-assets.themuse.com/media/lead/01212022-1047259374-coding-classes_scanrail.jpg"
         alt="mentorship-header"

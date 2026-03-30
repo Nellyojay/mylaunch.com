@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { MentorHeader } from "../components/mentor-header";
 import { MentorPost } from "../components/mentor-post";
 import { MentorProfile } from "../components/mentor-profile";
+import { ArrowLeft } from "lucide-react";
+import ScrollToTop from "../constants/scrollToTop";
 
 export default function MentorshipPage() {
   const mentorPosts = [
@@ -60,14 +63,27 @@ export default function MentorshipPage() {
       mediaUrl: "https://images.unsplash.com/photo-1660810731526-0720827cbd38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2Z0d2FyZSUyMGRldmVsb3BlciUyMHdvcmtzcGFjZXxlbnwxfHx8fDE3NzQ4NTkxMjR8MA&ixlib=rb-4.1.0&q=80&w=1080",
     },
   ];
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ScrollToTop />
+
       {/* Header */}
       <MentorHeader
         topic="Web Development Mentorship"
         description="Learn modern web development practices, from frontend frameworks to full-stack architecture. Get personalized guidance and insights from years of industry experience."
       />
+
+      <div className="ml-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 mt-4 text-blue-600 hover:text-blue-700 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+      </div>
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 py-6 md:py-8">
@@ -88,7 +104,7 @@ export default function MentorshipPage() {
         {/* Posts Section */}
         <div>
           <h2 className="text-xl md:text-2xl mb-4">Recent Posts & Insights</h2>
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {mentorPosts.map((post) => (
               <MentorPost
                 key={post.id}

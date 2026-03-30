@@ -29,7 +29,7 @@ export default function MentorshipPageCard(mentorship: MentorshipData) {
             </h3>
           </div>
 
-          <p className="text-gray-600 text-sm mb-4">
+          <p className="text-gray-600 text-sm mb-4 line-clamp-3">
             {mentorship.description}
           </p>
 

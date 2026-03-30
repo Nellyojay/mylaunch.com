@@ -55,7 +55,7 @@ export function UserProfile() {
   const { mentorshipData } = useMentorshipData();
   const { logout, user } = useAuth();
 
-  const [tab, setTab] = useState(userData?.user_roles.includes(BUSINESS_PERSONNEL_ROLE) ? 0 : 1);
+  const [tab, setTab] = useState<number | null>(null);
   const [favoritesId, setFavoritesId] = useState<Favorites[]>([]);
   const [savedPosts, setSavedPosts] = useState<SavedPosts[]>([])
   const [moreOpen, setMoreOpen] = useState(false);
@@ -69,6 +69,10 @@ export function UserProfile() {
     userData?.id === profileId &&
     userData?.auth_id === user?.id
   );
+
+  useEffect(() => {
+    setTab(userData?.user_roles.includes(BUSINESS_PERSONNEL_ROLE) ? 0 : 1)
+  }, [userData])
 
   useEffect(() => {
     const handleClickOutside = (event: any) => {
