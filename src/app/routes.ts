@@ -11,11 +11,12 @@ import { Signup } from "./pages/auth/signup";
 import { EditStartup } from "./pages/EditStartup";
 import { EditProfile } from "./pages/EditProfile";
 import { Feedback } from "./pages/Feedback";
+import { FollowingStartups } from "./pages/FollowingStartups";
 import TC_agree from "./pages/TC_agree";
 import PostFeed from "./pages/PostFeed";
-import { FollowingStartups } from "./pages/FollowingStartups";
-import CreateMentorshipPage from "./components/CreateMentorshipPage";
-import { MentorshipPage } from "./pages/MentorshipPage";
+import MentorshipPage from "./pages/MentorshipPage";
+import CreateMentorship from "./pages/CreateMentorship";
+import EditMentorship from "./pages/EditMentorshipPage";
 
 export const router = createHashRouter([
   {
@@ -63,10 +64,6 @@ export const router = createHashRouter([
     Component: CreateStartup,
   },
   {
-    path: "/create-mentorship",
-    Component: CreateMentorshipPage,
-  },
-  {
     path: "/login",
     Component: Login,
   },
@@ -85,6 +82,14 @@ export const router = createHashRouter([
   {
     path: "/mentorship-page/:id",
     Component: MentorshipPage,
+  },
+  {
+    path: "/mentorship-page/create",
+    Component: CreateMentorship,
+  },
+  {
+    path: "/mentorship-page/:id/edit",
+    Component: EditMentorship,
   },
   {
     path: "*",

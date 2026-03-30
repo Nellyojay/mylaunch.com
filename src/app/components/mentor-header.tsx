@@ -1,0 +1,27 @@
+import { BookOpen } from "lucide-react";
+
+interface MentorHeaderProps {
+  topic: string;
+  description: string;
+}
+
+export function MentorHeader({ topic, description }: MentorHeaderProps) {
+  return (
+    <div className="relative bg-gray-900 text-white py-8 px-4 md:py-12">
+      <img
+        src="https://cms-assets.themuse.com/media/lead/01212022-1047259374-coding-classes_scanrail.jpg"
+        alt="mentorship-header"
+        className="w-full h-full object-cover absolute top-0 left-0 opacity-30"
+      />
+      <div className="relative max-w-4xl mx-auto">
+        <div className="flex items-center gap-3 mb-4">
+          <BookOpen className="w-8 h-8 md:w-10 md:h-10" />
+          <h1 className="text-2xl md:text-4xl">{topic}</h1>
+        </div>
+        <p className="text-blue-100 text-sm md:text-base max-w-3xl">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+}

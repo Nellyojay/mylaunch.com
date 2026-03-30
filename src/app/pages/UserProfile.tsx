@@ -13,8 +13,8 @@ import Loader from '../constants/loader';
 import supabase from '../supabaseClient';
 import { PostCard } from '../components/PostCard';
 import { ActionsPopup } from '../components/Popup';
-
-type Tab = 'mine' | 'favorites' | 'savedPosts';
+import MentorshipPageCard from '../components/MentorshipPageCard';
+import { useMentorshipData } from '../contexts/mentorshipContext';
 
 type Favorites = {
   startup_id: string
@@ -39,7 +39,7 @@ const noteMessage = [
   },
   {
     role: MENTOR_ROLE,
-    message: 'As a Mentor, you can create and manage your own mentorship page.'
+    message: 'As a Mentor, you can create and manage your own mentorship page. One mentor can have a maximum of three (3) mentorship pages'
   },
   {
     role: ADMIN_ROLE,
@@ -52,9 +52,10 @@ export function UserProfile() {
   const { id } = useParams<{ id: string }>();
   const { startupData, posts, fetchStartupPosts, handleDeletePost } = useStartup();
   const { userData, setSelectedProfile, selectedProfile } = useUserData();
+  const { mentorshipData } = useMentorshipData();
   const { logout, user } = useAuth();
 
-  const [tab, setTab] = useState<Tab>(userData?.user_roles.includes(BUSINESS_PERSONNEL_ROLE) ? 'mine' : 'favorites');
+  const [tab, setTab] = useState(userData?.user_roles.includes(BUSINESS_PERSONNEL_ROLE) ? 0 : 1);
   const [favoritesId, setFavoritesId] = useState<Favorites[]>([]);
   const [savedPosts, setSavedPosts] = useState<SavedPosts[]>([])
   const [moreOpen, setMoreOpen] = useState(false);
@@ -139,7 +140,7 @@ export function UserProfile() {
       <Navbar />
       <ScrollToTop />
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-18 pb-20">
         {/* Profile Header */}
         <div className="bg-white rounded-2xl shadow-md pb-4 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6 p-6">
@@ -174,7 +175,7 @@ export function UserProfile() {
                 {userData?.bio || 'This user has not added a bio yet.'}
               </p>
 
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-gray-500">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-gray-500 text-xs mt-4">
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-4 h-4" />
                   <span>Joined MyLaunch {formatDate(userData?.created_at, false)}</span>
@@ -187,7 +188,7 @@ export function UserProfile() {
 
               <div className="flex items-center justify-center md:block text-gray-500 mt-2">
                 <Link to={'/following'} className="text-blue-600 hover:text-blue-400">
-                  Businesses Following <span className='font-semibold text-gray-800'>{userData.following}</span>
+                  Businesses Following <span className='font-semibold text-gray-600'>{userData.following}</span>
                 </Link>
               </div>
             </div>
@@ -212,20 +213,22 @@ export function UserProfile() {
             ) : null}
           </div>
 
-          <div className='flex justify-center items-center gap-1'>
-            <button
-              title={moreOpen ? 'Hide role information' : 'View more about user roles'}
-              onClick={() => setMoreOpen(!moreOpen)}
-              className='text-xs md:text-sm text-blue-600 md:hover:text-blue-400 transition-colors flex items-center'
-            >
-              View more about your roles
-            </button>
-            {moreOpen ? (
-              <ChevronUp className='w-4 h-4 text-blue-600' />
-            ) : (
-              <ChevronDown className='w-4 h-4 text-blue-600' />
-            )}
-          </div>
+          {isOwner && (
+            <div className='flex justify-center items-center gap-1'>
+              <button
+                title={moreOpen ? 'Hide role information' : 'View more about user roles'}
+                onClick={() => setMoreOpen(!moreOpen)}
+                className='text-xs md:text-sm text-blue-600 md:hover:text-blue-400 transition-colors flex items-center'
+              >
+                View more about your roles
+              </button>
+              {moreOpen ? (
+                <ChevronUp className='w-4 h-4 text-blue-600' />
+              ) : (
+                <ChevronDown className='w-4 h-4 text-blue-600' />
+              )}
+            </div>
+          )}
 
           {moreOpen && (
             <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mx-6 mt-2 rounded-lg text-xs md:text-sm">
@@ -249,25 +252,32 @@ export function UserProfile() {
             <div className='flex text-gray-500 space-x-2 border-2 border-gray-400 rounded-lg py-1 px-4 mr-1 justify-around not-md:w-full backdrop-blur-xl'>
               {userData.user_roles.includes(BUSINESS_PERSONNEL_ROLE) && (
                 <button
-                  onClick={() => setTab('mine')}
-                  className={`font-bold cursor-pointer md:hover:text-gray-800 transition-all duration-200 ${tab === 'mine' && 'text-gray-800 border-b-2'}`}
-                >Mine</button>
+                  onClick={() => setTab(0)}
+                  className={`font-bold cursor-pointer md:hover:text-gray-800 transition-all duration-200 ${tab === 0 && 'text-gray-800 border-b-2'}`}
+                >Businesses</button>
+              )}
+
+              {userData.user_roles.includes(MENTOR_ROLE) && (
+                <button
+                  onClick={() => setTab(1)}
+                  className={`font-bold cursor-pointer md:hover:text-gray-800 transition-all duration-200 ${tab === 1 && 'text-gray-800 border-b-2'}`}
+                >Pages</button>
               )}
 
               <div className='flex items-center justify-center gap-1 md:hover:text-gray-800'>
                 <Star className='fill-gray-500' size={18} color='' />
                 <button
-                  onClick={() => setTab('favorites')}
-                  className={`font-semibold cursor-pointer transition-all duration-200 ${tab === 'favorites' && 'text-gray-800 border-b-2'}`}
+                  onClick={() => setTab(2)}
+                  className={`font-semibold cursor-pointer transition-all duration-200 ${tab === 2 && 'text-gray-800 border-b-2'}`}
                 >Favorites</button>
               </div>
 
               <div className='flex items-center gap-1 md:hover:text-gray-800'>
                 <Bookmark className='fill-gray-500' size={18} color='' />
                 <button
-                  onClick={() => setTab('savedPosts')}
-                  className={`font-semibold cursor-pointer transition-all duration-200 ${tab === 'savedPosts' && 'text-gray-800 border-b-2'}`}
-                >Posts</button>
+                  onClick={() => setTab(3)}
+                  className={`font-semibold cursor-pointer transition-all duration-200 ${tab === 3 && 'text-gray-800 border-b-2'}`}
+                >Saved</button>
               </div>
             </div>
 
@@ -286,7 +296,7 @@ export function UserProfile() {
             </div>
           </div>
 
-          {tab === 'mine' && (
+          {tab === 0 && userData.user_roles.includes(BUSINESS_PERSONNEL_ROLE) && (
             (userStartups ?? []).length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {userStartups?.map((startup) => (
@@ -307,7 +317,30 @@ export function UserProfile() {
               </div>
             )
           )}
-          {tab === 'favorites' && (
+          {tab === 1 && userData.user_roles.includes(MENTOR_ROLE) && (
+            (mentorshipData ?? []).length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {mentorshipData.map((page) => (
+                  <Link key={page.id} to={`/mentorship/${page.id}`}>
+                    <MentorshipPageCard {...page} />
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl shadow-md p-12 text-center">
+                <p className="text-gray-500 mb-4">No Business page created yet.</p>
+                {isOwner && (
+                  <Link
+                    to="/mentorship/create"
+                    className="inline-block not-md:text-sm bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    Create Your First Mentorship Page
+                  </Link>
+                )}
+              </div>
+            )
+          )}
+          {tab === 2 && (
             (favStartups ?? []).length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {favStartups?.map((startup) => (
@@ -320,7 +353,7 @@ export function UserProfile() {
               </div>
             )
           )}
-          {tab === 'savedPosts' && (
+          {tab === 3 && (
             (savPosts ?? []).length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {savPosts.map((post) => (

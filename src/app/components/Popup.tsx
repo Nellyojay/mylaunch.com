@@ -17,19 +17,12 @@ export const ActionsPopup = (user: userData) => {
       )}
       {user.user_roles?.includes(MENTOR_ROLE) && (
         <Link
-          to="/create-mentorship"
+          to="/mentorship-page/create"
           className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
         >
           Create Mentorship Page
         </Link>
       )}
-
-      <Link
-        to="/mentorship-page/1"
-        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
-      >
-        View mentorship page
-      </Link>
     </div>
   );
 }

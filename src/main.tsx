@@ -6,6 +6,7 @@ import { WebDataProvider } from './app/contexts/webData'
 import { AuthProvider } from './app/contexts/authContext'
 import { UserDataProvider } from './app/contexts/userDataContext'
 import { StartupProvider } from './app/contexts/StartupProfileContext'
+import { MentorshipDataProvider } from './app/contexts/mentorshipContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -13,7 +14,9 @@ createRoot(document.getElementById('root')!).render(
       <AuthProvider>
         <UserDataProvider>
           <StartupProvider>
-            <App />
+            <MentorshipDataProvider>
+              <App />
+            </MentorshipDataProvider>
           </StartupProvider>
         </UserDataProvider>
       </AuthProvider>
