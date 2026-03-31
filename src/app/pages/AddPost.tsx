@@ -9,6 +9,7 @@ import SuccessMessage from '../components/SuccessMessage';
 export function AddPost() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  console.log(id)
   const { userData } = useUserData();
 
   const [content, setContent] = useState('');
@@ -65,20 +66,24 @@ export function AddPost() {
 
     if (insertError) {
       setError(insertError.message || 'Could not save post');
+      setSaving(false);
       return;
     }
 
-    const insertImage = await imageHandlerService.uploadImage(
-      imageFile,
-      FOLDER.STARTUP_POST,
-      userData?.id || '',
-      id,
-      data.id
-    )
+    if (imageFile) {
+      const insertImage = await imageHandlerService.uploadImage(
+        imageFile,
+        FOLDER.STARTUP_POST,
+        userData?.id || '',
+        id,
+        data.id
+      )
 
-    if (!insertImage) {
-      setError('Post saved but image upload failed');
-      return;
+      if (!insertImage) {
+        setError('Post saved but image upload failed');
+        setSaving(false)
+        return;
+      }
     }
 
     setSaving(false);

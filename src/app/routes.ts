@@ -56,6 +56,10 @@ export const router = createHashRouter([
     Component: AddPost,
   },
   {
+    path: "/mentorship-page/:id/add-post",
+    Component: AddPost,
+  },
+  {
     path: "/create",
     Component: CreateStartup,
   },

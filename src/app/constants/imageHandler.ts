@@ -24,7 +24,7 @@ const TABLE_MAP = {
     column: "cover_image",
   },
   [FOLDER.STARTUP_POST]: {
-    table: "startup_posts",
+    table: "posts",
     column: "image_url",
   },
 };

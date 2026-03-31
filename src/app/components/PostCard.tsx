@@ -117,27 +117,35 @@ export function PostCard({ post, deletePost }: PostCardProps) {
     <div className="bg-white border border-gray-300 rounded-md shadow-sm overflow-hidden">
 
       {/* Post Image */}
-      <img
-        src={getImageUrl(post.image_url) || '/default-post-image.jpg'}
-        alt="Post"
-        className="w-full h-auto object-cover"
-      />
+      {post.image_url && (
+        <img
+          src={getImageUrl(post.image_url) || '/default-post-image.jpg'}
+          alt="Post"
+          className="w-full h-auto object-cover"
+        />
+      )}
 
       {/* Post Content */}
       <div className="p-4">
         {/* Action Buttons */}
-        <div className="flex items-center justify-between -mt-10">
+        <div className={`flex items-center justify-between ${post.image_url && '-mt-10'}`}>
           <Link
             to={`/startup/${post.startup_id}`}
-            className=''
+            className={`${!post.image_url && 'flex justify-between items-center gap-3'}`}
           >
-            <img
-              src={getImageUrl(post.startups.display_image) || undefined}
-              alt=""
-              className='w-12 h-12 rounded-full'
-            />
+            {post.startups.display_image ? (
+              <img
+                src={getImageUrl(post.startups.display_image) || undefined}
+                alt=""
+                className='w-12 h-12 rounded-full'
+              />
+            ) : (
+              <div className='bg-blue-600 w-12 h-12 rounded-full flex justify-center items-center'>
+                <p className='text-white font-bold text-lg'>{post.startups.name.charAt(0).toLocaleUpperCase()}</p>
+              </div>
+            )}
             <p
-              className='line-clamp-1 text-gray-500'
+              className='line-clamp-1 text-gray-500 font-medium'
             >
               {post.startups.name}
             </p>

@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MentorHeader } from "../components/mentor-header";
 import { MentorPost } from "../components/mentor-post";
 import { MentorProfile } from "../components/mentor-profile";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Edit, Plus } from "lucide-react";
 import ScrollToTop from "../constants/scrollToTop";
 
 export default function MentorshipPage() {
@@ -64,6 +64,7 @@ export default function MentorshipPage() {
     },
   ];
   const navigate = useNavigate();
+  const id = useParams();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -75,13 +76,21 @@ export default function MentorshipPage() {
         description="Learn modern web development practices, from frontend frameworks to full-stack architecture. Get personalized guidance and insights from years of industry experience."
       />
 
-      <div className="ml-4">
+      <div className="flex justify-between items-center px-4 pt-4">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 mt-4 text-blue-600 hover:text-blue-700 transition-colors"
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
+        </button>
+
+        <button
+          onClick={() => navigate(`/mentorship-page/${id}/edit`)}
+          className="flex justify-center items-center text-blue-400 hover:text-blue-600 border-2 border-blue-400 hover:border-blue-600 bg-blue-50 rounded-lg py-1 px-4 gap-2"
+        >
+          <Edit size={18} />
+          <span>Edit page</span>
         </button>
       </div>
 
@@ -103,7 +112,17 @@ export default function MentorshipPage() {
 
         {/* Posts Section */}
         <div>
-          <h2 className="text-xl md:text-2xl mb-4">Recent Posts & Insights</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl md:text-2xl">Recent Posts & Insights</h2>
+            <button
+              onClick={() => navigate(`/mentorship-page/${id}/add-post`)}
+              className="flex justify-center items-center text-blue-400 hover:text-blue-600 border-2 border-blue-400 hover:border-blue-600 bg-blue-50 rounded-lg py-1 px-4 font-medium gap-2"
+            >
+              <Plus size={18} />
+              <span className="hidden md:block">Create post</span>
+            </button>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {mentorPosts.map((post) => (
               <MentorPost
