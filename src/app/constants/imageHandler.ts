@@ -5,7 +5,8 @@ export const FOLDER = {
   USER_PROFILE: "user_profile_image",
   STARTUP_PROFILE: "startup_profile_image",
   STARTUP_BANNER: "startup_banner",
-  STARTUP_POST: "startup_post_image",
+  POST: "post_image",
+  MENTORSHIP_BANNER: "mentorship_banner"
 } as const;
 
 type FolderType = (typeof FOLDER)[keyof typeof FOLDER];
@@ -23,8 +24,12 @@ const TABLE_MAP = {
     table: "startups",
     column: "cover_image",
   },
-  [FOLDER.STARTUP_POST]: {
+  [FOLDER.POST]: {
     table: "posts",
+    column: "image_url",
+  },
+  [FOLDER.MENTORSHIP_BANNER]: {
+    table: "mentorship_page",
     column: "image_url",
   },
 };
@@ -53,7 +58,8 @@ export const imageHandlerService = {
     folder: FolderType,
     userId: string,
     startupId?: string,
-    postId?: string
+    postId?: string,
+    mentorshipId?: string
   ): Promise<string | null> => {
     try {
       if (!file) return null;
@@ -81,14 +87,16 @@ export const imageHandlerService = {
 
       if (folder === FOLDER.USER_PROFILE) recordId = userId;
       if (folder === FOLDER.STARTUP_PROFILE || folder === FOLDER.STARTUP_BANNER) recordId = startupId!;
-      if (folder === FOLDER.STARTUP_POST) recordId = postId!;
+      if (folder === FOLDER.POST) recordId = postId!;
+      if (folder === FOLDER.MENTORSHIP_BANNER) recordId = mentorshipId!;
 
       /* DELETE OLD IMAGE ONLY FOR PROFILE OR BANNER */
 
       if (
         folder === FOLDER.USER_PROFILE ||
         folder === FOLDER.STARTUP_PROFILE ||
-        folder === FOLDER.STARTUP_BANNER
+        folder === FOLDER.STARTUP_BANNER ||
+        folder === FOLDER.MENTORSHIP_BANNER
       ) {
         const { data: existing, error: existingError } = await supabase
           .from(table)
@@ -131,8 +139,12 @@ export const imageHandlerService = {
           filePath = `${folder}/${startupId}/banner_${timestamp}.jpg`;
           break;
 
-        case FOLDER.STARTUP_POST:
-          filePath = `${folder}/${startupId}/${postId}/image_${timestamp}.jpg`;
+        case FOLDER.POST:
+          filePath = `${folder}/${startupId ? startupId : mentorshipId}/${postId}/image_${timestamp}.jpg`;
+          break;
+
+        case FOLDER.MENTORSHIP_BANNER:
+          filePath = `${folder}/${mentorshipId}/image_${timestamp}.jpg`;
           break;
       }
 
@@ -148,9 +160,12 @@ export const imageHandlerService = {
           maxFileSize = 0.5; // 0.5MB for startup profile images
           break;
         case FOLDER.STARTUP_BANNER:
-          maxFileSize = 1; // 1MB for profile and banner images
+          maxFileSize = 1; // 1MB for banner images
           break;
-        case FOLDER.STARTUP_POST:
+        case FOLDER.MENTORSHIP_BANNER:
+          maxFileSize = 1; // 1MB ford banner images
+          break;
+        case FOLDER.POST:
           maxFileSize = 2; // 2MB for post images
           break;
         default:
@@ -180,15 +195,19 @@ export const imageHandlerService = {
 
       if (folder === FOLDER.USER_PROFILE) {
         query = query.eq("id", userId);
-      }
+      };
 
       if (folder === FOLDER.STARTUP_PROFILE || folder === FOLDER.STARTUP_BANNER) {
         query = query.eq("id", startupId).eq("user_id", userId);
-      }
+      };
 
-      if (folder === FOLDER.STARTUP_POST) {
+      if (folder === FOLDER.POST) {
         query = query.eq("id", postId).eq("user_id", userId);
-      }
+      };
+
+      if (folder === FOLDER.MENTORSHIP_BANNER) {
+        query = query.eq("id", mentorshipId).eq("user_id", userId);
+      };
 
       const { error: updateError } = await query;
 

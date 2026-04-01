@@ -9,7 +9,6 @@ import SuccessMessage from '../components/SuccessMessage';
 export function AddPost() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  console.log(id)
   const { userData } = useUserData();
 
   const [content, setContent] = useState('');
@@ -73,7 +72,7 @@ export function AddPost() {
     if (imageFile) {
       const insertImage = await imageHandlerService.uploadImage(
         imageFile,
-        FOLDER.STARTUP_POST,
+        FOLDER.POST,
         userData?.id || '',
         id,
         data.id

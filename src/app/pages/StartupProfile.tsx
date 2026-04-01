@@ -120,7 +120,6 @@ export function StartupProfile() {
 
       setLoading(false);
       if (error) {
-        console.error('Failed to load comments', error);
         return;
       }
 

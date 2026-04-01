@@ -97,6 +97,20 @@ export const StartupProvider = ({ children }: { children: React.ReactNode }) => 
     const confirmDelete = window.confirm("Are you sure you want to delete this post?");
     if (!confirmDelete) return;
 
+    const { data } = await supabase
+      .from('posts')
+      .select('image_url')
+      .eq('id', postId)
+      .single();
+
+    if (data) {
+      const { error } = await supabase.storage
+        .from("images")
+        .remove([data.image_url]);
+
+      if (error) return;
+    }
+
     const { error } = await supabase
       .from('posts')
       .delete()
