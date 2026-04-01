@@ -1,22 +1,28 @@
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { useUserData } from '../contexts/userDataContext';
 import supabase from '../supabaseClient';
 import { FOLDER, imageHandlerService } from '../constants/imageHandler';
 import SuccessMessage from '../components/SuccessMessage';
+import { BiArrowBack } from 'react-icons/bi';
 
 export function AddPost() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const { currentUser } = useUserData();
 
+  const [heading, setHeading] = useState('');
   const [content, setContent] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const uploadMentorshipId = location.pathname.includes('/mentorship-page') ? id : null
+  const uploadStartupId = location.pathname.includes('/startup') ? id : null
 
   const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -40,11 +46,11 @@ export function AddPost() {
     e.preventDefault();
 
     if (!id) {
-      setError('Startup not found for current profile.');
+      setError('Id not found for current profile.');
       return;
     }
     if (!content.trim()) {
-      setError('Please provide content for the post.');
+      setError('Please provide text content for the post.');
       return;
     }
 
@@ -55,9 +61,11 @@ export function AddPost() {
       .from('posts')
       .insert([
         {
-          startup_id: id,
+          startup_id: uploadStartupId ?? null,
+          mentorship_id: uploadMentorshipId ?? null,
           user_id: currentUser?.id || null,
           content: content.trim(),
+          mentorship_post_heading: heading ?? null,
         },
       ])
       .select('id, image_url')
@@ -75,7 +83,8 @@ export function AddPost() {
         FOLDER.POST,
         currentUser?.id || '',
         id,
-        data.id
+        data.id,
+        id
       )
 
       if (!insertImage) {
@@ -89,17 +98,23 @@ export function AddPost() {
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
-      navigate(`/startup/${id}`);
+      navigate(`${uploadStartupId ? `/startup/${id}` : `/mentorship-page/${id}`}`);
     }, 4000);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar showAuth={false} />
-      <main className="max-w-3xl mx-auto pt-16 pb-20 px-4">
+      <main className="max-w-3xl mx-auto pt-20 pb-20 px-4">
         <div className="mb-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Add Post</h1>
-          <Link className="text-blue-600 hover:text-blue-800" to={`/startup/${id}`}>Back to Startup</Link>
+          <h1 className="text-lg md:text-xl font-bold">Add Post</h1>
+          <button
+            onClick={() => navigate(-1)}
+            className="text-blue-600 hover:text-blue-800 flex gap-2 items-center"
+          >
+            <BiArrowBack />
+            Back to page
+          </button>
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-md">
@@ -107,6 +122,19 @@ export function AddPost() {
             <p className="text-red-600">No startup selected. Go back to the profile and choose a startup first.</p>
           ) : (
             <form onSubmit={handlePostSubmit} className="space-y-4">
+
+              {uploadMentorshipId && (
+                <div>
+                  <label htmlFor="post-content" className="block text-sm font-medium text-gray-700">Post Sub-header</label>
+                  <input
+                    id="post-header"
+                    value={heading}
+                    onChange={(e) => setHeading(e.target.value)}
+                    className="mt-1 w-full border rounded-lg p-3 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Write your sub-heading here..."
+                  />
+                </div>
+              )}
 
               <div>
                 <label htmlFor="post-content" className="block text-sm font-medium text-gray-700">Content</label>

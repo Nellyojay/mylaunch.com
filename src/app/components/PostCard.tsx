@@ -12,12 +12,12 @@ import { Link } from 'react-router-dom';
 interface PostCardProps {
   post: Post;
   deletePost: () => void;
-
 }
 
 export function PostCard({ post, deletePost }: PostCardProps) {
   const { session, user } = useAuth();
   const { currentUser } = useUserData();
+
   const [liked, setLiked] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [likes, setLikes] = useState(post.likes);
@@ -26,7 +26,7 @@ export function PostCard({ post, deletePost }: PostCardProps) {
   const [saves, setSaves] = useState(post.saves || 0);
   const [savingSave, setSavingSave] = useState(false);
 
-  const postOwner = Boolean(currentUser?.id === post.user_id && user?.id == currentUser.auth_id)
+  const postOwner = Boolean(currentUser?.id === post.user_id && user?.id == currentUser?.auth_id)
 
   useEffect(() => {
     if (!session || !currentUser) return;
@@ -114,7 +114,7 @@ export function PostCard({ post, deletePost }: PostCardProps) {
   };
 
   return (
-    <div className="bg-white border border-gray-300 rounded-md shadow-sm overflow-hidden">
+    <div className="bg-white border border-gray-300 rounded-sm shadow-sm overflow-hidden">
 
       {/* Post Image */}
       {post.image_url && (
@@ -130,24 +130,28 @@ export function PostCard({ post, deletePost }: PostCardProps) {
         {/* Action Buttons */}
         <div className={`flex items-center justify-between ${post.image_url && '-mt-10'}`}>
           <Link
-            to={`/startup/${post.startup_id}`}
-            className={`${!post.image_url && 'flex justify-between items-center gap-3'}`}
+            to={`${post.startups ? `/startup/${post.startups?.id}` : `/mentorship-page/${post.mentorship_page?.id}`}`}
+            className={`${!post.image_url && 'flex justify-between items-center gap-2'}`}
           >
-            {post.startups.display_image ? (
+            {post.startups?.display_image || post.mentorship_page?.image_url ? (
               <img
-                src={getImageUrl(post.startups.display_image) || undefined}
+                src={getImageUrl(post.startups ? post.startups.display_image : post.mentorship_page?.image_url) || undefined}
                 alt=""
                 className='w-12 h-12 rounded-full'
               />
             ) : (
               <div className='bg-blue-600 w-12 h-12 rounded-full flex justify-center items-center'>
-                <p className='text-white font-bold text-lg'>{post.startups.name.charAt(0).toLocaleUpperCase()}</p>
+                <p className='text-white font-bold text-lg'>{post.startups ? post.startups?.name.charAt(0).toLocaleUpperCase() : post.mentorship_page?.topic.charAt(0).toLocaleUpperCase()}</p>
               </div>
             )}
             <p
-              className='line-clamp-1 text-gray-500 font-medium'
+              className='text-gray-500 font-medium text-sm my-2'
             >
-              {post.startups.name}
+              {post.startups ? post.startups.name : post.mentorship_page?.topic}
+              <br />
+              {post.mentorship_page && (
+                <span className='text-xs text-gray-400'>--Mentorship--</span>
+              )}
             </p>
           </Link>
 
@@ -155,8 +159,9 @@ export function PostCard({ post, deletePost }: PostCardProps) {
             <button
               title='Delete Post'
               onClick={() => setIsConfirmOpen(true)}
+              className='text-red-400 px-2'
             >
-              <Trash2 className="w-5 h-5 text-red-400" />
+              <Trash2 size={24} />
             </button>
           )}
         </div>
@@ -175,9 +180,18 @@ export function PostCard({ post, deletePost }: PostCardProps) {
           confirmClassName='bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg'
         />
 
+        {/* Header */}
+        {post.mentorship_post_heading && (
+          <div>
+            <p className='font-medium tex-gray-900'>
+              {post.mentorship_post_heading}
+            </p>
+          </div>
+        )}
+
         {/* Caption */}
         <div>
-          <p className="text-gray-800 leading-relaxed mb-2">
+          <p className="text-gray-800 text-sm leading-relaxed mb-2">
             {post.content}
           </p>
         </div>
@@ -194,9 +208,9 @@ export function PostCard({ post, deletePost }: PostCardProps) {
               className={`flex items-center space-x-1 transition-colors ${liked ? 'text-red-500' : 'text-gray-700 hover:text-red-500'}`}
             >
               <Heart
-                className={`w-6 h-6 text-gray-500 ${liked ? 'fill-red-500 text-red-500' : ''}`}
+                className={`w-5 h-5 text-gray-500 ${liked ? 'fill-red-500 text-red-500' : ''}`}
               />
-              <p className="font-semibold text-gray-500">{likes.toLocaleString()}</p>
+              <p className="text-gray-500">{likes.toLocaleString()}</p>
             </button>
             <button
               title='Save'
@@ -204,8 +218,8 @@ export function PostCard({ post, deletePost }: PostCardProps) {
               disabled={!session || savingSave}
               className={`flex items-center space-x-1 transition-colors ${saved ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'}`}
             >
-              <Bookmark className={`w-6 h-6 ${saved ? 'fill-blue-500 text-blue-500' : 'text-gray-500'}`} />
-              <p className="font-semibold text-gray-500">{saves.toLocaleString()}</p>
+              <Bookmark className={`w-5 h-5 ${saved ? 'fill-blue-500 text-blue-500' : 'text-gray-500'}`} />
+              <p className="text-gray-500">{saves.toLocaleString()}</p>
             </button>
           </div>
         </div>

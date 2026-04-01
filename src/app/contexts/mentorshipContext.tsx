@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import supabase from "../supabaseClient";
+import { useUserData } from "./userDataContext";
 
 export type MentorshipData = {
   id: string;
@@ -28,6 +29,7 @@ type MentorshipContextType = {
 const MentorshipContext = createContext<MentorshipContextType | null>(null);
 
 export const MentorshipDataProvider = ({ children }: { children: React.ReactNode }) => {
+  const { currentUser } = useUserData();
   const [mentorshipData, setMentorshipData] = useState<MentorshipData[] | null>([]);
 
   const fetchMentorshipPageData = async () => {
@@ -44,7 +46,40 @@ export const MentorshipDataProvider = ({ children }: { children: React.ReactNode
 
   useEffect(() => {
     fetchMentorshipPageData();
-  }, []);
+
+    const channel = supabase
+      .channel('realtime-startups')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'startups' },
+        (payload) => {
+          setMentorshipData((prevState) => {
+            if (!prevState) return prevState;
+
+            const record = payload.new || payload.old;
+            if (!record) return prevState;
+
+            switch (payload.eventType) {
+              case 'INSERT':
+                return [...prevState, record as MentorshipData];
+              case 'UPDATE':
+                return prevState.map((item) =>
+                  item.id === (record as MentorshipData).id ? (record as MentorshipData) : item
+                );
+              case 'DELETE':
+                return prevState.filter((item) => item.id !== (record as MentorshipData).id);
+              default:
+                return prevState;
+            }
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentUser]);
 
   return (
     <MentorshipContext.Provider value={{ mentorshipData }}>

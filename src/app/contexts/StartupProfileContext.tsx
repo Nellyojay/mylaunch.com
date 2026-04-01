@@ -11,12 +11,18 @@ export type Post = {
   likes: number;
   saves: number;
   user_id: string;
-  startup_id: string;
-  startups: {
+  mentorship_post_heading: string;
+  startups?: {
     id: string;
     display_image: string;
     name: string;
-  }
+  } | null;
+  mentorship_id: string;
+  mentorship_page?: {
+    id: string;
+    image_url: string;
+    topic: string;
+  } | null
 }
 
 export type StartupData = {
@@ -84,7 +90,7 @@ export const StartupProvider = ({ children }: { children: React.ReactNode }) => 
   const fetchStartupPosts = async () => {
     const { data, error } = await supabase
       .from('posts')
-      .select('id, content, image_url, created_at, likes, saves, user_id, startup_id, startups(id, display_image, name)')
+      .select('*, startups(id, display_image, name), mentorship_page(id, topic, image_url)')
       .order('created_at', { ascending: false });
 
     setLoadingPosts(false);

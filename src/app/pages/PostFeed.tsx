@@ -15,7 +15,7 @@ function PostFeed() {
   const { loadingPosts, posts, handleDeletePost, fetchStartupPosts, startupData } = useStartup();
   const [visibleCount, setVisibleCount] = useState(10);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
-  const userStartups = startupData?.filter(s => s.user_id === currentUser?.id)
+  const userStartups = startupData?.filter(s => s.user_id === currentUser?.id);
 
   useEffect(() => {
     fetchStartupPosts();
@@ -51,10 +51,10 @@ function PostFeed() {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen pt-12">
+    <div className="bg-gray-200 min-h-screen pt-12">
       <Navbar showSearch={true} />
 
-      <div className="max-w-6xl mx-auto px-4 pt-6 pb-20 grid grid-cols-12 gap-4">
+      <div className="max-w-6xl mx-auto pt-6 pb-20 grid grid-cols-12 gap-4">
 
         <div className="sticky top-18 h-fit hidden md:block col-span-12 md:col-span-3 space-y-2">
 
@@ -67,7 +67,7 @@ function PostFeed() {
                 <img
                   src={getImageUrl(currentUser?.profile_image) || 'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80'}
                   alt="Profile-image"
-                  className="w-14 h-14 rounded-full object-cover"
+                  className="max-w-32 max-h-32 rounded-lg object-cover"
                 />
                 <p className="font-semibold text-lg">{currentUser?.full_name}</p>
               </Link>
@@ -116,7 +116,7 @@ function PostFeed() {
 
         <div className="col-span-12 md:col-span-5">
           {!loadingPosts && displayedPosts.length > 0 ? (
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 gap-1">
               {displayedPosts.map((post) => (
                 <PostCard
                   key={post.id}

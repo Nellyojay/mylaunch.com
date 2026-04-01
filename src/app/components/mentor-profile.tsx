@@ -44,7 +44,7 @@ export function MentorProfile({
               <Star className="w-5 h-5 text-blue-600" />
               <div>
                 <p className="text-xs text-gray-500">Rating</p>
-                <p className="text-sm">{rating}/5.0</p>
+                <p className="text-sm">{rating || 0}/5.0</p>
               </div>
             </div>
           </div>
@@ -57,7 +57,7 @@ export function MentorProfile({
               <h2 className="text-xl md:text-2xl mb-1">{name}</h2>
 
               {/* Stats for desktop */}
-              <div className="flex gap-8">
+              <div className="flex gap-8 not-md:hidden">
                 <div className="flex items-center gap-2">
                   <Award className="w-5 h-5 text-blue-600" />
                   <div>

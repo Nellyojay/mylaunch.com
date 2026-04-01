@@ -144,7 +144,7 @@ export function UserProfile() {
       <Navbar />
       <ScrollToTop />
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20">
+      <main className="max-w-6xl mx-auto px-2 sm:px-6 lg:px-8 pt-20 pb-20">
         {/* Profile Header */}
         <div className="bg-white rounded-2xl shadow-md pb-4 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6 p-6">
@@ -184,10 +184,12 @@ export function UserProfile() {
                   <Calendar className="w-4 h-4" />
                   <span>Joined MyLaunch {formatDate(userData?.created_at, false)}</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Briefcase className="w-4 h-4" />
-                  <span>{userStartups?.length} Business{userStartups?.length === 1 ? '' : 'es'}</span>
-                </div>
+                {userData.user_roles.includes(BUSINESS_PERSONNEL_ROLE) && (
+                  <div className="flex items-center space-x-2">
+                    <Briefcase className="w-4 h-4" />
+                    <span>{userStartups?.length} Business{userStartups?.length === 1 ? '' : 'es'}</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-center md:block text-gray-500 mt-2">
@@ -323,7 +325,7 @@ export function UserProfile() {
           )}
           {tab === 1 && userData.user_roles.includes(MENTOR_ROLE) && (
             (mentorshipData ?? []).length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {mentorshipData?.map((page) => (
                   <Link key={page.id} to={`/mentorship-page/${page.id}`}>
                     <MentorshipPageCard {...page} />
@@ -353,7 +355,7 @@ export function UserProfile() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl shadow-md p-12 text-center">
-                <p className="text-gray-500 mb-4">{userData?.full_name?.split(' ')[1] || 'User'} has no favorite businesses yet.</p>
+                <p className="text-gray-500 mb-4">{userData?.full_name?.split(' ')[1] || 'User'} has no favorite businesses.</p>
               </div>
             )
           )}
@@ -370,7 +372,7 @@ export function UserProfile() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl shadow-md p-12 text-center">
-                <p className="text-gray-500 mb-4">{userData?.full_name?.split(' ')[1] || 'User'} has not saved any posts yet.</p>
+                <p className="text-gray-500 mb-4">{userData?.full_name?.split(' ')[1] || 'User'} has not saved any posts.</p>
               </div>
             )
           )}

@@ -61,7 +61,7 @@ export default function EditMentorship() {
     setSaving(true);
     setErrorMessage('');
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('mentorship_page')
       .update({
         topic: formData?.topic,
@@ -74,6 +74,8 @@ export default function EditMentorship() {
         image_url: formData?.imageUrl,
       })
       .eq('id', id)
+      .select('id')
+      .single();
 
     if (error) {
       setSaving(false)
@@ -113,6 +115,7 @@ export default function EditMentorship() {
         experience: '',
         imageUrl: null,
       })
+      navigate(`/mentorship-page/${data.id}`)
     }, 4000);
   };
 

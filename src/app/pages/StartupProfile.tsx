@@ -53,7 +53,7 @@ export function StartupProfile() {
 
   const activeStartup = rawStartup;
   const startup = activeStartup;
-  const StartupOwnPosts = posts.filter(p => p.startup_id === startup?.id)
+  const StartupOwnPosts = posts.filter(p => p.startups?.id === startup?.id)
 
   const [following, setFollowing] = useState(false);
   const [favorites, setFavorites] = useState(false)

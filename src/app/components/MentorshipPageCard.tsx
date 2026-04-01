@@ -11,7 +11,11 @@ export default function MentorshipPageCard(mentorship: MentorshipData) {
       <div className="aspect-video bg-linear-to-br from-blue-500 to-blue-600 relative overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
           {mentorship.image_url ? (
-            <img src={getImageUrl(mentorship.image_url) || undefined} alt="mentorship banner" />
+            <img
+              src={getImageUrl(mentorship.image_url) || undefined}
+              alt="mentorship banner"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            />
           ) : (
             <BookOpen className="w-16 h-16 text-white opacity-50" />
           )}
