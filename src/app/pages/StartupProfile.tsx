@@ -36,7 +36,7 @@ import ScrollToTop from '../constants/scrollToTop';
 export function StartupProfile() {
   const navigate = useNavigate();
   const { session, user } = useAuth();
-  const { userData, currentUser } = useUserData();
+  const { currentUser } = useUserData();
   const {
     startupData,
     loadingPosts,
@@ -49,7 +49,7 @@ export function StartupProfile() {
   const { id } = useParams();
 
   const rawStartup = startupData?.find(s => s.id === id) || null;
-  const isOwner = Boolean(rawStartup && userData && user && rawStartup.user_id === userData.id && userData.auth_id === user.id);
+  const isOwner = Boolean(rawStartup?.user_id === currentUser?.id && currentUser?.auth_id === user?.id);
 
   const activeStartup = rawStartup;
   const startup = activeStartup;
@@ -168,6 +168,8 @@ export function StartupProfile() {
       alert("Please log in to follow startups.");
       return;
     }
+
+    if (startup?.user_id === currentUser?.id) return;
 
     setFollowing(!following);
 

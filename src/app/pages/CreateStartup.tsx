@@ -11,14 +11,14 @@ import ScrollToTop from '../constants/scrollToTop';
 export function CreateStartup() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { userData, currentUser, setSelectedProfile } = useUserData();
+  const { currentUser, setSelectedProfile } = useUserData();
   const { webName } = useWebData();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    founder: userData?.full_name,
+    founder: currentUser?.full_name,
     introDescription: '',
     description: '',
     phone: '',
@@ -43,7 +43,7 @@ export function CreateStartup() {
     const { data, error } = await supabase
       .from('startups')
       .insert({
-        user_id: userData?.id,
+        user_id: currentUser?.id,
         name: formData.name,
         founder_name: formData.founder,
         cartegory: formData.category,

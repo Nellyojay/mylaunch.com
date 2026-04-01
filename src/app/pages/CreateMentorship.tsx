@@ -10,7 +10,7 @@ export default function CreateMentorship() {
   const navigate = useNavigate();
   const { currentUser } = useUserData();
   const [submitted, setSubmitted] = useState(false)
-  const [errorMessahe, setErrorMessage] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     topic: "",
     category: "",
