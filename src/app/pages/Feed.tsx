@@ -70,7 +70,7 @@ export function Feed() {
     filteredPosts = filteredPosts?.filter(
       post =>
         post.content.toLowerCase().includes(query) ||
-        post.startups.name.toLowerCase().includes(query)
+        post.startups?.name.toLowerCase().includes(query)
     );
 
     filteredUsers = filteredUsers?.filter(
