@@ -285,6 +285,10 @@ export default function CreateMentorship() {
             </div>
           </div>
 
+          {errorMessage && (
+            <p>{errorMessage}</p>
+          )}
+
           {/* Action Buttons */}
           {submitted ? (
             <SuccessMessage

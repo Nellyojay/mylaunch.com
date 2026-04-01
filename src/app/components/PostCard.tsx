@@ -17,7 +17,7 @@ interface PostCardProps {
 
 export function PostCard({ post, deletePost }: PostCardProps) {
   const { session, user } = useAuth();
-  const { userData, currentUser } = useUserData();
+  const { currentUser } = useUserData();
   const [liked, setLiked] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [likes, setLikes] = useState(post.likes);
@@ -29,14 +29,14 @@ export function PostCard({ post, deletePost }: PostCardProps) {
   const postOwner = Boolean(currentUser?.id === post.user_id && user?.id == currentUser.auth_id)
 
   useEffect(() => {
-    if (!session || !userData) return;
+    if (!session || !currentUser) return;
 
     const fetchStatus = async () => {
       const { data: likedRow, error: likeErr } = await supabase
         .from('likes')
         .select('id')
         .eq('post_id', post.id)
-        .eq('user_id', userData.id)
+        .eq('user_id', currentUser.id)
         .maybeSingle()
 
       if (!likeErr) {
@@ -48,7 +48,7 @@ export function PostCard({ post, deletePost }: PostCardProps) {
         .from('saves')
         .select('id')
         .eq('post_id', post.id)
-        .eq('user_id', userData.id)
+        .eq('user_id', currentUser.id)
         .maybeSingle();
 
       if (!saveErr) {
@@ -57,7 +57,7 @@ export function PostCard({ post, deletePost }: PostCardProps) {
     };
 
     void fetchStatus();
-  }, [session, userData, post.id]);
+  }, [session, currentUser, post.id]);
 
   const handleLike = async () => {
     if (!session) return;
@@ -70,11 +70,11 @@ export function PostCard({ post, deletePost }: PostCardProps) {
     setLikes(nextLikeCount);
 
     const { error: likeError } = nextLiked
-      ? await supabase.from('likes').insert([{ post_id: post.id, user_id: userData?.id }])
+      ? await supabase.from('likes').insert([{ post_id: post.id, user_id: currentUser?.id }])
       : await supabase
         .from('likes')
         .delete()
-        .match({ post_id: post.id, user_id: userData?.id });
+        .match({ post_id: post.id, user_id: currentUser?.id });
 
     if (likeError) {
       setLiked(liked);
@@ -97,11 +97,11 @@ export function PostCard({ post, deletePost }: PostCardProps) {
     setSaves(nextSaveCount);
 
     const { error: saveError } = nextSaved
-      ? await supabase.from('saves').insert([{ post_id: post.id, user_id: userData?.id }])
+      ? await supabase.from('saves').insert([{ post_id: post.id, user_id: currentUser?.id }])
       : await supabase
         .from('saves')
         .delete()
-        .match({ post_id: post.id, user_id: userData?.id });
+        .match({ post_id: post.id, user_id: currentUser?.id });
 
     if (saveError) {
       setSaved(saved);

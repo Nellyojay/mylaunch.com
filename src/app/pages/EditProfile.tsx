@@ -1,37 +1,36 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { useAuth } from '../contexts/authContext';
-import { useUserData } from '../contexts/userDataContext';
 import supabase from '../supabaseClient';
 import { Upload } from 'lucide-react';
 import { FOLDER, imageHandlerService } from '../constants/imageHandler';
 import SuccessMessage from '../components/SuccessMessage';
+import { useUserData } from '../contexts/userDataContext';
 
 export function EditProfile() {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const { userData, selectedProfile, setSelectedProfile } = useUserData();
+  const { selectedProfile, setSelectedProfile, currentUser } = useUserData();
 
-  const profileId = id || selectedProfile || userData?.id || user?.id || null;
+  const profileId = selectedProfile || currentUser?.id || user?.id || null;
 
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [fullName, setFullName] = useState(userData?.full_name || '');
-  const [userName, setUserName] = useState(userData?.user_name || '');
-  const [bio, setBio] = useState(userData?.bio || '');
-  const [roles, setRoles] = useState<string[]>(userData?.user_roles || []);
+  const [fullName, setFullName] = useState(currentUser?.full_name || '');
+  const [userName, setUserName] = useState(currentUser?.user_name || '');
+  const [bio, setBio] = useState(currentUser?.bio || '');
+  const [roles, setRoles] = useState<string[]>(currentUser?.user_roles || []);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (userData) {
-      setFullName(userData.full_name || '');
-      setUserName(userData.user_name || '');
-      setBio(userData.bio || '');
+    if (currentUser) {
+      setFullName(currentUser.full_name || '');
+      setUserName(currentUser.user_name || '');
+      setBio(currentUser.bio || '');
     }
-  }, [userData]);
+  }, [currentUser]);
 
   const dismissSelectedProfileImage = () => setProfileImage(null);
 

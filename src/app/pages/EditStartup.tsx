@@ -29,11 +29,11 @@ type FormData = {
 export function EditStartup() {
   const navigate = useNavigate();
   const { session, user } = useAuth();
-  const { userData, selectedProfile } = useUserData();
+  const { currentUser, selectedProfile } = useUserData();
   const { startupData } = useStartup();
   const { id } = useParams<{ id: string }>();
 
-  const profileId = selectedProfile || userData?.id || user?.id;
+  const profileId = selectedProfile || currentUser?.id || user?.id;
   const startup = startupData?.find((s) => s.id === id && s.user_id === profileId) || null;
 
   const [formData, setFormData] = useState<FormData>({
@@ -121,7 +121,7 @@ export function EditStartup() {
       const updatedDisplayImage = await imageHandlerService.uploadImage(
         formData.display_image,
         FOLDER.STARTUP_PROFILE,
-        userData?.id || '',
+        currentUser?.id || '',
         startup.id,
         undefined
       );
@@ -138,7 +138,7 @@ export function EditStartup() {
       const updatedCoverImage = await imageHandlerService.uploadImage(
         formData.cover_image,
         FOLDER.STARTUP_BANNER,
-        userData?.id || '',
+        currentUser?.id || '',
         startup.id,
         undefined
       );

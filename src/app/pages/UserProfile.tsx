@@ -253,7 +253,7 @@ export function UserProfile() {
         {/* Startups Section */}
         <div>
           <div className="sticky top-18 h-fit z-50 flex items-center justify-between mb-6">
-            <div className='flex text-gray-500 space-x-2 border-2 border-gray-400 rounded-lg py-1 px-4 mr-1 justify-around not-md:w-full backdrop-blur-xl'>
+            <div className='flex text-gray-500 space-x-2 bg-gray-50 rounded-lg py-1 px-4 mr-1 justify-around not-md:w-full shadow-gray-200 shadow-sm'>
               {userData.user_roles.includes(BUSINESS_PERSONNEL_ROLE) && (
                 <button
                   onClick={() => setTab(0)}

@@ -9,7 +9,7 @@ import SuccessMessage from '../components/SuccessMessage';
 export function AddPost() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { userData } = useUserData();
+  const { currentUser } = useUserData();
 
   const [content, setContent] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -56,7 +56,7 @@ export function AddPost() {
       .insert([
         {
           startup_id: id,
-          user_id: userData?.id || null,
+          user_id: currentUser?.id || null,
           content: content.trim(),
         },
       ])
@@ -73,7 +73,7 @@ export function AddPost() {
       const insertImage = await imageHandlerService.uploadImage(
         imageFile,
         FOLDER.POST,
-        userData?.id || '',
+        currentUser?.id || '',
         id,
         data.id
       )
