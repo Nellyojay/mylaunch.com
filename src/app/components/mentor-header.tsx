@@ -11,7 +11,7 @@ export function MentorHeader({ topic, imageUrl, description }: MentorHeaderProps
   return (
     <div className="relative bg-gray-900 text-white py-8 px-4 md:py-12">
       <img
-        src={getImageUrl(imageUrl) || undefined}
+        src={getImageUrl(imageUrl) || ' https://user-images.githubusercontent.com/237508/90246627-ecbda400-de2c-11ea-8bfb-b4307bfb975d.png'}
         alt="mentorship-header"
         className="w-full h-full object-cover absolute top-0 left-0 opacity-20"
       />

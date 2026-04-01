@@ -1,8 +1,10 @@
 import { MapPin, Award, Star } from "lucide-react";
 import { getImageUrl } from "../constants/imageHandler";
+import { Link } from "react-router-dom";
 
 interface MentorProfileProps {
   name: string | undefined;
+  userId: string | undefined;
   title: string | undefined;
   location: string | undefined;
   imageUrl: string | undefined;
@@ -13,6 +15,7 @@ interface MentorProfileProps {
 
 export function MentorProfile({
   name,
+  userId,
   title,
   location,
   imageUrl,
@@ -25,11 +28,15 @@ export function MentorProfile({
       <div className="flex flex-col md:flex-row gap-4 md:gap-6">
         {/* Profile Image */}
         <div className="shrink-0 flex items-start justify-between">
-          <img
-            src={getImageUrl(imageUrl) || "https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80"}
-            alt={name}
-            className="max-w-32 max-h-32 rounded-lg object-cover"
-          />
+          <Link
+            to={`/profile/${userId}`}
+          >
+            <img
+              src={getImageUrl(imageUrl) || "https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80"}
+              alt={name}
+              className="max-w-32 max-h-32 rounded-lg object-cover"
+            />
+          </Link>
 
           {/* Stats for mobile */}
           <div className="md:hidden">
@@ -54,7 +61,10 @@ export function MentorProfile({
         <div className="flex-1">
           <div className="mb-3">
             <div className="flex justify-between">
-              <h2 className="text-xl md:text-2xl mb-1">{name}</h2>
+              <Link
+                to={`/profile/${userId}`}
+                className="text-xl md:text-2xl mb-1"
+              >{name}</Link>
 
               {/* Stats for desktop */}
               <div className="flex gap-8 not-md:hidden">

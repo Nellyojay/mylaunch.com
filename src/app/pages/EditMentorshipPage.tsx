@@ -18,7 +18,6 @@ export default function EditMentorship() {
 
   const editingData = mentorshipData?.find(m => m.id === id)
 
-  // Pre-populated with existing data (in a real app, this would be fetched)
   const [formData, setFormData] = useState({
     topic: editingData?.topic,
     category: editingData?.category,
@@ -71,7 +70,6 @@ export default function EditMentorship() {
         location: formData?.location,
         mentorship_bio: formData?.bio,
         experience: formData?.experience,
-        image_url: formData?.imageUrl,
       })
       .eq('id', id)
       .select('id')

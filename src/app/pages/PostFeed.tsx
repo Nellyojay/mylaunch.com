@@ -8,14 +8,18 @@ import { Link } from "react-router-dom";
 import { getImageUrl } from "../constants/imageHandler";
 import { Bookmark } from "lucide-react";
 import { useAuth } from "../contexts/authContext";
+import { useMentorshipData } from "../contexts/mentorshipContext";
 
 function PostFeed() {
   const { session } = useAuth();
   const { currentUser } = useUserData();
+  const { mentorshipData } = useMentorshipData();
   const { loadingPosts, posts, handleDeletePost, fetchStartupPosts, startupData } = useStartup();
+
   const [visibleCount, setVisibleCount] = useState(10);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const userStartups = startupData?.filter(s => s.user_id === currentUser?.id);
+  const userMentorshipPages = mentorshipData?.filter(m => m.users.id === currentUser?.id)
 
   useEffect(() => {
     fetchStartupPosts();
@@ -62,7 +66,7 @@ function PostFeed() {
             {session ? (
               <Link
                 to={`/profile/${currentUser?.id}`}
-                className="flex flex-col items-center justify-centers"
+                className="flex flex-col items-center justify-center"
               >
                 <img
                   src={getImageUrl(currentUser?.profile_image) || 'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80'}
@@ -74,36 +78,47 @@ function PostFeed() {
             ) : (
               <Link
                 to={'/login'}
-                className="flex flex-col items-center justify-centers"
+                className="flex flex-col items-center justify-center"
               >
                 <img
                   src={'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80'}
                   alt="Profile-image"
                   className="w-14 h-14 rounded-full object-cover"
                 />
-                <p className="font-semibold text-gray-500">Sign in to view profile</p>
+                <p className="font-semibold text-gray-500 text-center">Sign in to view profile</p>
               </Link>
             )}
           </div>
 
           {session && (
             <div className="bg-white rounded-md shadow-sm p-4 space-y-2">
-              <p className="font-semibold">My Businesses ({userStartups?.length})</p>
+              <p className="font-semibold">My Pages ({userStartups?.length})</p>
 
-              <div>
-                {(userStartups?.length ?? 0) > 0 ? (
-                  <>
-                    {userStartups?.map(s => (
-                      <Link
-                        to={`/startup/${s.id}`}
-                        className="line-clamp-1 text-xs text-gray-500 hover:underline"
-                      >
-                        {s.name}
-                      </Link>
-                    ))}
-                  </>
-                ) : null}
-              </div>
+              {(userStartups?.length ?? 0) > 0 ? (
+                <>
+                  {userStartups?.map(s => (
+                    <Link
+                      to={`/startup/${s.id}`}
+                      className="line-clamp-1 text-xs text-gray-500 hover:underline"
+                    >
+                      {s.name}
+                    </Link>
+                  ))}
+                </>
+              ) : null}
+
+              {(userMentorshipPages?.length ?? 0) > 0 ? (
+                <>
+                  {userMentorshipPages?.map(m => (
+                    <Link
+                      to={`/mentorship-page/${m.id}`}
+                      className="line-clamp-1 text-xs text-gray-500 hover:underline"
+                    >
+                      {m.topic}
+                    </Link>
+                  ))}
+                </>
+              ) : null}
 
               <div className="flex gap-2">
                 <Bookmark className="fill-black" size={18} />
