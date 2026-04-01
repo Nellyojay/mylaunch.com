@@ -1,18 +1,19 @@
 import { BookOpen } from "lucide-react";
+import { getImageUrl } from "../constants/imageHandler";
 
 interface MentorHeaderProps {
   topic: string | undefined;
+  imageUrl: string | null | undefined;
   description: string | undefined;
 }
 
-export function MentorHeader({ topic, description }: MentorHeaderProps) {
+export function MentorHeader({ topic, imageUrl, description }: MentorHeaderProps) {
   return (
     <div className="relative bg-gray-900 text-white py-8 px-4 md:py-12">
-
       <img
-        src="https://cms-assets.themuse.com/media/lead/01212022-1047259374-coding-classes_scanrail.jpg"
+        src={getImageUrl(imageUrl) || undefined}
         alt="mentorship-header"
-        className="w-full h-full object-cover absolute top-0 left-0 opacity-30"
+        className="w-full h-full object-cover absolute top-0 left-0 opacity-20"
       />
       <div className="relative max-w-4xl mx-auto">
         <div className="flex items-center gap-3 mb-4">

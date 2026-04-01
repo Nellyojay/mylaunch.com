@@ -144,7 +144,7 @@ export function UserProfile() {
       <Navbar />
       <ScrollToTop />
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-18 pb-20">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20">
         {/* Profile Header */}
         <div className="bg-white rounded-2xl shadow-md pb-4 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6 p-6">

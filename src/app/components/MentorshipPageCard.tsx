@@ -11,7 +11,7 @@ export default function MentorshipPageCard(mentorship: MentorshipData) {
       <div className="aspect-video bg-linear-to-br from-blue-500 to-blue-600 relative overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
           {mentorship.image_url ? (
-            <img src={getImageUrl(mentorship.image_url) || undefined} alt="" />
+            <img src={getImageUrl(mentorship.image_url) || undefined} alt="mentorship banner" />
           ) : (
             <BookOpen className="w-16 h-16 text-white opacity-50" />
           )}
@@ -36,7 +36,7 @@ export default function MentorshipPageCard(mentorship: MentorshipData) {
         {/* Mentor Info */}
         <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
           <img
-            src={getImageUrl(mentorship.image_url) || 'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80'}
+            src={getImageUrl(mentorship.users.profile_image) || 'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80'}
             alt={mentorship.users.full_name}
             className="w-10 h-10 rounded-full object-cover"
           />

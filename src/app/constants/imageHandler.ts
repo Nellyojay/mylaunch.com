@@ -109,6 +109,7 @@ export const imageHandlerService = {
         }
 
         const oldImage = existing?.[column as any] as string | null;
+        console.log("Deleting old image:", oldImage)
 
         if (oldImage) {
           const { error } = await supabase.storage
@@ -118,6 +119,7 @@ export const imageHandlerService = {
           if (error) {
             return null;
           }
+          console.log("Deleted old image successfully")
         }
       }
 
@@ -144,7 +146,7 @@ export const imageHandlerService = {
           break;
 
         case FOLDER.MENTORSHIP_BANNER:
-          filePath = `${folder}/${mentorshipId}/image_${timestamp}.jpg`;
+          filePath = `${folder}/${mentorshipId}/banner_${timestamp}.jpg`;
           break;
       }
 

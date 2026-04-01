@@ -2,38 +2,49 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
 import { useMentorshipData } from "../contexts/mentorshipContext";
+import { useAuth } from "../contexts/authContext";
+import supabase from "../supabaseClient";
+import SuccessMessage from "../components/SuccessMessage";
+import { FOLDER, imageHandlerService } from "../constants/imageHandler";
+import { useUserData } from "../contexts/userDataContext";
+import ScrollToTop from "../constants/scrollToTop";
 
 export default function EditMentorship() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { mentorshipData } = useMentorshipData();
+  const { session } = useAuth();
+  const { currentUser } = useUserData();
 
   const editingData = mentorshipData?.find(m => m.id === id)
 
   // Pre-populated with existing data (in a real app, this would be fetched)
   const [formData, setFormData] = useState({
     topic: editingData?.topic,
+    category: editingData?.category,
     description: editingData?.description,
-    mentorName: editingData?.users.full_name,
     mentorTitle: editingData?.mentor_title,
     location: editingData?.location,
     bio: editingData?.mentorship_bio,
     experience: editingData?.experience,
-    imageUrl: editingData?.image_url,
+    imageUrl: null as File | null,
   });
+  const [saving, setSaving] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const dismissSelectedImage = () => setFormData({ ...formData, imageUrl: '' })
+  const dismissSelectedImage = () => setFormData({ ...formData, imageUrl: null })
 
   useEffect(() => {
     setFormData({
       topic: editingData?.topic,
+      category: editingData?.category,
       description: editingData?.description,
-      mentorName: editingData?.users.full_name,
       mentorTitle: editingData?.mentor_title,
       location: editingData?.location,
       bio: editingData?.mentorship_bio,
       experience: editingData?.experience,
-      imageUrl: editingData?.image_url,
+      imageUrl: null,
     })
   }, [id])
 
@@ -44,16 +55,71 @@ export default function EditMentorship() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would update this in a database
-    console.log("Updating mentorship:", formData);
-    // Navigate back to the mentorship page
-    navigate(`/mentorship/${id}`);
+    if (!id || !session) return;
+    setSaving(true);
+    setErrorMessage('');
+
+    const { error } = await supabase
+      .from('mentorship_page')
+      .update({
+        topic: formData?.topic,
+        category: formData?.category,
+        description: formData?.description,
+        mentor_title: formData?.mentorTitle,
+        location: formData?.location,
+        mentorship_bio: formData?.bio,
+        experience: formData?.experience,
+        image_url: formData?.imageUrl,
+      })
+      .eq('id', id)
+
+    if (error) {
+      setSaving(false)
+      setErrorMessage("Error updating data, please try again.")
+      return;
+    }
+
+    if (formData.imageUrl) {
+      const updatedDisplayImage = await imageHandlerService.uploadImage(
+        formData.imageUrl,
+        FOLDER.MENTORSHIP_BANNER,
+        currentUser?.id || '',
+        undefined,
+        undefined,
+        editingData?.id
+      );
+
+      if (!updatedDisplayImage) {
+        setErrorMessage('Failed to update banner image, please try again.');
+        setSaving(false);
+        return;
+      }
+
+    }
+
+    setSaving(false)
+    setSubmitted(true)
+    setTimeout(() => {
+      setSubmitted(false)
+      setFormData({
+        topic: '',
+        category: '',
+        description: '',
+        mentorTitle: '',
+        location: '',
+        bio: '',
+        experience: '',
+        imageUrl: null,
+      })
+    }, 4000);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ScrollToTop />
+
       {/* Header */}
       <div className="bg-blue-600 text-white py-6 px-4">
         <div className="max-w-4xl mx-auto">
@@ -87,7 +153,7 @@ export default function EditMentorship() {
                     htmlFor="topic"
                     className="block text-sm mb-2 text-gray-700"
                   >
-                    Topic *
+                    Topic
                   </label>
                   <input
                     type="text"
@@ -103,10 +169,29 @@ export default function EditMentorship() {
 
                 <div>
                   <label
+                    htmlFor="topic"
+                    className="block text-sm mb-2 text-gray-700"
+                  >
+                    Category
+                  </label>
+                  <input
+                    type="text"
+                    id="category"
+                    name="category"
+                    required
+                    value={formData.category}
+                    onChange={handleChange}
+                    placeholder="e.g., Web Development Mentorship"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label
                     htmlFor="description"
                     className="block text-sm mb-2 text-gray-700"
                   >
-                    Description *
+                    Description
                   </label>
                   <textarea
                     id="description"
@@ -129,29 +214,10 @@ export default function EditMentorship() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label
-                      htmlFor="mentorName"
-                      className="block text-sm mb-2 text-gray-700"
-                    >
-                      Mentor Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="mentorName"
-                      name="mentorName"
-                      required
-                      value={formData.mentorName}
-                      onChange={handleChange}
-                      placeholder="Full name"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label
                       htmlFor="mentorTitle"
                       className="block text-sm mb-2 text-gray-700"
                     >
-                      Title *
+                      Title
                     </label>
                     <input
                       type="text"
@@ -172,7 +238,7 @@ export default function EditMentorship() {
                       htmlFor="location"
                       className="block text-sm mb-2 text-gray-700"
                     >
-                      Location *
+                      Location
                     </label>
                     <input
                       type="text"
@@ -191,7 +257,7 @@ export default function EditMentorship() {
                       htmlFor="experience"
                       className="block text-sm mb-2 text-gray-700"
                     >
-                      Years of Experience *
+                      Years of Experience
                     </label>
                     <input
                       type="text"
@@ -211,7 +277,7 @@ export default function EditMentorship() {
                     htmlFor="bio"
                     className="block text-sm mb-2 text-gray-700"
                   >
-                    Bio *
+                    Bio
                   </label>
                   <textarea
                     id="bio"
@@ -230,7 +296,7 @@ export default function EditMentorship() {
                   {formData.imageUrl ? (
                     <div className="w-full flex items-start gap-1">
                       <img
-                        src={formData.imageUrl ? formData.imageUrl : '/default-startup-display.jpg'}
+                        src={formData.imageUrl ? URL.createObjectURL(formData.imageUrl) : undefined}
                         alt="Cover"
                         className="w-full h-full rounded-lg object-cover"
                       />
@@ -249,8 +315,7 @@ export default function EditMentorship() {
                         name="imageUrl"
                         multiple
                         accept="image/*"
-                        value={formData.imageUrl as string}
-                        onChange={handleChange}
+                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.files?.[0] || null })}
                         className="hidden"
                       />
                       <label htmlFor="images" className="cursor-pointer">
@@ -265,24 +330,37 @@ export default function EditMentorship() {
             </div>
           </div>
 
+          {errorMessage && (
+            <p className="mt-4 text-red-600">{errorMessage}</p>
+          )}
+
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 mt-8 pt-6 border-t border-gray-200">
-            <button
-              type="submit"
-              className="flex-1 sm:flex-none px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-            >
-              <Save className="w-4 h-4" />
-              <span>Save Changes</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="flex-1 sm:flex-none px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-            >
-              <X className="w-4 h-4" />
-              <span>Cancel</span>
-            </button>
-          </div>
+          {submitted ? (
+            <SuccessMessage
+              header="Page data updated successfully!"
+              message={null}
+              error={false}
+            />
+          ) : (
+            <div className="flex flex-col sm:flex-row gap-3 mt-8 pt-6 border-t border-gray-200">
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex-1 sm:flex-none px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 disabled:bg-blue-300 disabled:cursor-not-allowed"
+              >
+                <Save className="w-4 h-4" />
+                <span>{saving ? "Saving..." : "Save Changes"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="flex-1 sm:flex-none px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+              >
+                <X className="w-4 h-4" />
+                <span>Cancel</span>
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>

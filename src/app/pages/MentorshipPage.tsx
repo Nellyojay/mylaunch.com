@@ -69,7 +69,6 @@ export default function MentorshipPage() {
   const { mentorshipData } = useMentorshipData();
 
   const pageData = mentorshipData?.find(m => m.id === id)
-  console.log(pageData)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -78,6 +77,7 @@ export default function MentorshipPage() {
       {/* Header */}
       <MentorHeader
         topic={pageData?.topic}
+        imageUrl={pageData?.image_url}
         description={pageData?.description}
       />
 

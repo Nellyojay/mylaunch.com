@@ -84,7 +84,7 @@ export function EditStartup() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!startup || !session) {
-      alert('Unable to update startup: no startup selected or not authenticated');
+      alert('Unable to update business: no bsuiness selected or not authenticated');
       return;
     }
 
@@ -114,7 +114,7 @@ export function EditStartup() {
       .eq('id', startup.id);
 
     if (error) {
-      alert('Error updating startup. Please try again.');
+      alert('Error updating business. Please try again.');
     }
 
     if (formData.display_image) {
@@ -127,7 +127,7 @@ export function EditStartup() {
       );
 
       if (!updatedDisplayImage) {
-        alert('Startup updated but failed to upload display image');
+        alert('Business data updated but failed to upload display image');
         setLoading(false);
         return;
       }
@@ -144,12 +144,11 @@ export function EditStartup() {
       );
 
       if (!updatedCoverImage) {
-        alert('Startup updated but failed to upload cover image');
+        alert('Business data updated but failed to upload cover image');
         setLoading(false);
         return;
       }
 
-      console.log('Cover image uploaded successfully!', updatedCoverImage);
     }
 
     setLoading(false);
