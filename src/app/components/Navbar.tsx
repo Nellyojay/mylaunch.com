@@ -1,10 +1,11 @@
 import { Link, useNavigate, useLocation } from 'react-router';
-import { Search, User, Home, Compass, MessageCircle } from 'lucide-react';
+import { Search, Home, Compass, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useWebData } from '../contexts/webData';
 import { useAuth } from '../contexts/authContext';
 import { useUserData } from '../contexts/userDataContext';
 import Loader from '../constants/loader';
+import { getImageUrl } from '../constants/imageHandler';
 
 interface NavbarProps {
   showSearch?: boolean;
@@ -117,7 +118,11 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
                   Create Page
                 </Link>
                 <Link to={`/profile/${currentUser?.id}`} className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname.startsWith('/profile') ? 'text-gray-800' : ''}`} onClick={() => setSelectedProfile(currentUser?.id)}>
-                  <User className="w-6 h-6" />
+                  <img
+                    src={getImageUrl(currentUser?.profile_image) || 'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80'}
+                    alt={currentUser?.full_name}
+                    className='w-8 h-8 rounded-full'
+                  />
                 </Link>
               </>
             )}
@@ -158,7 +163,11 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
               onClick={() => setSelectedProfile(currentUser?.id)}
               className={`flex flex-col items-center justify-center gap-1 rounded-md px-2 py-1 ${location.pathname.startsWith('/profile') ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
             >
-              <User className="w-5 h-5" />
+              <img
+                src={getImageUrl(currentUser?.profile_image) || 'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80'}
+                alt={currentUser?.full_name}
+                className='w-6 h-6 rounded-full'
+              />
               <span className="text-xs">Profile</span>
             </Link>
           ) : (
@@ -166,7 +175,11 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
               to="/login"
               className={`flex flex-col items-center justify-center gap-1 rounded-md px-2 py-1 ${location.pathname === '/login' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
             >
-              <User className="w-5 h-5" />
+              <img
+                src={getImageUrl(currentUser?.profile_image) || 'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80'}
+                alt={currentUser?.full_name}
+                className='w-6 h-6 rounded-full'
+              />
               <span className="text-xs">Sign In</span>
             </Link>
           )}

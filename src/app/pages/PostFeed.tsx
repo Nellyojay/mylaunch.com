@@ -6,12 +6,12 @@ import Loader from "../constants/loader";
 import { useUserData } from "../contexts/userDataContext";
 import { Link } from "react-router-dom";
 import { getImageUrl } from "../constants/imageHandler";
-import { Bookmark, User } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import { useAuth } from "../contexts/authContext";
 
 function PostFeed() {
   const { session } = useAuth();
-  const { currentUser, setSelectedProfile } = useUserData();
+  const { currentUser } = useUserData();
   const { loadingPosts, posts, handleDeletePost, fetchStartupPosts, startupData } = useStartup();
   const [visibleCount, setVisibleCount] = useState(10);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -60,25 +60,30 @@ function PostFeed() {
 
           <div className="bg-white rounded-md shadow-sm p-4">
             {session ? (
-              <Link to={`/profile/${currentUser?.id}`} onClick={() => setSelectedProfile(currentUser?.id)}>
-                {currentUser?.profile_image ? (
-                  <img
-                    src={getImageUrl(currentUser?.profile_image) || undefined}
-                    alt="Profile-image"
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                ) : (
-                  <User className="w-10 h-10 rounded-full object-cover text-gray-400" />
-                )}
+              <Link
+                to={`/profile/${currentUser?.id}`}
+                className="flex flex-col items-center justify-centers"
+              >
+                <img
+                  src={getImageUrl(currentUser?.profile_image) || 'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80'}
+                  alt="Profile-image"
+                  className="w-14 h-14 rounded-full object-cover"
+                />
                 <p className="font-semibold text-lg">{currentUser?.full_name}</p>
               </Link>
             ) : (
-              <Link to={'/login'} className="gap-2">
-                <User className="w-10 h-10 rounded-full object-cover" />
+              <Link
+                to={'/login'}
+                className="flex flex-col items-center justify-centers"
+              >
+                <img
+                  src={'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80'}
+                  alt="Profile-image"
+                  className="w-14 h-14 rounded-full object-cover"
+                />
                 <p className="font-semibold text-gray-500">Sign in to view profile</p>
               </Link>
             )}
-
           </div>
 
           {session && (

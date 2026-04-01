@@ -1,24 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
+import { useMentorshipData } from "../contexts/mentorshipContext";
 
 export default function EditMentorship() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { mentorshipData } = useMentorshipData();
+
+  const editingData = mentorshipData?.find(m => m.id === id)
 
   // Pre-populated with existing data (in a real app, this would be fetched)
   const [formData, setFormData] = useState({
-    topic: "Web Development Mentorship",
-    description:
-      "Learn modern web development practices, from frontend frameworks to full-stack architecture. Get personalized guidance and insights from years of industry experience.",
-    mentorName: "Sarah Johnson",
-    mentorTitle: "Senior Full-Stack Developer & Tech Lead",
-    location: "San Francisco, CA",
-    bio: "Passionate about helping developers grow their skills and advance their careers. Specializing in React, Node.js, and system design with 10+ years of experience building scalable web applications.",
-    experience: "10+ years",
-    imageUrl:
-      "https://images.unsplash.com/photo-1621533463370-837f20c6c889?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBtZW50b3IlMjBoZWFkc2hvdHxlbnwxfHx8fDE3NzQ4Nzg3OTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    topic: editingData?.topic,
+    description: editingData?.description,
+    mentorName: editingData?.users.full_name,
+    mentorTitle: editingData?.mentor_title,
+    location: editingData?.location,
+    bio: editingData?.mentorship_bio,
+    experience: editingData?.experience,
+    imageUrl: editingData?.image_url,
   });
+
+  const dismissSelectedImage = () => setFormData({ ...formData, imageUrl: '' })
+
+  useEffect(() => {
+    setFormData({
+      topic: editingData?.topic,
+      description: editingData?.description,
+      mentorName: editingData?.users.full_name,
+      mentorTitle: editingData?.mentor_title,
+      location: editingData?.location,
+      bio: editingData?.mentorship_bio,
+      experience: editingData?.experience,
+      imageUrl: editingData?.image_url,
+    })
+  }, [id])
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -97,7 +114,7 @@ export default function EditMentorship() {
                     required
                     value={formData.description}
                     onChange={handleChange}
-                    rows={3}
+                    rows={6}
                     placeholder="Brief description of what students will learn..."
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                   />
@@ -202,38 +219,48 @@ export default function EditMentorship() {
                     required
                     value={formData.bio}
                     onChange={handleChange}
-                    rows={4}
+                    rows={8}
                     placeholder="Tell students about your background, expertise, and what you're passionate about..."
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                   />
                 </div>
 
-                <div>
-                  <label
-                    htmlFor="imageUrl"
-                    className="block text-sm mb-2 text-gray-700"
-                  >
-                    Profile Image URL
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="url"
-                      id="imageUrl"
-                      name="imageUrl"
-                      value={formData.imageUrl}
-                      onChange={handleChange}
-                      placeholder="https://example.com/image.jpg"
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                      type="button"
-                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
-                    >
-                      <Upload className="w-4 h-4" />
-                      <span className="hidden sm:inline">Upload</span>
-                    </button>
-                  </div>
-                </div>
+                <label className="block text-sm text-gray-700">
+                  Mentorship Banner
+                  {formData.imageUrl ? (
+                    <div className="w-full flex items-start gap-1">
+                      <img
+                        src={formData.imageUrl ? formData.imageUrl : '/default-startup-display.jpg'}
+                        alt="Cover"
+                        className="w-full h-full rounded-lg object-cover"
+                      />
+                      <button
+                        className='justify-end bg-blue-100 rounded-full border-none cursor-pointer'
+                        onClick={dismissSelectedImage}
+                      >
+                        <X className="text-red-500 font-bold text-3xl hover:text-red-300" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-500 transition-colors">
+                      <input
+                        type="file"
+                        id="images"
+                        name="imageUrl"
+                        multiple
+                        accept="image/*"
+                        value={formData.imageUrl as string}
+                        onChange={handleChange}
+                        className="hidden"
+                      />
+                      <label htmlFor="images" className="cursor-pointer">
+                        <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-600 mb-2">Click to upload images</p>
+                        <p className="text-sm text-gray-500">PNG, JPG up to 10MB</p>
+                      </label>
+                    </div>
+                  )}
+                </label>
               </div>
             </div>
           </div>

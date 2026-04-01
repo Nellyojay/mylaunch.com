@@ -4,6 +4,7 @@ import { MentorPost } from "../components/mentor-post";
 import { MentorProfile } from "../components/mentor-profile";
 import { ArrowLeft, Edit, Plus } from "lucide-react";
 import ScrollToTop from "../constants/scrollToTop";
+import { useMentorshipData } from "../contexts/mentorshipContext";
 
 export default function MentorshipPage() {
   const mentorPosts = [
@@ -64,7 +65,11 @@ export default function MentorshipPage() {
     },
   ];
   const navigate = useNavigate();
-  const id = useParams();
+  const { id } = useParams();
+  const { mentorshipData } = useMentorshipData();
+
+  const pageData = mentorshipData?.find(m => m.id === id)
+  console.log(pageData)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -72,8 +77,8 @@ export default function MentorshipPage() {
 
       {/* Header */}
       <MentorHeader
-        topic="Web Development Mentorship"
-        description="Learn modern web development practices, from frontend frameworks to full-stack architecture. Get personalized guidance and insights from years of industry experience."
+        topic={pageData?.topic}
+        description={pageData?.description}
       />
 
       <div className="flex justify-between items-center px-4 pt-4">
@@ -86,7 +91,7 @@ export default function MentorshipPage() {
         </button>
 
         <button
-          onClick={() => navigate(`/mentorship-page/${id}/edit`)}
+          onClick={() => navigate(`/mentorship-page/${pageData?.id}/edit`)}
           className="flex justify-center items-center text-blue-400 hover:text-blue-600 border-2 border-blue-400 hover:border-blue-600 bg-blue-50 rounded-lg py-1 px-4 gap-2"
         >
           <Edit size={18} />
@@ -95,18 +100,17 @@ export default function MentorshipPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-6 md:py-8">
+      <div className="max-w-6xl mx-auto px-4 py-6 md:py-4">
         {/* Mentor Profile */}
         <div className="mb-8">
           <MentorProfile
-            name="Sarah Johnson"
-            title="Senior Full-Stack Developer & Tech Lead"
-            location="San Francisco, CA"
-            imageUrl="https://images.unsplash.com/photo-1621533463370-837f20c6c889?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBtZW50b3IlMjBoZWFkc2hvdHxlbnwxfHx8fDE3NzQ4Nzg3OTZ8MA&ixlib=rb-4.1.0&q=80&w=1080"
-            bio="Passionate about helping developers grow their skills and advance their careers. Specializing in React, Node.js, and system design with 10+ years of experience building scalable web applications."
-            experience="10+ years"
-            students={150}
-            rating={4.9}
+            name={pageData?.users.full_name}
+            title={pageData?.mentor_title}
+            location={pageData?.location}
+            imageUrl={pageData?.users.profile_image}
+            bio={pageData?.mentorship_bio}
+            experience={pageData?.experience}
+            rating={pageData?.rating}
           />
         </div>
 

@@ -1,15 +1,14 @@
-import { MapPin, Award, Users, Star } from "lucide-react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { MapPin, Award, Star } from "lucide-react";
+import { getImageUrl } from "../constants/imageHandler";
 
 interface MentorProfileProps {
-  name: string;
-  title: string;
-  location: string;
-  imageUrl: string;
-  bio: string;
-  experience: string;
-  students: number;
-  rating: number;
+  name: string | undefined;
+  title: string | undefined;
+  location: string | undefined;
+  imageUrl: string | undefined;
+  bio: string | undefined;
+  experience: string | undefined;
+  rating: number | undefined;
 }
 
 export function MentorProfile({
@@ -19,7 +18,6 @@ export function MentorProfile({
   imageUrl,
   bio,
   experience,
-  students,
   rating,
 }: MentorProfileProps) {
   return (
@@ -27,8 +25,8 @@ export function MentorProfile({
       <div className="flex flex-col md:flex-row gap-4 md:gap-6">
         {/* Profile Image */}
         <div className="shrink-0">
-          <ImageWithFallback
-            src={imageUrl}
+          <img
+            src={getImageUrl(imageUrl) || "https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80"}
             alt={name}
             className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover"
           />
@@ -54,13 +52,6 @@ export function MentorProfile({
               <div>
                 <p className="text-xs text-gray-500">Experience</p>
                 <p className="text-sm">{experience}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-blue-600" />
-              <div>
-                <p className="text-xs text-gray-500">Students</p>
-                <p className="text-sm">{students}+</p>
               </div>
             </div>
             <div className="flex items-center gap-2">

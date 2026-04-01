@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { ArrowLeft, Upload, X } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import ScrollToTop from "../constants/scrollToTop";
 import SuccessMessage from "../components/SuccessMessage";
 import supabase from "../supabaseClient";
@@ -19,10 +19,7 @@ export default function CreateMentorship() {
     location: "",
     bio: "",
     experience: "",
-    imageUrl: "",
   });
-
-  const dismissSelectedImage = () => setFormData({ ...formData, imageUrl: "" })
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -44,12 +41,13 @@ export default function CreateMentorship() {
         description: formData.description,
         topic: formData.topic,
         mentor_title: formData.mentorTitle,
-        experience: formData.experience
+        experience: formData.experience,
+        mentorship_bio: formData.bio
       })
       .select()
 
     if (error) {
-      console.error(error.message)
+      setErrorMessage('Error submitting information, please try again.')
     } else {
       setSubmitted(true)
       setFormData({
@@ -60,7 +58,6 @@ export default function CreateMentorship() {
         location: "",
         bio: "",
         experience: "",
-        imageUrl: "",
       })
 
       setTimeout(() => {
@@ -145,7 +142,7 @@ export default function CreateMentorship() {
                     htmlFor="description"
                     className="block text-sm mb-2 text-gray-700"
                   >
-                    Category *
+                    Category * (Choose a definitive category for this topic.)
                   </label>
                   <input
                     id="category"
@@ -239,48 +236,10 @@ export default function CreateMentorship() {
                     value={formData.bio}
                     onChange={handleChange}
                     rows={4}
-                    placeholder="Tell students about your background, expertise, and what you're passionate about..."
+                    placeholder="Tell others about your background, expertise, and what you're passionate about in this specific category..."
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                   />
                 </div>
-
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Mentorship Display image
-                  {formData.imageUrl ? (
-                    <div className="w-full flex items-start gap-1">
-                      <img
-                        src={formData.imageUrl ? formData.imageUrl : '/default-startup-display.jpg'}
-                        alt="Cover"
-                        className="w-full h-full rounded-lg object-cover"
-                      />
-                      <button
-                        className='justify-end bg-blue-100 rounded-full border-none cursor-pointer'
-                        onClick={dismissSelectedImage}
-                      >
-                        <X className=" text-red-500 font-bold text-3xl hover:text-red-300" />
-                      </button>
-                    </div>
-                  ) : (
-
-                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-500 transition-colors">
-                      <input
-                        type="file"
-                        id="images"
-                        name="imageUrl"
-                        multiple
-                        accept="image/*"
-                        value={formData.imageUrl}
-                        onChange={handleChange}
-                        className="hidden"
-                      />
-                      <label htmlFor="images" className="cursor-pointer">
-                        <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-600 mb-2">Click to upload images</p>
-                        <p className="text-sm text-gray-500">PNG, JPG up to 10MB</p>
-                      </label>
-                    </div>
-                  )}
-                </label>
               </div>
             </div>
           </div>

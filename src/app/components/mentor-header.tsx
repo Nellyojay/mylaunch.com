@@ -1,8 +1,8 @@
 import { BookOpen } from "lucide-react";
 
 interface MentorHeaderProps {
-  topic: string;
-  description: string;
+  topic: string | undefined;
+  description: string | undefined;
 }
 
 export function MentorHeader({ topic, description }: MentorHeaderProps) {

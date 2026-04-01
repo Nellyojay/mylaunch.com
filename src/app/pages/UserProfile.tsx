@@ -52,8 +52,8 @@ export function UserProfile() {
   const { id } = useParams<{ id: string }>();
   const { startupData, posts, fetchStartupPosts, handleDeletePost } = useStartup();
   const { userData, setSelectedProfile, selectedProfile } = useUserData();
-  const { mentorshipData } = useMentorshipData();
   const { logout, user } = useAuth();
+  const { mentorshipData } = useMentorshipData();
 
   const [tab, setTab] = useState<number | null>(null);
   const [favoritesId, setFavoritesId] = useState<Favorites[]>([]);
@@ -324,8 +324,8 @@ export function UserProfile() {
           {tab === 1 && userData.user_roles.includes(MENTOR_ROLE) && (
             (mentorshipData ?? []).length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {mentorshipData.map((page) => (
-                  <Link key={page.id} to={`/mentorship/${page.id}`}>
+                {mentorshipData?.map((page) => (
+                  <Link key={page.id} to={`/mentorship-page/${page.id}`}>
                     <MentorshipPageCard {...page} />
                   </Link>
                 ))}
