@@ -64,7 +64,7 @@ export default function MentorshipPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-4">
+      <div className="max-w-6xl mx-auto px-1 py-4">
         {/* Mentor Profile */}
         <div className="mb-8">
           <MentorProfile

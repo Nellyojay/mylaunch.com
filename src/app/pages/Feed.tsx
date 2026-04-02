@@ -9,18 +9,21 @@ import supabase from '../supabaseClient';
 import { type userData } from '../contexts/userDataContext';
 import { PostCard } from '../components/PostCard';
 import { getImageUrl } from '../constants/imageHandler';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useMentorshipData } from '../contexts/mentorshipContext';
+import MentorshipPageCard from '../components/MentorshipPageCard';
 
 export function Feed() {
   const navigate = useNavigate();
+  const { mentorshipData } = useMentorshipData();
   const { startupData, posts, handleDeletePost, fetchStartupPosts } = useStartup();
   const [users, setUsers] = useState<userData[] | undefined>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'newest' | 'likes' | 'trending'>('newest');
-  const [tab, setTab] = useState<'businesses' | 'posts' | 'users'>(() => {
+  const [sortBy, setSortBy] = useState<'newest' | 'likes' | 'trending' | 'rated'>('newest');
+  const [tab, setTab] = useState<'businesses' | 'mentorships' | 'posts' | 'users'>(() => {
     const savedTab = localStorage.getItem('feedTab');
-    return (savedTab as 'businesses' | 'posts' | 'users') || 'businesses';
+    return (savedTab as 'businesses' | 'mentorships' | 'posts' | 'users') || 'businesses';
   });
 
   useEffect(() => {
@@ -53,8 +56,13 @@ export function Feed() {
   let filteredStartups = selectedCategory === 'All'
     ? startupData
     : startupData?.filter(startup => startup.cartegory === selectedCategory);
+  let filteredMentorshipPages = selectedCategory === 'All'
+    ? mentorshipData
+    : mentorshipData?.filter(m => m.category === selectedCategory);
+  let filteredPosts = selectedCategory === 'All'
+    ? posts
+    : posts?.filter(p => p.startups?.cartegory === selectedCategory);
 
-  let filteredPosts = tab === 'posts' ? posts : [];
   let filteredUsers = tab === 'users' ? users : [];
 
   // Filter by search query
@@ -65,6 +73,12 @@ export function Feed() {
         startup.name.toLowerCase().includes(query) ||
         startup.founder_name.toLowerCase().includes(query) ||
         startup.description.toLowerCase().includes(query)
+    );
+
+    filteredMentorshipPages = filteredMentorshipPages?.filter(
+      mentorship =>
+        mentorship.topic.toLowerCase().includes(query) ||
+        mentorship.users.full_name.toLowerCase().includes(query)
     );
 
     filteredPosts = filteredPosts?.filter(
@@ -106,6 +120,8 @@ export function Feed() {
         return bScore - aScore;
       });
       break;
+    case 'rated':
+      filteredMentorshipPages = filteredMentorshipPages?.slice().sort((a, b) => b.rating - a.rating)
   }
 
   return (
@@ -132,13 +148,19 @@ export function Feed() {
           </div>
 
           {/* Sort Dropdown */}
-          <div className="flex justify-between w-full">
-            <div className='flex gap-3 text-gray-500'>
+          <div className="flex justify-between w-full gap-2">
+            <div className='flex gap-3 text-gray-500 overflow-x-auto'>
               <button
                 className={`${tab === 'businesses' ? 'text-gray-800' : 'text-gray-400'}`}
                 onClick={() => setTab('businesses')}
               >
                 Businesses
+              </button>
+              <button
+                className={`${tab === 'mentorships' ? 'text-gray-800' : 'text-gray-400'}`}
+                onClick={() => setTab('mentorships')}
+              >
+                Mentorships
               </button>
               <button
                 className={`${tab === 'posts' ? 'text-gray-800' : 'text-gray-400'}`}
@@ -154,17 +176,18 @@ export function Feed() {
               </button>
             </div>
 
-            <div className='flex items-center space-x-2'>
+            <div className='flex items-center shadow-lg p-1 rounded-full gap-1'>
               <ArrowUpDown className="w-4 h-4 text-gray-500" />
               <select
                 title='sortBy'
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'newest' | 'likes' | 'trending')}
+                onChange={(e) => setSortBy(e.target.value as 'newest' | 'likes' | 'trending' | 'rated')}
                 className="px-2 py-1 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-700 not-md:text-xs"
               >
                 <option value="newest">Newest</option>
                 <option value="likes">Most Liked</option>
                 <option value="trending">Trending</option>
+                <option value="rated">Rated</option>
               </select>
             </div>
           </div>
@@ -175,6 +198,24 @@ export function Feed() {
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1">
               {filteredStartups?.map((startup) => (
                 <StartupCard key={startup.id} startup={startup} userId={startup.user_id} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20">
+              <p className="text-gray-500 text-lg">
+                {searchQuery ? `No startups found matching "${searchQuery}"` : 'No startups found in this category.'}
+              </p>
+            </div>
+          )
+        )}
+
+        {tab === 'mentorships' && (
+          (filteredMentorshipPages ?? []).length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1">
+              {filteredMentorshipPages?.map((page) => (
+                <Link key={page.id} to={`/mentorship-page/${page.id}`}>
+                  <MentorshipPageCard {...page} />
+                </Link>
               ))}
             </div>
           ) : (

@@ -391,17 +391,19 @@ export function StartupProfile() {
               <span>Contact</span>
             </a>
 
-            <button
-              onClick={handleFavorites}
-              disabled={!session}
-              className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium transition-all ${favorites
-                ? 'bg-red-50 text-red-500 border-2 border-red-200'
-                : 'bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50'
-                }`}
-            >
-              <Star className={`w-5 h-5 ${favorites ? 'fill-red-500' : ''}`} />
-              <span>Favorite</span>
-            </button>
+            {!isOwner && (
+              <button
+                onClick={handleFavorites}
+                disabled={!session}
+                className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium transition-all ${favorites
+                  ? 'bg-red-50 text-red-500 border-2 border-red-200'
+                  : 'bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+              >
+                <Star className={`w-5 h-5 ${favorites ? 'fill-red-500' : ''}`} />
+                <span>Favorite</span>
+              </button>
+            )}
 
             <button
               onClick={handleShare}

@@ -23,8 +23,8 @@ export default function MentorshipPageCard(mentorship: MentorshipData) {
       </div>
 
       {/* Card Content */}
-      <div className="p-5">
-        <div className="mb-3">
+      <div className="p-2">
+        <div>
           <span className="inline-block px-2.5 py-1 bg-blue-100 text-blue-600 text-xs rounded-full mb-2">
             {mentorship.category}
           </span>
@@ -33,12 +33,12 @@ export default function MentorshipPageCard(mentorship: MentorshipData) {
           </h3>
         </div>
 
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+        <p className="text-gray-600 text-sm mb-2 line-clamp-3">
           {mentorship.description}
         </p>
 
         {/* Mentor Info */}
-        <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
+        <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-100">
           <img
             src={getImageUrl(mentorship.users.profile_image) || 'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80'}
             alt={mentorship.users.full_name}
