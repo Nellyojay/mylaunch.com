@@ -1,6 +1,8 @@
 import { MapPin, Award, Star } from "lucide-react";
 import { getImageUrl } from "../constants/imageHandler";
 import { Link } from "react-router-dom";
+import { RateMentorship } from "./Popup";
+import type { SetStateAction } from "react";
 
 interface MentorProfileProps {
   name: string | undefined;
@@ -11,6 +13,12 @@ interface MentorProfileProps {
   bio: string | undefined;
   experience: string | undefined;
   rating: number | undefined;
+  openRatings: boolean;
+  setOpenRatings: React.Dispatch<SetStateAction<boolean>>;
+  setRated: React.Dispatch<SetStateAction<number>>;
+  handleRating: () => void;
+  rateErr: boolean;
+  submitted: boolean;
 }
 
 export function MentorProfile({
@@ -22,6 +30,12 @@ export function MentorProfile({
   bio,
   experience,
   rating,
+  openRatings,
+  setOpenRatings,
+  setRated,
+  handleRating,
+  rateErr,
+  submitted
 }: MentorProfileProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
@@ -47,13 +61,18 @@ export function MentorProfile({
                 <p className="text-sm">{experience}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                console.log('Clicked')
+              }}
+              className="flex items-center gap-2"
+            >
               <Star className="w-5 h-5 text-blue-600" />
               <div>
                 <p className="text-xs text-gray-500">Rating</p>
                 <p className="text-sm">{rating || 0}/5.0</p>
               </div>
-            </div>
+            </button>
           </div>
         </div>
 
@@ -67,7 +86,7 @@ export function MentorProfile({
               >{name}</Link>
 
               {/* Stats for desktop */}
-              <div className="flex gap-8 not-md:hidden">
+              <div className="relative flex gap-8 not-md:hidden">
                 <div className="flex items-center gap-2">
                   <Award className="w-5 h-5 text-blue-600" />
                   <div>
@@ -75,13 +94,28 @@ export function MentorProfile({
                     <p className="text-sm">{experience}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setOpenRatings(!openRatings)
+                    setRated(0)
+                  }}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
                   <Star className="w-5 h-5 text-blue-600" />
                   <div>
                     <p className="text-xs text-gray-500">Rating</p>
                     <p className="text-sm">{rating || 0}/5.0</p>
                   </div>
-                </div>
+
+                </button>
+                {openRatings && (
+                  <RateMentorship
+                    setRated={setRated}
+                    onClick={handleRating}
+                    rateErr={rateErr}
+                    submitted={submitted}
+                  />
+                )}
               </div>
             </div>
             <p className="text-blue-600 text-sm md:text-base mb-2">{title}</p>

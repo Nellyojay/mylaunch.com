@@ -6,10 +6,11 @@ import ScrollToTop from "../constants/scrollToTop";
 import { useMentorshipData } from "../contexts/mentorshipContext";
 import { PostCard } from "../components/PostCard";
 import { useStartup } from "../contexts/StartupProfileContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/authContext";
 import { useUserData } from "../contexts/userDataContext";
 import Loader from "../constants/loader";
+import supabase from "../supabaseClient";
 
 export default function MentorshipPage() {
 
@@ -20,6 +21,11 @@ export default function MentorshipPage() {
   const { mentorshipData } = useMentorshipData();
   const { posts, handleDeletePost, fetchStartupPosts } = useStartup();
 
+  const [openRatings, setOpenRatings] = useState(false);
+  const [rated, setRated] = useState<number>(0);
+  const [submittedRating, setSubmittedRating] = useState(false);
+  const [rateErr, setRateErr] = useState(false);
+
   const pageData = mentorshipData?.find(m => m.id === id)
   const mentorshipPosts = posts.filter(p => p.mentorship_id === id)
   const isOwner = Boolean(currentUser?.auth_id === user?.id && pageData?.users.id === currentUser?.id)
@@ -27,6 +33,76 @@ export default function MentorshipPage() {
   useEffect(() => {
     fetchStartupPosts();
   }, [id])
+
+  const handleRating = async () => {
+    if (rated === 0) {
+      const { error: deleteErr } = await supabase
+        .from('mentorship_rating')
+        .delete()
+        .eq('user_id', currentUser?.id)
+        .eq('mentorship_id', pageData?.id)
+
+      if (deleteErr) {
+        setRateErr(true)
+        return;
+      }
+
+      setSubmittedRating(true);
+      setTimeout(() => {
+        setOpenRatings(false);
+        setSubmittedRating(false)
+      }, 3000);
+      return;
+    };
+
+    const { data: userRated } = await supabase
+      .from('mentorship_rating')
+      .select('id')
+      .eq('user_id', currentUser?.id)
+      .eq('mentorship_id', pageData?.id)
+      .maybeSingle();
+
+    if (userRated && rated !== 0) {
+      const { error: updateErr } = await supabase
+        .from('mentorship_rating')
+        .update({ rating: rated })
+        .eq('user_id', currentUser?.id)
+        .eq('mentorship_id', pageData?.id)
+
+      if (updateErr) {
+        setRateErr(true);
+        return;
+      }
+
+      setSubmittedRating(true);
+      setTimeout(() => {
+        setOpenRatings(false);
+        setSubmittedRating(false)
+      }, 3000);
+      return;
+    }
+
+    const { error } = await supabase
+      .from('mentorship_rating')
+      .insert({
+        user_id: currentUser?.id,
+        mentorship_id: pageData?.id,
+        rating: rated
+      })
+      .select()
+      .single();
+
+    if (error) {
+      setRateErr(true);
+      return;
+    }
+
+    setSubmittedRating(true);
+    setTimeout(() => {
+      setOpenRatings(false);
+      setSubmittedRating(false)
+    }, 3000);
+  }
 
   if (!id || !user || !posts || !currentUser || !pageData) {
     <Loader />
@@ -75,7 +151,13 @@ export default function MentorshipPage() {
             imageUrl={pageData?.users.profile_image}
             bio={pageData?.mentorship_bio}
             experience={pageData?.experience}
-            rating={pageData?.rating}
+            rating={pageData?.avg_rating}
+            openRatings={openRatings}
+            setOpenRatings={setOpenRatings}
+            setRated={setRated}
+            handleRating={handleRating}
+            rateErr={rateErr}
+            submitted={submittedRating}
           />
         </div>
 

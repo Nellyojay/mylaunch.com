@@ -54,7 +54,7 @@ export default function MentorshipPageCard(mentorship: MentorshipData) {
         <div className="text-sm text-gray-600">
           <div className="flex items-center gap-1">
             <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-            <span>{mentorship.rating || 0}</span>
+            <span>{mentorship.avg_rating || 0}</span>
           </div>
         </div>
       </div>

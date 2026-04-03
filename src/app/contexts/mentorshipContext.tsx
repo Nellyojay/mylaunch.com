@@ -9,7 +9,7 @@ export type MentorshipData = {
   category: string;
   mentor_title: string;
   students: number;
-  rating: number;
+  avg_rating: number;
   description: string;
   experience: string;
   image_url: string | null;
@@ -48,10 +48,10 @@ export const MentorshipDataProvider = ({ children }: { children: React.ReactNode
     fetchMentorshipPageData();
 
     const channel = supabase
-      .channel('realtime-startups')
+      .channel('realtime-mentorship_page')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'startups' },
+        { event: '*', schema: 'public', table: 'mentorship_page' },
         (payload) => {
           setMentorshipData((prevState) => {
             if (!prevState) return prevState;

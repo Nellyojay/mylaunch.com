@@ -121,7 +121,7 @@ export function Feed() {
       });
       break;
     case 'rated':
-      filteredMentorshipPages = filteredMentorshipPages?.slice().sort((a, b) => b.rating - a.rating)
+      filteredMentorshipPages = filteredMentorshipPages?.slice().sort((a, b) => b.avg_rating - a.avg_rating)
   }
 
   return (
