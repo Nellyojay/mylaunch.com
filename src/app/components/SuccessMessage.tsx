@@ -8,7 +8,7 @@ type Props = {
 
 export default function SuccessMessage({ header, message, error }: Props) {
   return (
-    <div className={`mb-6 p-4 ${error ? 'bg-red-50' : 'bg-green-50'} border border-green-200 rounded-xl flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 duration-300 mt-4`}>
+    <div className={`m-2 p-2 ${error ? 'bg-red-50' : 'bg-green-50'} border border-green-200 rounded-xl flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 duration-300`}>
       {!error && (<CheckCircle className="w-6 h-6 text-green-600 shrink-0" />)}
       <div>
         {header && (<p className={`font-semibold ${error ? 'text-red-500' : 'text-green-900'}`}>{header}</p>)}
