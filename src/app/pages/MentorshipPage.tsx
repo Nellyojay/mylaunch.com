@@ -104,7 +104,7 @@ export default function MentorshipPage() {
     }, 3000);
   }
 
-  if (!id || !user || !posts || !currentUser || !pageData) {
+  if (!id || !posts || !pageData) {
     return <Loader />
   }
 
