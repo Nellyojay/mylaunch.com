@@ -64,10 +64,6 @@ export const router = createHashRouter([
     Component: CreateStartup,
   },
   {
-    path: "/create",
-    Component: CreateStartup,
-  },
-  {
     path: "/login",
     Component: Login,
   },

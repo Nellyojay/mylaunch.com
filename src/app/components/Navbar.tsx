@@ -1,11 +1,12 @@
 import { Link, useNavigate, useLocation } from 'react-router';
 import { Search, Home, Compass, MessageCircle } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useWebData } from '../contexts/webData';
 import { useAuth } from '../contexts/authContext';
-import { useUserData } from '../contexts/userDataContext';
+import { BUSINESS_PERSONNEL_ROLE, MENTOR_ROLE, useUserData } from '../contexts/userDataContext';
 import Loader from '../constants/loader';
 import { getImageUrl } from '../constants/imageHandler';
+import { ActionsPopup } from './Popup';
 
 interface NavbarProps {
   showSearch?: boolean;
@@ -19,13 +20,30 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   const { webName } = useWebData();
   const { session } = useAuth();
   const { setSelectedProfile, currentUser, agreeToTC } = useUserData();
+  const [openPopup, setOpenPopup] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [hideLogoName, setHideLogoName] = useState(false);
   const [searchBarNavigateToFeed, setSearchBarNavigateToFeed] = useState(false);
 
+  const actionsRef = useRef<HTMLDivElement | null>(null);
+
   if (!currentUser) {
     <Loader />
   }
+
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (actionsRef.current && !actionsRef.current.contains(event.target as Node)) {
+        setOpenPopup(false);
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   const check = () => {
     if (currentUser?.TC_agreed === false && !currentUser.user_roles) {
@@ -90,7 +108,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
           )}
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-6 transition-all">
+          <div ref={actionsRef} className="hidden md:flex items-center space-x-6 transition-all">
             {!session ? (
               <>
                 <Link to="/" className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname === '/' ? 'text-gray-800 border-b border-gray-800' : ''}`}>
@@ -114,9 +132,19 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
                 <Link to="/feedback" className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname === '/feedback' ? 'text-gray-800 border-b border-gray-800' : ''} hidden sm:block`}>
                   Feedback
                 </Link>
-                <Link to="/create" className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname === '/create' ? 'text-gray-800 border-b border-gray-800' : ''}`}>
-                  Create Page
-                </Link>
+                {currentUser?.user_roles.includes(BUSINESS_PERSONNEL_ROLE) || currentUser?.user_roles.includes(MENTOR_ROLE) && (
+                  <button
+                    onClick={() => { setOpenPopup(!openPopup) }}
+                    className={`text-gray-500 hover:text-gray-800 transition-colors relative ${location.pathname === '/create' ? 'text-gray-800 border-b border-gray-800' : ''}`}
+                  >
+                    Create Page
+                    {openPopup && (
+                      <ActionsPopup
+                        {...currentUser}
+                      />
+                    )}
+                  </button>
+                )}
                 <Link to={`/profile/${currentUser?.id}`} className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname.startsWith('/profile') ? 'text-gray-800' : ''}`} onClick={() => setSelectedProfile(currentUser?.id)}>
                   <img
                     src={getImageUrl(currentUser?.profile_image) || 'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg?semt=ais_incoming&w=740&q=80'}

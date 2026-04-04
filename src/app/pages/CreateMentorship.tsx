@@ -74,7 +74,7 @@ export default function CreateMentorship() {
       {/* Header */}
       <div className="bg-blue-600 text-white py-6 px-4">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl md:text-3xl">Create New Mentorship</h1>
+          <h1 className="text-2xl md:text-3xl">Create Mentorship Page</h1>
         </div>
       </div>
 

@@ -21,6 +21,10 @@ function PostFeed() {
   const userStartups = startupData?.filter(s => s.user_id === currentUser?.id);
   const userMentorshipPages = mentorshipData?.filter(m => m.users.id === currentUser?.id)
 
+  if (loadingPosts || !posts || !mentorshipData) {
+    return <Loader />
+  }
+
   useEffect(() => {
     fetchStartupPosts();
   }, [])
@@ -49,10 +53,6 @@ function PostFeed() {
       }
     };
   }, [posts?.length, displayedPosts.length, loadingPosts]);
-
-  if (loadingPosts || !posts) {
-    return <Loader />
-  }
 
   return (
     <div className="bg-gray-200 min-h-screen pt-12">

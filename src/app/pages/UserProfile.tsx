@@ -31,15 +31,15 @@ const noteMessage = [
   },
   {
     role: CUSTOMER_ROLE,
-    message: 'As a Customer, you can follow businesses and engage with their posts, but you cannot create your own business page.'
+    message: 'As a Customer, you can follow business pages and mentorship pages and engage with their posts.'
   },
   {
     role: BUSINESS_PERSONNEL_ROLE,
-    message: 'As a Business Personnel, you can create and manage your own business page.'
+    message: 'As a Business Personnel, you can create and manage your own business page and all the benefits of being customer.'
   },
   {
     role: MENTOR_ROLE,
-    message: 'As a Mentor, you can create and manage your own mentorship page. One mentor can have a maximum of three (3) mentorship pages'
+    message: 'As a Mentor, you can create and manage your own mentorship page and all the benefits of the being a customer.'
   },
   {
     role: ADMIN_ROLE,
