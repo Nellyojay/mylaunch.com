@@ -3,6 +3,7 @@ import { getImageUrl } from "../constants/imageHandler";
 import { Link } from "react-router-dom";
 import { RateMentorship } from "./Popup";
 import type { SetStateAction } from "react";
+import { useAuth } from "../contexts/authContext";
 
 interface MentorProfileProps {
   name: string | undefined;
@@ -37,6 +38,8 @@ export function MentorProfile({
   rateErr,
   submitted
 }: MentorProfileProps) {
+  const { session } = useAuth();
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
       <div className="flex flex-col md:flex-row gap-4 md:gap-6">
@@ -53,8 +56,8 @@ export function MentorProfile({
           </Link>
 
           {/* Stats for mobile */}
-          <div className="md:hidden">
-            <div className="flex items-center gap-2 mb-4">
+          <div className="md:hidden relative flex items-center gap-8">
+            <div className="flex items-center gap-2">
               <Award className="w-5 h-5 text-blue-600" />
               <div>
                 <p className="text-xs text-gray-500">Experience</p>
@@ -63,16 +66,27 @@ export function MentorProfile({
             </div>
             <button
               onClick={() => {
-                console.log('Clicked')
+                setOpenRatings(!openRatings)
+                setRated(0)
               }}
-              className="flex items-center gap-2"
+              disabled={!session}
+              className="flex items-center gap-2 cursor-pointer active:bg-gray-200 p-2 rounded-lg transition-colors"
             >
               <Star className="w-5 h-5 text-blue-600" />
               <div>
                 <p className="text-xs text-gray-500">Rating</p>
                 <p className="text-sm">{rating || 0}/5.0</p>
               </div>
+
             </button>
+            {openRatings && (
+              <RateMentorship
+                setRated={setRated}
+                onClick={handleRating}
+                rateErr={rateErr}
+                submitted={submitted}
+              />
+            )}
           </div>
         </div>
 
@@ -99,7 +113,7 @@ export function MentorProfile({
                     setOpenRatings(!openRatings)
                     setRated(0)
                   }}
-                  className="flex items-center gap-2 cursor-pointer"
+                  className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded-lg"
                 >
                   <Star className="w-5 h-5 text-blue-600" />
                   <div>

@@ -155,7 +155,7 @@ function PostFeed() {
         <div className="sticky top-18 h-fit hidden md:block col-span-12 md:col-span-4 space-y-2">
 
           <div className="bg-white rounded-md shadow-sm p-4">
-            <p className="font-semibold">Trending Startup</p>
+            <p className="font-semibold">Trending Businesses</p>
             <p className="text-gray-500">Coming soon!</p>
           </div>
 

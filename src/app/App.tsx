@@ -1,7 +1,35 @@
 import { RouterProvider } from 'react-router';
 import { router } from './routes';
+import { PopupProvider, usePopup } from './contexts/EdgePopupContext';
+import GlobalPopup from './components/GlobalPopup';
+import { useEffect } from 'react';
 
 export default function App() {
 
-  return <RouterProvider router={router} />;
+  function NetworkWatcher() {
+    const { showPopup } = usePopup();
+
+    useEffect(() => {
+      const offline = () => showPopup("You are offline", "error");
+      const online = () => showPopup("Back online", "success");
+
+      window.addEventListener("offline", offline);
+      window.addEventListener("online", online);
+
+      return () => {
+        window.removeEventListener("offline", offline);
+        window.removeEventListener("online", online);
+      };
+    }, []);
+
+    return null;
+  }
+
+  return (
+    <PopupProvider>
+      <NetworkWatcher />
+      <GlobalPopup />
+      <RouterProvider router={router} />
+    </PopupProvider>
+  );
 }
