@@ -3,7 +3,7 @@ import { Navbar } from "../components/Navbar"
 import { PostCard } from "../components/PostCard";
 import { useStartup } from "../contexts/StartupProfileContext";
 import Loader from "../constants/loader";
-import { useUserData } from "../contexts/userDataContext";
+import { BUSINESS_PERSONNEL_ROLE, MENTOR_ROLE, useUserData } from "../contexts/userDataContext";
 import { Link } from "react-router-dom";
 import { getImageUrl } from "../constants/imageHandler";
 import { Bookmark } from "lucide-react";
@@ -90,9 +90,9 @@ function PostFeed() {
             )}
           </div>
 
-          {session && (
+          {session && currentUser?.user_roles.includes(BUSINESS_PERSONNEL_ROLE) || currentUser?.user_roles.includes(MENTOR_ROLE) && (
             <div className="bg-white rounded-md shadow-sm p-4 space-y-2">
-              <p className="font-semibold">My Pages ({userStartups?.length})</p>
+              <p className="font-semibold">My Pages ({userStartups?.length || userMentorshipPages?.length})</p>
 
               {(userStartups?.length ?? 0) > 0 ? (
                 <>
