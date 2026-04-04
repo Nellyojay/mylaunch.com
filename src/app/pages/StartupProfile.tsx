@@ -56,6 +56,7 @@ export function StartupProfile() {
   const StartupOwnPosts = posts.filter(p => p.startups?.id === startup?.id)
 
   const [following, setFollowing] = useState(false);
+  const [lineClamp, setLineClamp] = useState(false);
   const [favorites, setFavorites] = useState(false)
   const [showMore, setShowMore] = useState(false);
   const [showComments, setShowComments] = useState(false);
@@ -442,7 +443,16 @@ export function StartupProfile() {
                 <div className="mt-6 pt-6 border-t border-gray-200 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Full Description</h3>
-                    <p className="text-gray-700 leading-relaxed">{startup?.description}</p>
+                    <p className="text-gray-700 leading-relaxed">
+                      <span className={`${lineClamp ? 'line-clamp-0' : 'line-clamp-5'}`}>{startup?.description}</span>
+                      <span className='text-gray-400 font-semibold'>
+                        <button
+                          onClick={() => setLineClamp(!lineClamp)}
+                        >
+                          {lineClamp ? 'collapse' : 'more'}
+                        </button>
+                      </span>
+                    </p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
