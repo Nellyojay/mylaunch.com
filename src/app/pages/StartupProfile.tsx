@@ -282,7 +282,7 @@ export function StartupProfile() {
         </div>
 
         {/* Profile Header Section */}
-        <div className="bg-white -mt-16 mx-4 rounded-3xl shadow-lg p-6 relative z-10">
+        <div className="bg-white -mt-8 mx-4 rounded-3xl shadow-lg p-6 relative z-10">
           {/* Logo overlapping banner */}
           <div className="flex flex-col items-center md:flex-row md:items-start gap-4">
             <div className="w-28 h-28 rounded-full shadow-xl -mt-14 bg-gray-200 flex items-center justify-center border border-gray-300">
@@ -534,8 +534,8 @@ export function StartupProfile() {
         </div>
 
         {/* Posts Feed Section */}
-        <div className="mt-8 px-4">
-          <div className="mb-6">
+        <div className="mt-8 px-1">
+          <div className="mb-2 px-2">
             <div className='flex justify-between mb-2 pb-2 border-b border-gray-400'>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Posts</h2>
               {isOwner && (
@@ -559,7 +559,7 @@ export function StartupProfile() {
           )}
 
           {!loadingPosts && posts.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
               {StartupOwnPosts.map((post) => (
                 <PostCard
                   key={post.id}

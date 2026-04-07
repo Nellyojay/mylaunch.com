@@ -15,6 +15,7 @@ import { PostCard } from '../components/PostCard';
 import { ActionsPopup } from '../components/Popup';
 import MentorshipPageCard from '../components/MentorshipPageCard';
 import { useMentorshipData } from '../contexts/mentorshipContext';
+import { Modal } from '../components/Modal';
 
 type Favorites = {
   startup_id: string
@@ -60,6 +61,7 @@ export function UserProfile() {
   const [savedPosts, setSavedPosts] = useState<SavedPosts[]>([])
   const [moreOpen, setMoreOpen] = useState(false);
   const [openActionsPopup, setOpenActiionsPopup] = useState(false);
+  const [openLogOutModal, setOpenLogOutModal] = useState(false);
 
   const actionsRef = useRef<HTMLDivElement | null>(null);
 
@@ -209,8 +211,7 @@ export function UserProfile() {
                 <button
                   className="px-6 py-2 border border-red-700 text-red-700 rounded-full hover:bg-red-100 transition-colors font-medium"
                   onClick={() => {
-                    logout();
-                    navigate('/login');
+                    setOpenLogOutModal(true)
                   }}
                 >
                   Log out
@@ -378,6 +379,21 @@ export function UserProfile() {
           )}
         </div>
       </main>
+
+      <Modal
+        isOpen={openLogOutModal}
+        title="Log Out"
+        message="Are you sure you want to log out?"
+        confirmText="Log Out"
+        cancelText="Cancel"
+        onConfirm={() => {
+          logout();
+          navigate('/login')
+        }}
+        onCancel={() => setOpenLogOutModal(false)}
+        confirmClassName="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+        cancelClassName="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
+      />
     </div>
   );
 }

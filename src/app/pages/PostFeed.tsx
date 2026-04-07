@@ -90,7 +90,7 @@ function PostFeed() {
             )}
           </div>
 
-          {session && currentUser?.user_roles.includes(BUSINESS_PERSONNEL_ROLE) || currentUser?.user_roles.includes(MENTOR_ROLE) && (
+          {session && (currentUser?.user_roles.includes(BUSINESS_PERSONNEL_ROLE) || currentUser?.user_roles.includes(MENTOR_ROLE)) && (
             <div className="bg-white rounded-md shadow-sm p-4 space-y-2">
               <p className="font-semibold">My Pages ({userStartups?.length || userMentorshipPages?.length})</p>
 

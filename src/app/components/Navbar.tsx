@@ -132,7 +132,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
                 <Link to="/feedback" className={`text-gray-500 hover:text-gray-800 transition-colors ${location.pathname === '/feedback' ? 'text-gray-800 border-b border-gray-800' : ''} hidden sm:block`}>
                   Feedback
                 </Link>
-                {currentUser?.user_roles.includes(BUSINESS_PERSONNEL_ROLE) || currentUser?.user_roles.includes(MENTOR_ROLE) && (
+                {(currentUser?.user_roles.includes(BUSINESS_PERSONNEL_ROLE) || currentUser?.user_roles.includes(MENTOR_ROLE)) && (
                   <button
                     onClick={() => { setOpenPopup(!openPopup) }}
                     className={`text-gray-500 hover:text-gray-800 transition-colors relative ${location.pathname === '/create' ? 'text-gray-800 border-b border-gray-800' : ''}`}

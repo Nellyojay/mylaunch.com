@@ -137,10 +137,10 @@ export function PostCard({ post, deletePost }: PostCardProps) {
               <img
                 src={getImageUrl(post.startups ? post.startups.display_image : post.mentorship_page?.image_url) || undefined}
                 alt=""
-                className='w-12 h-12 rounded-full'
+                className='w-10 h-10 rounded-full'
               />
             ) : (
-              <div className='bg-blue-600 w-12 h-12 rounded-full flex justify-center items-center'>
+              <div className='bg-blue-600 w-10 h-10 rounded-full flex justify-center items-center'>
                 <p className='text-white font-bold text-lg'>{post.startups ? post.startups?.name.charAt(0).toLocaleUpperCase() : post.mentorship_page?.topic.charAt(0).toLocaleUpperCase()}</p>
               </div>
             )}
