@@ -18,6 +18,7 @@ import { useUserData } from '../contexts/userDataContext';
 import { useAuth } from '../contexts/authContext';
 import { Modal } from '../components/Modal';
 import ScrollToTop from '../constants/scrollToTop';
+import { getImageUrl } from '../constants/imageHandler';
 
 export function Settings() {
   const navigate = useNavigate();
@@ -35,13 +36,22 @@ export function Settings() {
       <Navbar showAuth={false} />
       <ScrollToTop />
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         {/* Profile Section */}
         <div className="bg-white rounded-2xl shadow-md p-6 mb-4">
           <div className="flex items-center gap-4">
             <div className="relative">
               <div className="w-20 h-20 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
-                <span className="text-3xl font-bold text-white">{currentUser?.full_name[0]}</span>
+                {currentUser?.profile_image ? (
+                  <img
+                    src={getImageUrl(currentUser?.profile_image) || undefined}
+                    alt="Profile Picture"
+                    className="w-20 h-20 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="text-3xl font-bold text-white">{currentUser?.full_name[0]}</span>
+                )}
+
               </div>
             </div>
             <div className="flex-1">
