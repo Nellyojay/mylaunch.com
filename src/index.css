@@ -53,3 +53,9 @@
     transform: scale(1) translateY(0);
   }
 }
+
+@theme {
+  --color-primary: #016B61;
+  --color-secondary: #70B2B2;
+  --color-accent: #016b6032;
+}
