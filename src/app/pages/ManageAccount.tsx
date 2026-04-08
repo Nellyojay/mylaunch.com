@@ -88,7 +88,7 @@ export function ManageAccount() {
                 </ul>
                 <button
                   onClick={() => setShowDeactivateDialog(true)}
-                  className="px-6 py-2.5 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition-colors font-medium"
+                  className="w-full py-2 bg-orange-500 text-white rounded-full hover:bg-orange-700 transition-colors font-medium"
                 >
                   Deactivate Account
                 </button>
@@ -131,7 +131,7 @@ export function ManageAccount() {
                 </ul>
                 <button
                   onClick={() => setShowDeleteDialog(true)}
-                  className="px-6 py-2.5 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors font-medium"
+                  className="w-full py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors font-medium"
                 >
                   Delete Account
                 </button>
