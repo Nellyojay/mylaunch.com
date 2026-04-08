@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { StartupCard } from '../components/StartupCard';
 import { formatDate } from '../constants/dateFormat';
@@ -15,7 +15,6 @@ import { PostCard } from '../components/PostCard';
 import { ActionsPopup } from '../components/Popup';
 import MentorshipPageCard from '../components/MentorshipPageCard';
 import { useMentorshipData } from '../contexts/mentorshipContext';
-import { Modal } from '../components/Modal';
 
 type Favorites = {
   startup_id: string
@@ -49,11 +48,10 @@ const noteMessage = [
 ]
 
 export function UserProfile() {
-  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { startupData, posts, fetchStartupPosts, handleDeletePost } = useStartup();
   const { userData, setSelectedProfile, selectedProfile } = useUserData();
-  const { logout, user } = useAuth();
+  const { user } = useAuth();
   const { mentorshipData } = useMentorshipData();
 
   const [tab, setTab] = useState<number | null>(null);
@@ -61,7 +59,6 @@ export function UserProfile() {
   const [savedPosts, setSavedPosts] = useState<SavedPosts[]>([])
   const [moreOpen, setMoreOpen] = useState(false);
   const [openActionsPopup, setOpenActiionsPopup] = useState(false);
-  const [openLogOutModal, setOpenLogOutModal] = useState(false);
 
   const actionsRef = useRef<HTMLDivElement | null>(null);
 
@@ -204,18 +201,10 @@ export function UserProfile() {
             {isOwner ? (
               <div className="flex flex-col gap-2">
                 <Link
-                  to={`/profile/${profileId}/edit`}
-                  className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg">
-                  Edit profile
+                  to="/settings"
+                  className="flex justify-center items-center px-6 py-2 bg-linear-to-r from-gray-500 to-gray-700 text-white rounded-full hover:from-gray-600 hover:to-gray-800 transition-all font-medium shadow-md hover:shadow-lg">
+                  Settings
                 </Link>
-                <button
-                  className="px-6 py-2 border border-red-700 text-red-700 rounded-full hover:bg-red-100 transition-colors font-medium"
-                  onClick={() => {
-                    setOpenLogOutModal(true)
-                  }}
-                >
-                  Log out
-                </button>
               </div>
             ) : null}
           </div>
@@ -379,21 +368,6 @@ export function UserProfile() {
           )}
         </div>
       </main>
-
-      <Modal
-        isOpen={openLogOutModal}
-        title="Log Out"
-        message="Are you sure you want to log out?"
-        confirmText="Log Out"
-        cancelText="Cancel"
-        onConfirm={() => {
-          logout();
-          navigate('/login')
-        }}
-        onCancel={() => setOpenLogOutModal(false)}
-        confirmClassName="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
-        cancelClassName="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
-      />
     </div>
   );
 }

@@ -256,7 +256,7 @@ export function EditProfile() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => navigate(profileId ? `/profile/${profileId}` : '/')}
+                  onClick={() => navigate(-1)}
                   className="px-5 py-2 border rounded-lg border-gray-300 hover:bg-gray-100"
                 >
                   Cancel

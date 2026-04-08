@@ -7,6 +7,7 @@ import supabase from '../supabaseClient';
 import { useUserData } from '../contexts/userDataContext';
 import { formatDate } from '../constants/dateFormat';
 import SuccessMessage from '../components/SuccessMessage';
+import ScrollToTop from '../constants/scrollToTop';
 
 interface FeedbackMessage {
   id: number;
@@ -123,6 +124,7 @@ export function Feedback() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar showAuth={false} />
+      <ScrollToTop />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         {/* Header */}

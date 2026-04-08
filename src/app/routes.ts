@@ -12,11 +12,13 @@ import { EditStartup } from "./pages/EditStartup";
 import { EditProfile } from "./pages/EditProfile";
 import { Feedback } from "./pages/Feedback";
 import { FollowingStartups } from "./pages/FollowingStartups";
+import { Settings } from "./pages/Settings";
 import TC_agree from "./pages/TC_agree";
 import PostFeed from "./pages/PostFeed";
 import MentorshipPage from "./pages/MentorshipPage";
 import CreateMentorship from "./pages/CreateMentorship";
 import EditMentorship from "./pages/EditMentorshipPage";
+import { ManageAccount } from "./pages/ManageAccount";
 
 export const router = createHashRouter([
   {
@@ -90,6 +92,14 @@ export const router = createHashRouter([
   {
     path: "/mentorship-page/:id/edit",
     Component: EditMentorship,
+  },
+  {
+    path: "/settings",
+    Component: Settings,
+  },
+  {
+    path: "/manage-account",
+    Component: ManageAccount,
   },
   {
     path: "*",
