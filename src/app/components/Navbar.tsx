@@ -48,16 +48,16 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
   const check = () => {
     if (currentUser?.TC_agreed === false && !currentUser.user_roles) {
       navigate("/TC_agree")
-    }
+    };
 
-    if (session && !currentUser?.is_active) {
+    if (session && currentUser?.is_active === false) {
       navigate('/recover-account')
-    }
-  }
+    };
+  };
 
   useEffect(() => {
     check();
-  }, [agreeToTC, currentUser?.id])
+  }, [agreeToTC, currentUser?.id]);
 
   useEffect(() => {
     if (searchBarNavigateToFeed && location.pathname !== '/feed') {
@@ -70,7 +70,7 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
     setSearchValue(value);
     if (onSearch) {
       onSearch(value);
-    }
+    };
   };
 
   return (
