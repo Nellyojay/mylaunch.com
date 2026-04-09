@@ -20,6 +20,7 @@ export type userData = {
   favorites: number;
   user_roles: string[];
   is_active: boolean;
+  deleted_at: string;
 }
 
 type UserDataContextType = {
