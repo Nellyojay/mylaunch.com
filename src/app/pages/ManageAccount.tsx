@@ -1,25 +1,68 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { ChevronLeft, AlertTriangle, UserX, PauseCircle } from 'lucide-react';
 import ScrollToTop from '../constants/scrollToTop';
+import supabase from '../supabaseClient';
+import { useUserData } from '../contexts/userDataContext';
+import { usePopup } from '../contexts/EdgePopupContext';
+import { useAuth } from '../contexts/authContext';
 
 export function ManageAccount() {
   const navigate = useNavigate();
+
+  const { currentUser } = useUserData();
+  const { user } = useAuth();
+  const { showPopup } = usePopup();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDeactivateDialog, setShowDeactivateDialog] = useState(false);
 
+  useEffect(() => {
+    if (!user) {
+      navigate('/')
+    }
+  }, [])
+
+  async function deletAccount() {
+    const { error } = await supabase.rpc("soft_delete_user", {
+      p_user_id: currentUser?.id
+    });
+
+    if (error) {
+      console.error(error)
+      showPopup('Error deleting account', 'error');
+      return;
+    };
+
+    showPopup('Account deleted', 'success')
+
+    await supabase.auth.signOut();
+  }
+
   const handleDeleteAccount = () => {
     // In a real app, this would call the API to delete the account
-    console.log('Account deleted');
+    deletAccount();
     setShowDeleteDialog(false);
-    navigate('/login');
+    navigate('/login', { replace: true });
   };
 
-  const handleDeactivateAccount = () => {
+  const handleDeactivateAccount = async () => {
     // In a real app, this would call the API to deactivate the account
-    console.log('Account deactivated');
+    const { error } = await supabase
+      .from('users')
+      .update({ is_active: false })
+      .eq('id', currentUser?.id)
+      .eq('auth_id', user?.id)
+
+    if (error) {
+      showPopup('Error deactivateing account, please try again.', 'error')
+      return;
+    }
+
+    showPopup("Account deactivated", "success")
+
     setShowDeactivateDialog(false);
-    navigate('/login');
+    await supabase.auth.signOut();
+    navigate('/login', { replace: true })
   };
 
   return (

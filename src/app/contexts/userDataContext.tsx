@@ -19,6 +19,7 @@ export type userData = {
   TC_agreed: boolean;
   favorites: number;
   user_roles: string[];
+  is_active: boolean;
 }
 
 type UserDataContextType = {

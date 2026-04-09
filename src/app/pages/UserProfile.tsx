@@ -146,6 +146,10 @@ export function UserProfile() {
       <main className="max-w-6xl mx-auto px-2 sm:px-6 lg:px-8 pt-20 pb-20">
         {/* Profile Header */}
         <div className="bg-white rounded-2xl shadow-md pb-4 mb-8">
+          {!userData.is_active && (
+            <p className='text-red-600 text-center font-semibold border-2 border-red-600 bg-red-50 p-2 rounded-lg'>This User nolonger exists</p>
+          )}
+
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6 p-6">
             {/* Profile Picture */}
             {userData?.profile_image ? (

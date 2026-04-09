@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import {
@@ -31,6 +31,12 @@ export function Settings() {
   const [privateAccount, setPrivateAccount] = useState(false);
   const [openLogOutModal, setOpenLogOutModal] = useState(false);
 
+  useEffect(() => {
+    if (!user) {
+      navigate('/')
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar showAuth={false} />
@@ -56,7 +62,9 @@ export function Settings() {
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-bold text-gray-900">{currentUser?.full_name}</h2>
-              <p className="text-sm text-gray-600">{user?.email}</p>
+              {currentUser?.is_active && (
+                <p className="text-sm text-gray-600">{user?.email}</p>
+              )}
             </div>
           </div>
         </div>
@@ -213,7 +221,7 @@ export function Settings() {
         cancelText="Cancel"
         onConfirm={() => {
           logout();
-          navigate('/login')
+          navigate('/login', { replace: true });
         }}
         onCancel={() => setOpenLogOutModal(false)}
         confirmClassName="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
