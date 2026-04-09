@@ -19,6 +19,7 @@ import MentorshipPage from "./pages/MentorshipPage";
 import CreateMentorship from "./pages/CreateMentorship";
 import EditMentorship from "./pages/EditMentorshipPage";
 import { ManageAccount } from "./pages/ManageAccount";
+import { RecoverAccount } from "./pages/RecoverAccount";
 
 export const router = createHashRouter([
   {
@@ -100,6 +101,10 @@ export const router = createHashRouter([
   {
     path: "/manage-account",
     Component: ManageAccount,
+  },
+  {
+    path: "/recover-account",
+    Component: RecoverAccount,
   },
   {
     path: "*",

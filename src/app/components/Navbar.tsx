@@ -49,11 +49,15 @@ export function Navbar({ showSearch = false, onSearch }: NavbarProps) {
     if (currentUser?.TC_agreed === false && !currentUser.user_roles) {
       navigate("/TC_agree")
     }
+
+    if (session && !currentUser?.is_active) {
+      navigate('/recover-account')
+    }
   }
 
   useEffect(() => {
     check();
-  }, [agreeToTC])
+  }, [agreeToTC, currentUser?.id])
 
   useEffect(() => {
     if (searchBarNavigateToFeed && location.pathname !== '/feed') {
