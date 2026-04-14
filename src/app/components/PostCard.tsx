@@ -35,6 +35,18 @@ export function PostCard({ post, deletePost }: PostCardProps) {
   const startupId = post.startups?.id;
   const canComment = Boolean(startupId);
 
+  useEffect(() => {
+    if (showCommentModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showCommentModal]);
+
   const postOwner = Boolean(currentUser?.id === post.user_id && user?.id == currentUser?.auth_id)
 
   useEffect(() => {
