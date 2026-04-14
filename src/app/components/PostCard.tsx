@@ -8,6 +8,7 @@ import { Modal } from './Modal';
 import { getImageUrl } from '../constants/imageHandler';
 import type { Post } from '../contexts/StartupProfileContext';
 import { Link } from 'react-router-dom';
+import { usePopup } from '../contexts/EdgePopupContext';
 
 interface PostCardProps {
   post: Post;
@@ -17,6 +18,7 @@ interface PostCardProps {
 export function PostCard({ post, deletePost }: PostCardProps) {
   const { session, user } = useAuth();
   const { currentUser } = useUserData();
+  const { showPopup } = usePopup();
 
   const [liked, setLiked] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -66,8 +68,21 @@ export function PostCard({ post, deletePost }: PostCardProps) {
     const nextLiked = !liked;
     const nextLikeCount = nextLiked ? likes + 1 : likes - 1;
 
+    const { error } = await supabase.rpc("check_rate_limit", {
+      p_user_id: currentUser?.id,
+      p_action: "like",
+      p_limit: 20,
+      p_window: "1 minute"
+    });
+
+    if (error) {
+      showPopup(`${error.message} Try again in a minute.`, 'error')
+      return;
+    }
+
     setLiked(nextLiked);
     setLikes(nextLikeCount);
+
 
     const { error: likeError } = nextLiked
       ? await supabase.from('likes').insert([{ post_id: post.id, user_id: currentUser?.id }])
@@ -92,6 +107,18 @@ export function PostCard({ post, deletePost }: PostCardProps) {
 
     const nextSaved = !saved;
     const nextSaveCount = nextSaved ? saves + 1 : saves - 1;
+
+    const { error } = await supabase.rpc("check_rate_limit", {
+      p_user_id: currentUser?.id,
+      p_action: "save",
+      p_limit: 20,
+      p_window: "1 minute"
+    });
+
+    if (error) {
+      showPopup(`${error.message} Try again in a minute.`, 'error')
+      return;
+    }
 
     setSaved(nextSaved);
     setSaves(nextSaveCount);

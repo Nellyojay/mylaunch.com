@@ -6,12 +6,14 @@ import supabase from '../supabaseClient';
 import { FOLDER, imageHandlerService } from '../constants/imageHandler';
 import SuccessMessage from '../components/SuccessMessage';
 import { BiArrowBack } from 'react-icons/bi';
+import { usePopup } from '../contexts/EdgePopupContext';
 
 export function AddPost() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const { currentUser } = useUserData();
+  const { showPopup } = usePopup();
 
   const [heading, setHeading] = useState('');
   const [content, setContent] = useState('');
@@ -56,6 +58,18 @@ export function AddPost() {
 
     setError(null);
     setSaving(true);
+
+    const { error } = await supabase.rpc("check_rate_limit", {
+      p_user_id: currentUser?.id,
+      p_action: "post",
+      p_limit: 5,
+      p_window: "1 hour"
+    });
+
+    if (error) {
+      showPopup(`${error.message} Try again in a minute.`, 'error')
+      return;
+    }
 
     const { data, error: insertError } = await supabase
       .from('posts')
