@@ -19,7 +19,7 @@ function PostFeed() {
   const [visibleCount, setVisibleCount] = useState(10);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const userStartups = startupData?.filter(s => s.user_id === currentUser?.id);
-  const userMentorshipPages = mentorshipData?.filter(m => m.users.id === currentUser?.id)
+  const userMentorshipPages = mentorshipData?.filter(m => m.users?.id === currentUser?.id)
 
   if (loadingPosts || !posts || !mentorshipData) {
     return <Loader />

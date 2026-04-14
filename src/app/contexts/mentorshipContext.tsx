@@ -63,6 +63,7 @@ export const MentorshipDataProvider = ({ children }: { children: React.ReactNode
               case 'INSERT':
                 return [...prevState, record as MentorshipData];
               case 'UPDATE':
+                fetchMentorshipPageData();
                 return prevState.map((item) =>
                   item.id === (record as MentorshipData).id ? (record as MentorshipData) : item
                 );

@@ -28,11 +28,11 @@ export default function MentorshipPage() {
 
   const pageData = mentorshipData?.find(m => m.id === id)
   const mentorshipPosts = posts.filter(p => p.mentorship_id === id)
-  const isOwner = Boolean(currentUser?.auth_id === user?.id && pageData?.users.id === currentUser?.id)
+  const isOwner = Boolean(currentUser?.auth_id === user?.id && pageData?.users?.id === currentUser?.id)
 
   useEffect(() => {
     fetchStartupPosts();
-  }, [id])
+  }, [id, posts]);
 
   const handleRating = async () => {
     if (rated === 0) {
@@ -144,11 +144,11 @@ export default function MentorshipPage() {
         {/* Mentor Profile */}
         <div className="mb-8">
           <MentorProfile
-            name={pageData?.users.full_name}
-            userId={pageData?.users.id}
+            name={pageData?.users?.full_name}
+            userId={pageData?.users?.id}
             title={pageData?.mentor_title}
             location={pageData?.location}
-            imageUrl={pageData?.users.profile_image}
+            imageUrl={pageData?.users?.profile_image}
             bio={pageData?.mentorship_bio}
             experience={pageData?.experience}
             rating={pageData?.avg_rating}
