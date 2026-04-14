@@ -10,7 +10,8 @@ export interface Comment {
   content: string;
   created_at: string;
   user_id: string;
-  startup_id: string;
+  startup_id: string | null;
+  post_id: number | null;
   parent_id?: number | null;
   user_name?: string;
 }
@@ -20,7 +21,8 @@ interface CommentNode extends Comment {
 }
 
 interface CommentBoxProps {
-  startupId: string;
+  startupId?: string | null;
+  postId?: number | null;
   comments: Comment[];
   loading: boolean;
   setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
@@ -28,7 +30,7 @@ interface CommentBoxProps {
   setShowComments: (show: boolean) => void;
 }
 
-export function CommentBox({ startupId, comments, loading, setComments, showComments, setShowComments }: CommentBoxProps) {
+export function CommentBox({ startupId, postId, comments, loading, setComments, showComments, setShowComments }: CommentBoxProps) {
   const { session } = useAuth();
   const { currentUser } = useUserData();
   const [newComment, setNewComment] = useState('');
@@ -39,13 +41,13 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
   const REPLY_DEPTH_LIMIT = 3;
 
   useEffect(() => {
-    if (!startupId) return;
+    if (!startupId || !postId) return;
 
     const commentsChannel = supabase
       .channel(`realtime-comments-${startupId}`)
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'opinions', filter: `startup_id=eq.${startupId}` },
+        { event: '*', schema: 'public', table: 'opinions', filter: `startup_id=eq.${startupId},post_id=eq.${postId}` },
         (payload: any) => {
           setComments((prev) => {
             const record = payload.new || payload.old;
@@ -70,7 +72,7 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
     return () => {
       supabase.removeChannel(commentsChannel);
     };
-  }, [startupId, setComments]);
+  }, [startupId, postId, setComments]);
 
   const isAuthenticated = Boolean(session?.user);
 
@@ -192,7 +194,7 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
                 </div>
               </>
             ) : (
-              <p className="text-gray-700">{node.content}</p>
+              <p className="text-gray-800">{node.content}</p>
             )}
 
             {node.children.length > 0 && level < REPLY_DEPTH_LIMIT - 1 && (
@@ -228,15 +230,14 @@ export function CommentBox({ startupId, comments, loading, setComments, showComm
         {
           content,
           user_id: currentUser?.id || session.user.id,
-          startup_id: startupId,
+          startup_id: startupId || null,
+          post_id: postId || null,
           parent_id: replyToCommentId,
           user_name: currentUser?.user_name || `User${(currentUser?.id.slice(0, 5) || session.user.id).slice(0, 5)}`,
         }
       ])
       .select('*')
       .single();
-
-    console.log('Insert comment result:', { data, error });
 
     if (error) {
       alert('Failed to post comment. Please try again.');

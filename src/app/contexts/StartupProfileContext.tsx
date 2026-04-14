@@ -10,6 +10,7 @@ export type Post = {
   created_at: string;
   likes: number;
   saves: number;
+  comments: number;
   user_id: string;
   mentorship_post_heading: string;
   startups?: {

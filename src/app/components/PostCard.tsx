@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Bookmark, Heart, Trash2 } from 'lucide-react';
+import { Bookmark, Heart, Trash2, MessageCircle } from 'lucide-react';
 import { useAuth } from '../contexts/authContext';
 import { formatDate } from '../constants/dateFormat';
 import supabase from '../supabaseClient';
 import { useUserData } from '../contexts/userDataContext';
 import { Modal } from './Modal';
+import { CommentBox, type Comment } from './CommentBox';
 import { getImageUrl } from '../constants/imageHandler';
 import type { Post } from '../contexts/StartupProfileContext';
 import { Link } from 'react-router-dom';
@@ -27,6 +28,12 @@ export function PostCard({ post, deletePost }: PostCardProps) {
   const [saved, setSaved] = useState(false);
   const [saves, setSaves] = useState(post.saves || 0);
   const [savingSave, setSavingSave] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+
+  const startupId = post.startups?.id;
+  const canComment = Boolean(startupId);
 
   const postOwner = Boolean(currentUser?.id === post.user_id && user?.id == currentUser?.auth_id)
 
@@ -140,6 +147,28 @@ export function PostCard({ post, deletePost }: PostCardProps) {
     setSavingSave(false);
   };
 
+  useEffect(() => {
+    if (!showCommentModal || !startupId) return;
+
+    const fetchComments = async () => {
+      setLoadingComments(true);
+      const { data, error } = await supabase
+        .from('opinions')
+        .select('*')
+        .eq('post_id', post.id)
+        .order('created_at', { ascending: false });
+
+      if (!error && data) {
+        setComments(data as Comment[]);
+      } else {
+        setComments([]);
+      }
+      setLoadingComments(false);
+    };
+
+    void fetchComments();
+  }, [showCommentModal, startupId]);
+
   return (
     <div className="bg-white border border-gray-300 rounded-sm shadow-sm overflow-hidden">
 
@@ -228,6 +257,16 @@ export function PostCard({ post, deletePost }: PostCardProps) {
           <p className="text-xs text-gray-400 uppercase">{formatDate(post.created_at, false)}</p>
 
           <div className="flex items-center space-x-4">
+            {canComment && (
+              <button
+                title='Comment'
+                onClick={() => setShowCommentModal(true)}
+                disabled={!session || !canComment}
+                className={`flex items-center space-x-1 transition-colors ${canComment ? 'text-gray-500' : 'text-gray-300 cursor-not-allowed'}`}
+              >
+                <MessageCircle className="w-5 h-5" />
+                <p className="text-gray-500">{post.comments || 0}</p>
+              </button>)}
             <button
               title='Like'
               onClick={handleLike}
@@ -251,6 +290,24 @@ export function PostCard({ post, deletePost }: PostCardProps) {
           </div>
         </div>
       </div>
+
+      {showCommentModal && startupId && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="w-full max-w-3xl rounded-3xl bg-white shadow-2xl overflow-hidden">
+
+            <div className="max-h-[80vh] overflow-y-auto p-5">
+              <CommentBox
+                postId={post.id}
+                comments={comments}
+                loading={loadingComments}
+                setComments={setComments}
+                showComments={showCommentModal}
+                setShowComments={setShowCommentModal}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
