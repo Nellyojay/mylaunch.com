@@ -172,7 +172,7 @@ export function Settings() {
             <h3 className="font-semibold text-gray-900">Support</h3>
           </div>
 
-          <Link to={''} title='' className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors border-b border-gray-100">
+          <Link to="/help-center" title="help-center" className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors border-b border-gray-100">
             <div className="flex items-center gap-3">
               <HelpCircle className="w-5 h-5 text-gray-600" />
               <span className="text-gray-900">Help Center</span>

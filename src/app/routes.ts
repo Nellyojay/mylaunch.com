@@ -13,6 +13,7 @@ import { EditProfile } from "./pages/EditProfile";
 import { Feedback } from "./pages/Feedback";
 import { FollowingStartups } from "./pages/FollowingStartups";
 import { Settings } from "./pages/Settings";
+import { HelpCenter } from "./pages/HelpCenter";
 import TC_agree from "./pages/TC_agree";
 import PostFeed from "./pages/PostFeed";
 import MentorshipPage from "./pages/MentorshipPage";
@@ -98,6 +99,10 @@ export const router = createHashRouter([
   {
     path: "/settings",
     Component: Settings,
+  },
+  {
+    path: "/help-center",
+    Component: HelpCenter,
   },
   {
     path: "/change-password",
