@@ -64,6 +64,9 @@ export function StartupProfile() {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  console.log("Comments: ", comments);
+  console.log("Posts: ", StartupOwnPosts);
+
   useEffect(() => {
     if (!id) {
       setPosts([]);
@@ -89,7 +92,16 @@ export function StartupProfile() {
               case 'INSERT':
                 return [record, ...prevPosts];
               case 'UPDATE':
-                return prevPosts.map((p) => (p.id === record.id ? record : p));
+                return prevPosts.map((p) =>
+                  p.id === record.id
+                    ? {
+                        ...p,
+                        ...record,
+                        startups: record.startups ?? p.startups,
+                        mentorship_page: record.mentorship_page ?? p.mentorship_page,
+                      }
+                    : p
+                );
               case 'DELETE':
                 return prevPosts.filter((p) => p.id !== record.id);
               default:
@@ -103,7 +115,7 @@ export function StartupProfile() {
     return () => {
       supabase.removeChannel(postsChannel);
     };
-  }, [activeStartup?.id, following, session, currentUser]);
+  }, [startup?.id]);
 
   useEffect(() => {
     setLoading(true);
