@@ -304,10 +304,9 @@ export function PostCard({ post, deletePost }: PostCardProps) {
       </div>
 
       {showCommentModal && startupId && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/50 flex justify-center px-2 py-20 border-2">
           <div className="w-full max-w-3xl rounded-3xl bg-white shadow-2xl overflow-hidden">
-
-            <div className="max-h-[80vh] overflow-y-auto p-5">
+            <div className="h-full px-2 pb-6 pt-2">
               <CommentBox
                 postId={post.id}
                 comments={comments}

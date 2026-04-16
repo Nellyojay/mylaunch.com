@@ -30,7 +30,7 @@ interface CommentBoxProps {
   setShowComments: (show: boolean) => void;
 }
 
-export function CommentBox({ startupId, postId, comments, loading, setComments, showComments, setShowComments }: CommentBoxProps) {
+export function CommentBox({ startupId, postId, comments, loading, setComments, setShowComments }: CommentBoxProps) {
   const { session } = useAuth();
   const { currentUser } = useUserData();
   const [newComment, setNewComment] = useState('');
@@ -113,7 +113,7 @@ export function CommentBox({ startupId, postId, comments, loading, setComments, 
         key={node.id}
         className={`bg-white p-1 rounded-xl ${level > 0 ? 'ml-4' : 'border border-gray-200'}`}
       >
-        <div className="flex space-x-3">
+        <div className="flex gap-1">
           <div>
             <div className="w-8 h-8 rounded-full bg-blue-100 shrink-0 flex items-center justify-center">
               <span className="text-sm font-medium text-blue-600">
@@ -125,12 +125,12 @@ export function CommentBox({ startupId, postId, comments, loading, setComments, 
             )}
           </div>
           <div className="flex-1">
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between">
               <div>
                 <span className="text-xs md:text-sm font-medium text-gray-500">{node.user_name || 'Unknown'}</span>
                 <span className="text-xs text-gray-500 ml-2">{new Date(node.created_at).toLocaleDateString()}</span>
               </div>
-              <div className="flex gap-1">
+              <div className="flex items-center">
                 {level < 2 && (
                   <button
                     type="button"
@@ -303,20 +303,21 @@ export function CommentBox({ startupId, postId, comments, loading, setComments, 
 
 
   return (
-    <div className="space-y-4 mt-4">
+    <div className="flex flex-col gap-4 mt-2 h-full min-h-0">
       <div className='flex gap-2 items-center justify-between'>
         <h2 className="text-lg font-semibold text-gray-900">Comments ({comments.length})</h2>
         <button
           title='close'
-          onClick={() => setShowComments(!showComments)}
+          onClick={() => setShowComments(false)}
+          className="text-gray-500 hover:text-gray-700 transition-colors"
         >
-          <BsX className="w-6 h-6 text-gray-500 hover:text-gray-700 transition-colors" />
+          <BsX className="w-6 h-6" />
         </button>
       </div>
 
       {loading && <div className="text-sm text-gray-500">Loading comments...</div>}
 
-      <div className="space-y-3 max-h-72 overflow-y-auto pr-1 scrollbar-hide">
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1 scrollbar-hide">
         {renderComments(buildCommentTree())}
       </div>
 
