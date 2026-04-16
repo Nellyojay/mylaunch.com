@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Eye, EyeOff, Lock, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import supabase from '../supabaseClient';
@@ -13,36 +13,7 @@ export function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [sessionReady, setSessionReady] = useState(false);
-  const [hasResetSession, setHasResetSession] = useState(false);
-
-  useEffect(() => {
-    const initializeSession = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const recoveryType = params.get('type');
-      const accessToken = params.get('access_token');
-
-      if (!recoveryType && !accessToken) {
-        setSessionReady(true);
-        return;
-      }
-
-      const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
-      if (error) {
-        setErrorMessage(error.message || 'Unable to complete password reset. Please try again.');
-      } else if (data?.session) {
-        setHasResetSession(true);
-        setStatusMessage('Reset link accepted. Enter your new password below.');
-        window.history.replaceState({}, document.title, '/reset-password');
-      } else {
-        setErrorMessage('No valid password reset session found. Please use the link from your email.');
-      }
-
-      setSessionReady(true);
-    };
-
-    initializeSession();
-  }, []);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,20 +45,9 @@ export function ResetPassword() {
     }
 
     setStatusMessage('Your password has been reset successfully. Redirecting to login...');
+    setIsSuccess(true);
     setTimeout(() => navigate('/login'), 3000);
   };
-
-  if (!sessionReady) {
-    return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-12">
-        <ScrollToTop />
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center">
-          <RefreshCw className="mx-auto w-10 h-10 text-blue-600 animate-spin" />
-          <p className="mt-4 text-gray-700">Checking your reset link...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-12">
@@ -113,17 +73,7 @@ export function ResetPassword() {
             </div>
           )}
 
-          {!hasResetSession ? (
-            <div className="text-center space-y-4">
-              <p className="text-gray-600">This page is only available from your password reset email link.</p>
-              <Link
-                to="/forgot-password"
-                className="inline-block px-6 py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all font-medium"
-              >
-                Request a new reset link
-              </Link>
-            </div>
-          ) : (
+          {!isSuccess ? (
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
@@ -189,6 +139,20 @@ export function ResetPassword() {
                 )}
               </button>
             </form>
+          ) : (
+            <div className="space-y-4 text-center">
+              <div className="mx-auto w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                <CheckCircle className="w-10 h-10 text-green-600" />
+              </div>
+              <h2 className="text-2xl font-semibold text-gray-900">Password Reset Complete</h2>
+              <p className="text-gray-600">Your password has been updated successfully. You will be redirected to login shortly.</p>
+              <Link
+                to="/login"
+                className="inline-block px-6 py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all font-medium"
+              >
+                Back to Login Now
+              </Link>
+            </div>
           )}
 
           <div className="mt-6 text-center">
