@@ -8,6 +8,7 @@ import { AddPost } from "./pages/AddPost";
 import { NotFound } from "./pages/NotFound";
 import { Login } from "./pages/auth/login";
 import { Signup } from "./pages/auth/signup";
+import { ForgotPassword } from "./pages/ForgotPassword";
 import { EditStartup } from "./pages/EditStartup";
 import { EditProfile } from "./pages/EditProfile";
 import { Feedback } from "./pages/Feedback";
@@ -22,6 +23,7 @@ import EditMentorship from "./pages/EditMentorshipPage";
 import { ManageAccount } from "./pages/ManageAccount";
 import { ChangePassword } from "./pages/ChangePassword";
 import { RecoverAccount } from "./pages/RecoverAccount";
+import { ResetPassword } from "./pages/ResetPassword";
 
 export const router = createHashRouter([
   {
@@ -73,6 +75,10 @@ export const router = createHashRouter([
     Component: Login,
   },
   {
+    path: "/forgot-password",
+    Component: ForgotPassword,
+  },
+  {
     path: "/signup",
     Component: Signup,
   },
@@ -107,6 +113,10 @@ export const router = createHashRouter([
   {
     path: "/change-password",
     Component: ChangePassword,
+  },
+  {
+    path: "/reset-password",
+    Component: ResetPassword,
   },
   {
     path: "/manage-account",

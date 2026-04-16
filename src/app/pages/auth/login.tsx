@@ -132,9 +132,9 @@ export function Login() {
                 />
                 <span className="text-gray-600">Remember me</span>
               </label>
-              <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
+              <Link to="/forgot-password" className="text-blue-600 hover:text-blue-700 font-medium">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             {/* Submit Button */}
