@@ -22,7 +22,7 @@ export function ForgotPassword() {
 
     setIsLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`
+      redirectTo: 'https://nellyojay.github.io/adumun/#/reset-password'
     });
 
     if (error) {
