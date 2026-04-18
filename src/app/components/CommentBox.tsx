@@ -38,7 +38,24 @@ export function CommentBox({ startupId, postId, comments, loading, setComments, 
   const [replyToCommentId, setReplyToCommentId] = useState<number | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState('');
+  const [visibleCountByParent, setVisibleCountByParent] = useState<Record<string, number>>({ root: 3 });
   const REPLY_DEPTH_LIMIT = 3;
+
+  const getVisibleCount = (parentKey: string) => visibleCountByParent[parentKey] ?? 3;
+
+  const showMore = (parentKey: string, total: number) => {
+    setVisibleCountByParent((prev) => ({
+      ...prev,
+      [parentKey]: Math.min(total, (prev[parentKey] ?? 3) + 3),
+    }));
+  };
+
+  const hideAll = (parentKey: string) => {
+    setVisibleCountByParent((prev) => ({
+      ...prev,
+      [parentKey]: 3,
+    }));
+  };
 
   useEffect(() => {
     if (!startupId || !postId) return;
@@ -90,7 +107,7 @@ export function CommentBox({ startupId, postId, comments, loading, setComments, 
     });
 
     const traverse = (items: CommentNode[]) => {
-      items.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      items.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       items.forEach((item) => traverse(item.children));
     };
 
@@ -107,117 +124,148 @@ export function CommentBox({ startupId, postId, comments, loading, setComments, 
     }));
   }, []);
 
-  const renderComments = (nodes: CommentNode[], level = 0): React.ReactNode[] =>
-    nodes.map((node) => (
-      <div
-        key={node.id}
-        className={`bg-white p-1 rounded-xl ${level > 0 ? 'ml-4' : 'border border-gray-200'}`}
-      >
-        <div className="flex gap-1">
-          <div>
-            <div className="w-8 h-8 rounded-full bg-blue-100 shrink-0 flex items-center justify-center">
-              <span className="text-sm font-medium text-blue-600">
-                {(node.user_name || 'U')[0].toUpperCase()}
-              </span>
-            </div>
-            {openRepliesCommentId[String(node.id)] && (
-              <div className={`${level >= 0 && node.children.length > 0 ? 'border-l-2 border-b-2 border-gray-300 rounded-b-lg' : ''} h-full w-4 ml-4`} />
-            )}
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-xs md:text-sm font-medium text-gray-500">{node.user_name || 'Unknown'}</span>
-                <span className="text-xs text-gray-500 ml-2">{new Date(node.created_at).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center">
-                {level < 2 && (
-                  <button
-                    type="button"
-                    title="Reply to this comment"
-                    onClick={() => setReplyToCommentId(node.id)}
-                    className="text-xs text-blue-500 hover:underline pr-2"
-                  >
-                    Reply
-                  </button>
-                )}
-                {isAuthenticated && (currentUser?.id || session.user.id) === node.user_id && (
-                  <>
-                    <button
-                      type="button"
-                      title="Edit this comment"
-                      onClick={() => beginEdit(node)}
-                      className="p-1 text-gray-500 hover:text-blue-600"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      title="Delete this comment"
-                      onClick={() => handleDeleteComment(node.id, node.user_id)}
-                      className="p-1 text-gray-500 hover:text-red-600"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
+  const renderComments = (nodes: CommentNode[], level = 0, parentKey = 'root'): React.ReactNode => {
+    const shouldBatch = level > 0;
+    const visibleCount = shouldBatch ? getVisibleCount(parentKey) : nodes.length;
+    const visibleNodes = shouldBatch ? nodes.slice(0, visibleCount) : nodes;
+    const hasMore = shouldBatch && nodes.length > visibleCount;
 
-            {editingCommentId === node.id ? (
-              <>
-                <textarea
-                  className="w-full mt-2 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={2}
-                  placeholder="Edit your comment"
-                  value={editingText}
-                  onChange={(e) => setEditingText(e.target.value)}
-                />
-                <div className="flex gap-2 mt-2">
-                  <button
-                    type="button"
-                    onClick={saveEdit}
-                    className="px-3 py-1 text-xs font-semibold text-white bg-green-600 rounded hover:bg-green-700"
-                  >
-                    Save
-                  </button>
+    return (
+      <>
+        {visibleNodes.map((node) => (
+          <div
+            key={node.id}
+            className={`bg-white p-1 rounded-xl ${level > 0 ? 'ml-4' : 'border border-gray-200'}`}
+          >
+            <div className="flex gap-1">
+              <div>
+                <div className="w-8 h-8 rounded-full bg-blue-100 shrink-0 flex items-center justify-center">
+                  <span className="text-sm font-medium text-blue-600">
+                    {(node.user_name || 'U')[0].toUpperCase()}
+                  </span>
+                </div>
+                {openRepliesCommentId[String(node.id)] && (
+                  <div className={`${level >= 0 && node.children.length > 0 ? 'border-l-2 border-b-2 border-gray-300 rounded-b-lg' : ''} h-full w-4 ml-4`} />
+                )}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-xs md:text-sm font-medium text-gray-500">{node.user_name || 'Unknown'}</span>
+                    <span className="text-xs text-gray-500 ml-2">{new Date(node.created_at).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center">
+                    {level < 2 && (
+                      <button
+                        type="button"
+                        title="Reply to this comment"
+                        onClick={() => setReplyToCommentId(node.id)}
+                        className="text-xs text-blue-500 hover:underline pr-2"
+                      >
+                        Reply
+                      </button>
+                    )}
+                    {isAuthenticated && (currentUser?.id || session.user.id) === node.user_id && (
+                      <>
+                        <button
+                          type="button"
+                          title="Edit this comment"
+                          onClick={() => beginEdit(node)}
+                          className="p-1 text-gray-500 hover:text-blue-600"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          title="Delete this comment"
+                          onClick={() => handleDeleteComment(node.id, node.user_id)}
+                          className="p-1 text-gray-500 hover:text-red-600"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {editingCommentId === node.id ? (
+                  <>
+                    <textarea
+                      className="w-full mt-2 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows={2}
+                      placeholder="Edit your comment"
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                    />
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        type="button"
+                        onClick={saveEdit}
+                        className="px-3 py-1 text-xs font-semibold text-white bg-green-600 rounded hover:bg-green-700"
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingCommentId(null);
+                          setEditingText('');
+                        }}
+                        className="px-3 py-1 text-xs font-semibold text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-gray-800">{node.content}</p>
+                )}
+
+                {node.children.length > 0 && level < REPLY_DEPTH_LIMIT - 1 && (
                   <button
                     type="button"
                     onClick={() => {
-                      setEditingCommentId(null);
-                      setEditingText('');
+                      toggleReplies(node.id);
                     }}
-                    className="px-3 py-1 text-xs font-semibold text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
+                    className="text-xs text-blue-500 hover:underline mt-1"
                   >
-                    Cancel
+                    {openRepliesCommentId[String(node.id)] ? 'Hide Replies' : `View Replies (${node.children.length})`}
                   </button>
-                </div>
-              </>
-            ) : (
-              <p className="text-gray-800">{node.content}</p>
-            )}
+                )}
+              </div>
+            </div>
 
-            {node.children.length > 0 && level < REPLY_DEPTH_LIMIT - 1 && (
+            {node.children.length > 0 && (
+              <div className={`mt-1 space-y-3 ${!openRepliesCommentId[String(node.id)] ? 'hidden' : ''}`} id={`comment-${node.id}`}>
+                {renderComments(node.children, level + 1, String(node.id))}
+              </div>
+            )}
+          </div>
+        ))}
+
+        {hasMore && (
+          <div key={`${parentKey}-more`} className="flex flex-wrap gap-2 mt-2">
+            <button
+              type="button"
+              onClick={() => showMore(parentKey, nodes.length)}
+              className="text-xs text-blue-600 hover:underline"
+            >
+              View more ({nodes.length - visibleCount})
+            </button>
+            {visibleCount > 3 && (
               <button
                 type="button"
-                onClick={() => {
-                  toggleReplies(node.id);
-                }}
-                className="text-xs text-blue-500 hover:underline mt-1"
+                onClick={() => hideAll(parentKey)}
+                className="text-xs text-gray-500 hover:text-gray-700"
               >
-                {openRepliesCommentId[String(node.id)] ? 'Hide Replies' : `View Replies (${node.children.length})`}
+                Hide all
               </button>
             )}
           </div>
-        </div>
-
-        {node.children.length > 0 && (
-          <div className={`mt-1 space-y-3 ${!openRepliesCommentId[String(node.id)] ? 'hidden' : ''}`} id={`comment-${node.id}`}>
-            {renderComments(node.children, level + 1)}
-          </div>
         )}
-      </div>
-    ));
+      </>
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -318,7 +366,7 @@ export function CommentBox({ startupId, postId, comments, loading, setComments, 
       {loading && <div className="text-sm text-gray-500">Loading comments...</div>}
 
       <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1 scrollbar-hide">
-        {renderComments(buildCommentTree())}
+        {renderComments(buildCommentTree(), 0, 'root')}
       </div>
 
       {replyToCommentId && (
