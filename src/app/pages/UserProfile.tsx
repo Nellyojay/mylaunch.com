@@ -249,7 +249,7 @@ export function UserProfile() {
         {/* Startups Section */}
         <div>
           <div className="sticky top-18 h-fit z-50 flex items-center justify-between mb-6">
-            <div className='flex text-gray-500 space-x-2 bg-gray-50 rounded-lg py-1 px-4 mr-1 justify-around not-md:w-full shadow-gray-200 shadow-sm'>
+            <div className='flex text-gray-500 space-x-4 bg-gray-50 rounded-lg py-1 px-4 mr-1 justify-around not-md:w-full shadow-gray-200 shadow-sm'>
               {userData.user_roles.includes(BUSINESS_PERSONNEL_ROLE) && (
                 <button
                   onClick={() => setTab(0)}
@@ -265,19 +265,23 @@ export function UserProfile() {
               )}
 
               <div className='flex items-center justify-center gap-1 md:hover:text-gray-800'>
-                <Star className='fill-gray-500' size={18} color='' />
                 <button
+                  title='favorite businesses'
                   onClick={() => setTab(2)}
                   className={`font-semibold cursor-pointer transition-all duration-200 ${tab === 2 && 'text-gray-800 border-b-2'}`}
-                >Favorites</button>
+                >
+                  <Star className={`fill-gray-500 md:hover:fill-gray-700 ${tab === 2 && 'fill-gray-800'}`} size={18} color='' />
+                </button>
               </div>
 
               <div className='flex items-center gap-1 md:hover:text-gray-800'>
-                <Bookmark className='fill-gray-500' size={18} color='' />
                 <button
+                  title='saved posts'
                   onClick={() => setTab(3)}
                   className={`font-semibold cursor-pointer transition-all duration-200 ${tab === 3 && 'text-gray-800 border-b-2'}`}
-                >Saved</button>
+                >
+                  <Bookmark className={`fill-gray-500 md:hover:fill-gray-700 ${tab === 3 && 'fill-gray-800'}`} size={18} color='' />
+                </button>
               </div>
             </div>
 
